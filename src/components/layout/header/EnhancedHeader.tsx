@@ -4,6 +4,8 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import Icon from '@/components/ui/AppIcon';
+import { useAuth } from '@/features/auth/hooks/useAuth';
+import { useCart } from '@/features/cart/hooks/useCart';
 
 interface NavigationItem {
   label: string;
@@ -11,10 +13,13 @@ interface NavigationItem {
   icon: string;
 }
 
-const Header = () => {
+const EnhancedHeader = () => {
   const pathname = usePathname();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  
+  const { user, isAuthenticated, logout } = useAuth();
+  const { itemCount, toggleCart } = useCart();
 
   const navigationItems: NavigationItem[] = [
     { label: 'Home', path: '/', icon: 'HomeIcon' },
@@ -78,15 +83,20 @@ const Header = () => {
             ))}
           </nav>
 
-          {/* Right Section - Search, User Menu */}
+          {/* Right Section - Cart, User Menu */}
           <div className="flex items-center space-x-3">
-            {/* Search Button */}
+            {/* Cart Button with Count */}
             <button
-              className="flex h-10 w-10 items-center justify-center rounded-md text-foreground transition-smooth hover:bg-muted md:h-auto md:w-auto md:space-x-2 md:px-4"
-              aria-label="Search products"
+              onClick={toggleCart}
+              className="relative flex h-10 w-10 items-center justify-center rounded-md text-foreground transition-smooth hover:bg-muted"
+              aria-label="Shopping cart"
             >
-              <Icon name="MagnifyingGlassIcon" size={20} />
-              <span className="hidden md:inline">Search</span>
+              <Icon name="ShoppingCartIcon" size={20} />
+              {itemCount > 0 && (
+                <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-xs font-medium text-primary-foreground">
+                  {itemCount}
+                </span>
+              )}
             </button>
 
             {/* User Menu */}
@@ -108,10 +118,10 @@ const Header = () => {
                   <div className="absolute right-0 top-full z-[200] mt-2 w-56 rounded-md bg-popover shadow-elevation-3 transition-smooth">
                     <div className="p-4">
                       <p className="text-sm font-medium text-popover-foreground">
-                        Welcome, Guest
+                        {isAuthenticated ? `Welcome, ${user?.name}` : 'Welcome, Guest'}
                       </p>
                       <p className="caption text-muted-foreground">
-                        Sign in to access your account
+                        {isAuthenticated ? 'Manage your account' : 'Sign in to access your account'}
                       </p>
                     </div>
                     <div className="border-t border-border">
@@ -133,9 +143,21 @@ const Header = () => {
                       </Link>
                     </div>
                     <div className="border-t border-border p-3">
-                      <button className="w-full rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-smooth hover:scale-[0.97]">
-                        Sign In
-                      </button>
+                      {isAuthenticated ? (
+                        <button 
+                          onClick={() => {
+                            logout();
+                            setIsUserMenuOpen(false);
+                          }}
+                          className="w-full rounded-md bg-destructive px-4 py-2 text-sm font-medium text-destructive-foreground transition-smooth hover:scale-[0.97]"
+                        >
+                          Sign Out
+                        </button>
+                      ) : (
+                        <button className="w-full rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-smooth hover:scale-[0.97]">
+                          Sign In
+                        </button>
+                      )}
                     </div>
                   </div>
                 </>
@@ -186,4 +208,4 @@ const Header = () => {
   );
 };
 
-export default Header;
+export default EnhancedHeader;

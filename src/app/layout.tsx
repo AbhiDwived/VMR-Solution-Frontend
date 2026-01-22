@@ -2,6 +2,7 @@ import React from 'react';
 import type { Metadata, Viewport } from 'next';
 import Header from '@/components/common/Header';
 import Footer from '@/components/common/Footer';
+import { StoreProvider } from '@/lib/providers/StoreProvider';
 import '../styles/index.css';
 
 export const viewport: Viewport = {
@@ -27,9 +28,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <Header />
-        {children}
-        <Footer />
+        <StoreProvider>
+          <Header />
+          {children}
+          <Footer />
+        </StoreProvider>
 
         <script type="module" async src="https://static.rocket.new/rocket-web.js?_cfg=https%3A%2F%2Fplasticmar3871back.builtwithrocket.new&_be=https%3A%2F%2Fappanalytics.rocket.new&_v=0.1.14" />
         <script type="module" defer src="https://static.rocket.new/rocket-shot.js?v=0.0.2" />
