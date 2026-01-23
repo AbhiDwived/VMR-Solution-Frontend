@@ -47,8 +47,8 @@ const ProductGrid = ({ products, onAddToCart }: ProductGridProps) => {
   }
 
   return (
-    <div className="space-y-8">
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+    <div className="space-y-4 sm:space-y-8">
+      <div className="grid grid-cols-2 gap-4 sm:gap-6 lg:grid-cols-6">
         {displayedProducts.map((product) => (
           <ProductCard
             key={product.id}
@@ -60,7 +60,7 @@ const ProductGrid = ({ products, onAddToCart }: ProductGridProps) => {
 
       {/* Loading Skeletons */}
       {isLoading && (
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <div className="grid grid-cols-2 gap-4 sm:gap-6 lg:grid-cols-6">
           {[...Array(4)].map((_, i) => (
             <div
               key={i}

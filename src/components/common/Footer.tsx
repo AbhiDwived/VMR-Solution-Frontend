@@ -6,11 +6,16 @@ import Icon from '@/components/ui/AppIcon';
 
 const Footer = () => {
   const [email, setEmail] = useState('');
+  const [openSection, setOpenSection] = useState<string | null>(null);
 
   const handleNewsletterSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     console.log('Newsletter subscription:', email);
     setEmail('');
+  };
+
+  const toggleSection = (section: string) => {
+    setOpenSection(openSection === section ? null : section);
   };
 
   return (
@@ -26,7 +31,7 @@ const Footer = () => {
               <span className="font-heading text-xl font-semibold text-foreground">VMR Solution</span>
             </div>
             <p className="text-sm text-muted-foreground mb-4">Your trusted partner for durable, affordable plastic household products.</p>
-            <p className="text-sm font-medium text-primary mb-6">"Quality Plastic Products for Modern Living"</p>
+            <p className="text-sm font-medium text-primary mb-6">&quot;Quality Plastic Products for Modern Living&quot;</p>
             
             <div>
               <h4 className="font-semibold text-foreground mb-3">Stay Updated</h4>
@@ -38,8 +43,70 @@ const Footer = () => {
             </div>
           </div>
 
-          {/* Quick Links */}
-          <div data-aos="fade-up" data-aos-delay="100">
+          {/* Quick Links - Mobile Accordion */}
+          <div className="lg:hidden">
+            <button
+              onClick={() => toggleSection('quickLinks')}
+              className="flex w-full items-center justify-between py-2 font-semibold text-foreground"
+            >
+              Quick Links
+              <Icon name={openSection === 'quickLinks' ? 'ChevronUpIcon' : 'ChevronDownIcon'} size={16} />
+            </button>
+            {openSection === 'quickLinks' && (
+              <ul className="mt-2 space-y-2 text-sm">
+                <li><Link href="/" className="text-muted-foreground hover:text-primary transition-smooth">Home</Link></li>
+                <li><Link href="/product-catalog" className="text-muted-foreground hover:text-primary transition-smooth">Shop</Link></li>
+                <li><Link href="/product-catalog" className="text-muted-foreground hover:text-primary transition-smooth">Categories</Link></li>
+                <li><Link href="#" className="text-muted-foreground hover:text-primary transition-smooth">About Us</Link></li>
+                <li><Link href="#" className="text-muted-foreground hover:text-primary transition-smooth">Contact Us</Link></li>
+                <li><Link href="#" className="text-muted-foreground hover:text-primary transition-smooth">Bulk Orders</Link></li>
+              </ul>
+            )}
+          </div>
+
+          {/* Categories - Mobile Accordion */}
+          <div className="lg:hidden">
+            <button
+              onClick={() => toggleSection('categories')}
+              className="flex w-full items-center justify-between py-2 font-semibold text-foreground"
+            >
+              Categories
+              <Icon name={openSection === 'categories' ? 'ChevronUpIcon' : 'ChevronDownIcon'} size={16} />
+            </button>
+            {openSection === 'categories' && (
+              <ul className="mt-2 space-y-2 text-sm">
+                <li><Link href="/product-catalog" className="text-muted-foreground hover:text-primary transition-smooth">Flower Pots</Link></li>
+                <li><Link href="/product-catalog" className="text-muted-foreground hover:text-primary transition-smooth">Plastic Mugs</Link></li>
+                <li><Link href="/product-catalog" className="text-muted-foreground hover:text-primary transition-smooth">Containers</Link></li>
+                <li><Link href="/product-catalog" className="text-muted-foreground hover:text-primary transition-smooth">Buckets</Link></li>
+                <li><Link href="/product-catalog" className="text-muted-foreground hover:text-primary transition-smooth">Dustbins</Link></li>
+              </ul>
+            )}
+          </div>
+
+          {/* Support - Mobile Accordion */}
+          <div className="lg:hidden">
+            <button
+              onClick={() => toggleSection('support')}
+              className="flex w-full items-center justify-between py-2 font-semibold text-foreground"
+            >
+              Support
+              <Icon name={openSection === 'support' ? 'ChevronUpIcon' : 'ChevronDownIcon'} size={16} />
+            </button>
+            {openSection === 'support' && (
+              <ul className="mt-2 space-y-2 text-sm">
+                <li><Link href="#" className="text-muted-foreground hover:text-primary transition-smooth">FAQs</Link></li>
+                <li><Link href="#" className="text-muted-foreground hover:text-primary transition-smooth">Shipping & Delivery</Link></li>
+                <li><Link href="#" className="text-muted-foreground hover:text-primary transition-smooth">Return Policy</Link></li>
+                <li><Link href="/order-tracking" className="text-muted-foreground hover:text-primary transition-smooth">Order Tracking</Link></li>
+                <li><Link href="#" className="text-muted-foreground hover:text-primary transition-smooth">Privacy Policy</Link></li>
+                <li><Link href="#" className="text-muted-foreground hover:text-primary transition-smooth">Terms & Conditions</Link></li>
+              </ul>
+            )}
+          </div>
+
+          {/* Desktop Layout - Hidden on Mobile */}
+          <div className="hidden lg:block" data-aos="fade-up" data-aos-delay="100">
             <h4 className="font-semibold text-foreground mb-4">Quick Links</h4>
             <ul className="space-y-2 text-sm">
               <li><Link href="/" className="text-muted-foreground hover:text-primary transition-smooth">Home</Link></li>
@@ -51,8 +118,7 @@ const Footer = () => {
             </ul>
           </div>
 
-          {/* Product Categories */}
-          <div data-aos="fade-up" data-aos-delay="200">
+          <div className="hidden lg:block" data-aos="fade-up" data-aos-delay="200">
             <h4 className="font-semibold text-foreground mb-4">Categories</h4>
             <ul className="space-y-2 text-sm">
               <li><Link href="/product-catalog" className="text-muted-foreground hover:text-primary transition-smooth">Flower Pots</Link></li>
@@ -63,8 +129,7 @@ const Footer = () => {
             </ul>
           </div>
 
-          {/* Customer Support */}
-          <div data-aos="fade-up" data-aos-delay="300">
+          <div className="hidden lg:block" data-aos="fade-up" data-aos-delay="300">
             <h4 className="font-semibold text-foreground mb-4">Support</h4>
             <ul className="space-y-2 text-sm">
               <li><Link href="#" className="text-muted-foreground hover:text-primary transition-smooth">FAQs</Link></li>

@@ -39,7 +39,7 @@ const ExitIntentPopup = ({ onClose }: ExitIntentPopupProps) => {
               </div>
             </div>
             <h2 className="mb-2 text-center font-heading text-2xl font-bold text-foreground">
-              Wait! Don't Miss Out!
+              Wait! Don&apos;t Miss Out!
             </h2>
             <p className="mb-6 text-center text-muted-foreground">
               Get an exclusive 15% discount on your first order. Subscribe now!

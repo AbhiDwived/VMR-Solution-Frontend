@@ -38,7 +38,7 @@ export default function EmptyCart({ recentProducts }: EmptyCartProps) {
         Your Cart is Empty
       </h2>
       <p className="mb-8 text-muted-foreground">
-        Looks like you haven't added any items to your cart yet. Start shopping to fill it up!
+        Looks like you haven&apos;t added any items to your cart yet. Start shopping to fill it up!
       </p>
 
       <Link

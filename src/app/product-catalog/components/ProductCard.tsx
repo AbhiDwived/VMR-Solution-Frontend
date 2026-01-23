@@ -95,27 +95,27 @@ const ProductCard = ({ product, onAddToCart }: ProductCardProps) => {
         </Link>
 
         {/* Product Info */}
-        <div className="flex flex-1 flex-col p-4">
+        <div className="flex flex-1 flex-col p-2 sm:p-3">
           <Link href={`/product-details?id=${product.id}`}>
             <p className="caption mb-1 text-muted-foreground">{product.category}</p>
-            <h3 className="mb-2 line-clamp-2 text-base font-medium text-card-foreground transition-smooth hover:text-primary">
+            <h3 className="mb-1 line-clamp-2 text-sm font-medium text-card-foreground transition-smooth hover:text-primary sm:text-base">
               {product.name}
             </h3>
           </Link>
 
           {/* Capacity */}
-          <p className="caption mb-2 text-muted-foreground">
+          <p className="caption mb-1 text-muted-foreground">
             Capacity: {product.capacity}
           </p>
 
           {/* Rating */}
-          <div className="mb-3 flex items-center space-x-2">
+          <div className="mb-2 flex items-center space-x-2">
             <div className="flex items-center">
               {[...Array(5)].map((_, i) => (
                 <Icon
                   key={i}
                   name="StarIcon"
-                  size={14}
+                  size={12}
                   variant={i < Math.floor(product.rating) ? 'solid' : 'outline'}
                   className={i < Math.floor(product.rating) ? 'text-accent' : 'text-muted-foreground'}
                 />
@@ -127,32 +127,32 @@ const ProductCard = ({ product, onAddToCart }: ProductCardProps) => {
           </div>
 
           {/* Price */}
-          <div className="mb-3 flex items-baseline space-x-2">
-            <span className="data-text text-lg font-semibold text-primary">
+          <div className="mb-2 flex items-baseline space-x-2">
+            <span className="data-text text-base font-semibold text-primary sm:text-lg">
               ₹{product.price.toLocaleString('en-IN')}
             </span>
             {product.originalPrice && (
-              <span className="data-text text-sm text-muted-foreground line-through">
+              <span className="data-text text-xs text-muted-foreground line-through sm:text-sm">
                 ₹{product.originalPrice.toLocaleString('en-IN')}
               </span>
             )}
           </div>
 
           {/* Size & Color Options */}
-          <div className="mb-3 space-y-2">
+          <div className="mb-2 space-y-1">
             {product.sizes.length > 1 && (
               <div className="flex flex-wrap gap-1">
-                {product.sizes.slice(0, 3).map((size) => (
+                {product.sizes.slice(0, 2).map((size) => (
                   <span
                     key={size}
-                    className="caption rounded border border-border px-2 py-1 text-muted-foreground"
+                    className="caption rounded border border-border px-1 py-0.5 text-muted-foreground"
                   >
                     {size}
                   </span>
                 ))}
-                {product.sizes.length > 3 && (
-                  <span className="caption rounded border border-border px-2 py-1 text-muted-foreground">
-                    +{product.sizes.length - 3}
+                {product.sizes.length > 2 && (
+                  <span className="caption rounded border border-border px-1 py-0.5 text-muted-foreground">
+                    +{product.sizes.length - 2}
                   </span>
                 )}
               </div>
@@ -161,7 +161,7 @@ const ProductCard = ({ product, onAddToCart }: ProductCardProps) => {
               <div className="flex items-center space-x-1">
                 <span className="caption text-muted-foreground">Colors:</span>
                 <span className="caption font-medium text-foreground">
-                  {product.colors.length} available
+                  {product.colors.length}
                 </span>
               </div>
             )}
@@ -171,7 +171,7 @@ const ProductCard = ({ product, onAddToCart }: ProductCardProps) => {
           <button
             onClick={handleAddToCart}
             disabled={!product.inStock || isAddingToCart}
-            className={`mt-auto flex items-center justify-center space-x-2 rounded-md px-4 py-2 text-sm font-medium transition-smooth ${
+            className={`mt-auto flex items-center justify-center space-x-1 rounded-md px-2 py-1.5 text-xs font-medium transition-smooth sm:px-4 sm:py-2 sm:text-sm ${
               product.inStock
                 ? 'bg-primary text-primary-foreground hover:scale-[0.97]'
                 : 'cursor-not-allowed bg-muted text-muted-foreground'
@@ -179,12 +179,12 @@ const ProductCard = ({ product, onAddToCart }: ProductCardProps) => {
           >
             {isAddingToCart ? (
               <>
-                <Icon name="CheckIcon" size={18} />
+                <Icon name="CheckIcon" size={14} />
                 <span>Added!</span>
               </>
             ) : (
               <>
-                <Icon name="ShoppingCartIcon" size={18} />
+                <Icon name="ShoppingCartIcon" size={14} />
                 <span>{product.inStock ? 'Add to Cart' : 'Out of Stock'}</span>
               </>
             )}

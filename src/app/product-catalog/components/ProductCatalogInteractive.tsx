@@ -103,9 +103,9 @@ const ProductCatalogInteractive = () => {
 
   if (!isHydrated) {
     return (
-      <div className="mx-auto max-w-[1400px] px-4 py-8 sm:px-6">
+      <div className="w-full px-1 py-8 sm:px-6">
         <div className="mb-6 h-10 w-48 animate-pulse rounded bg-muted" />
-        <div className="flex gap-8">
+        <div className="flex gap-1 sm:gap-8">
           <div className="hidden w-64 flex-shrink-0 space-y-6 lg:block">
             <div className="h-96 animate-pulse rounded-lg bg-muted" />
           </div>
@@ -114,7 +114,7 @@ const ProductCatalogInteractive = () => {
               <div className="h-10 w-32 animate-pulse rounded bg-muted" />
               <div className="h-10 w-48 animate-pulse rounded bg-muted" />
             </div>
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            <div className="grid grid-cols-2 gap-1 sm:gap-6 lg:grid-cols-6">
               {[...Array(8)].map((_, i) => (
                 <div key={i} className="h-96 animate-pulse rounded-lg bg-muted" />
               ))}
@@ -126,8 +126,8 @@ const ProductCatalogInteractive = () => {
   }
 
   return (
-    <div className="mx-auto max-w-[1400px] px-4 py-8 sm:px-6">
-      <div className="flex gap-8">
+    <div className="w-full px-0 py-4 sm:px-6">
+      <div className="flex gap-0 sm:gap-8">
         {/* Desktop Filter Panel */}
         <aside className="hidden w-64 flex-shrink-0 lg:block">
           <div className="sticky top-24">
@@ -141,7 +141,7 @@ const ProductCatalogInteractive = () => {
         {/* Main Content */}
         <div className="flex-1">
           {/* Controls Bar */}
-          <div className="mb-6 flex items-center justify-between gap-4">
+          <div className="mb-4 flex items-center justify-between gap-2 px-1 sm:mb-6 sm:gap-4 sm:px-0">
             <MobileFilterPanel
               onFilterChange={setFilters}
               productCount={filteredProducts.length}
@@ -151,7 +151,7 @@ const ProductCatalogInteractive = () => {
                 Showing {filteredProducts.length} of {mockProducts.length} products
               </p>
             </div>
-            <SortControls onSortChange={setSortBy} />
+            <SortControls onSortChange={(sortBy: string) => setSortBy(sortBy as SortOption)} />
           </div>
 
           {/* Product Grid */}

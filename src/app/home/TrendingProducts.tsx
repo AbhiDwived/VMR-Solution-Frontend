@@ -35,29 +35,29 @@ const TrendingProducts = () => {
     }));
 
   return (
-    <section className="mx-auto max-w-[1400px] px-4 py-12 sm:px-6 sm:py-16">
-      <div className="mb-8 flex items-center justify-between" data-aos="fade-up">
+    <section className="w-full px-2 py-8 sm:px-4 sm:py-12">
+      <div className="mb-6 flex items-center justify-between sm:mb-8" data-aos="fade-up">
         <div>
-          <div className="mb-2 flex items-center space-x-2">
-            <Icon name="FireIcon" size={32} className="text-accent" variant="solid" />
-            <h2 className="font-heading text-3xl font-bold text-foreground sm:text-4xl">
+          <div className="mb-1 flex items-center space-x-2 sm:mb-2">
+            <Icon name="FireIcon" size={24} className="text-accent sm:size-8" variant="solid" />
+            <h2 className="font-heading text-2xl font-bold text-foreground sm:text-3xl lg:text-4xl">
               Trending Now
             </h2>
           </div>
-          <p className="text-muted-foreground">
+          <p className="text-sm text-muted-foreground sm:text-base">
             Most popular products this month
           </p>
         </div>
         <Link
           href="/product-catalog"
-          className="flex items-center space-x-1 text-sm font-medium text-primary transition-smooth hover:underline"
+          className="flex items-center space-x-1 text-xs font-medium text-primary transition-smooth hover:underline sm:text-sm"
         >
           <span>View All</span>
           <Icon name="ArrowRightIcon" size={16} />
         </Link>
       </div>
 
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-4 sm:gap-6 lg:grid-cols-6">
         {trendingProducts.map((product, index) => {
           const discount = product.originalPrice
             ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
@@ -72,7 +72,7 @@ const TrendingProducts = () => {
               data-aos-delay={index * 100}
             >
               <div className="absolute left-2 top-2 z-10 flex items-center space-x-1 rounded-md bg-accent px-2 py-1 text-xs font-medium text-accent-foreground">
-                <Icon name="FireIcon" size={12} variant="solid" />
+                <Icon name="FireIcon" size={10} variant="solid" />
                 <span>{product.salesCount} sold</span>
               </div>
               {discount > 0 && (
@@ -87,17 +87,17 @@ const TrendingProducts = () => {
                   className="h-full w-full object-cover transition-smooth group-hover:scale-105"
                 />
               </div>
-              <div className="p-4">
+              <div className="p-3 sm:p-4">
                 <p className="caption mb-1 text-muted-foreground">{product.category}</p>
-                <h3 className="mb-2 line-clamp-2 text-base font-medium text-card-foreground">
+                <h3 className="mb-2 line-clamp-2 text-sm font-medium text-card-foreground sm:text-base">
                   {product.name}
                 </h3>
-                <div className="mb-3 flex items-center space-x-1">
+                <div className="mb-2 flex items-center space-x-1 sm:mb-3">
                   {[...Array(5)].map((_, i) => (
                     <Icon
                       key={i}
                       name="StarIcon"
-                      size={14}
+                      size={12}
                       variant={i < Math.floor(product.rating) ? 'solid' : 'outline'}
                       className={i < Math.floor(product.rating) ? 'text-accent' : 'text-muted-foreground'}
                     />
@@ -105,11 +105,11 @@ const TrendingProducts = () => {
                   <span className="caption text-muted-foreground">({product.rating.toFixed(1)})</span>
                 </div>
                 <div className="flex items-baseline space-x-2">
-                  <span className="text-lg font-semibold text-primary">
+                  <span className="text-base font-semibold text-primary sm:text-lg">
                     ₹{product.price.toLocaleString('en-IN')}
                   </span>
                   {product.originalPrice && (
-                    <span className="text-sm text-muted-foreground line-through">
+                    <span className="text-xs text-muted-foreground line-through sm:text-sm">
                       ₹{product.originalPrice.toLocaleString('en-IN')}
                     </span>
                   )}

@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import HeroBanner from './HeroBanner';
 import FeaturedProducts from './FeaturedProducts';
-import CategoryShowcase from './CategoryShowcase';
 import TrendingProducts from './TrendingProducts';
 import NewArrivals from './NewArrivals';
 import OffersSection from './OffersSection';
@@ -42,10 +41,11 @@ const HomepageInteractive = () => {
   return (
     <main className="w-full">
       <HeroBanner />
-      <FeaturedProducts />
-      <CategoryShowcase />
-      <TrendingProducts />
       <NewArrivals />
+      <FeaturedProducts />
+
+      <TrendingProducts />
+
       <OffersSection />
       <Testimonials />
       <BlogSection />

@@ -94,7 +94,7 @@ const ProductGrid = ({ products, onAddToCart }: ProductGridProps) => {
 
       {!hasMore && displayedProducts.length > 0 && (
         <p className="text-center text-sm text-muted-foreground">
-          You've reached the end of the catalog
+          You&apos;ve reached the end of the catalog
         </p>
       )}
     </div>

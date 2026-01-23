@@ -77,20 +77,20 @@ const OffersSection = () => {
   };
 
   return (
-    <section className="mx-auto max-w-[1400px] px-4 py-12 sm:px-6 sm:py-16">
-      <div className="mb-8 text-center" data-aos="fade-up">
-        <div className="mb-2 flex items-center justify-center space-x-2">
-          <Icon name="TagIcon" size={32} className="text-accent" variant="solid" />
-          <h2 className="font-heading text-3xl font-bold text-foreground sm:text-4xl">
+    <section className="w-full px-2 py-8 sm:px-4 sm:py-12">
+      <div className="mb-6 text-center sm:mb-8" data-aos="fade-up">
+        <div className="mb-1 flex items-center justify-center space-x-2 sm:mb-2">
+          <Icon name="TagIcon" size={24} className="text-accent sm:size-8" variant="solid" />
+          <h2 className="font-heading text-2xl font-bold text-foreground sm:text-3xl lg:text-4xl">
             Best Offers & Coupons
           </h2>
         </div>
-        <p className="text-muted-foreground">
+        <p className="text-sm text-muted-foreground sm:text-base">
           Save more with our exclusive deals
         </p>
       </div>
 
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 sm:gap-6 md:grid-cols-3 lg:grid-cols-6">
         {offers.map((offer, index) => (
           <div
             key={offer.id}

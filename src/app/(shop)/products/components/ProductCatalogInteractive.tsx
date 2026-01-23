@@ -319,7 +319,7 @@ const ProductCatalogInteractive = () => {
                 Showing {filteredProducts.length} of {mockProducts.length} products
               </p>
             </div>
-            <SortControls onSortChange={setSortBy} />
+            <SortControls onSortChange={(sortBy: string) => setSortBy(sortBy as SortOption)} />
           </div>
 
           {/* Product Grid */}
