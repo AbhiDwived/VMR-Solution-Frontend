@@ -50,7 +50,7 @@ const HomepageInteractive = () => {
       <Testimonials />
       <BlogSection />
       <NewsletterSignup />
-      
+
       {showSocialProof && <SocialProofNotification />}
       {showExitPopup && <ExitIntentPopup onClose={() => setShowExitPopup(false)} />}
     </main>
