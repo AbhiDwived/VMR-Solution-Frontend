@@ -95,7 +95,7 @@ const ProductCard = ({ product, onAddToCart }: ProductCardProps) => {
         </Link>
 
         {/* Product Info */}
-        <div className="flex flex-1 flex-col p-2 sm:p-3">
+        <div className="flex flex-1 flex-col p-1.5 sm:p-2">
           <Link href={`/product-details?id=${product.id}`}>
             <p className="caption mb-1 text-muted-foreground">{product.category}</p>
             <h3 className="mb-1 line-clamp-2 text-sm font-medium text-card-foreground transition-smooth hover:text-primary sm:text-base">

@@ -20,22 +20,32 @@ module.exports = {
     },
     extend: {
       colors: {
-        border: 'var(--color-border)', // Deep forest green with opacity
-        input: 'var(--color-input)', // stone-200
-        ring: 'var(--color-ring)', // Warm terracotta
-        background: 'var(--color-background)', // Warm off-white
-        foreground: 'var(--color-foreground)', // Primary text
+        'soft-linen': '#FAF8F4',
+        'pure-white': '#FFFFFF',
+        'rich-walnut-brown': '#6B3F26',
+        'cocoa-brown': '#8B5A2B',
+        'olive-green': '#6B8E23',
+        'warm-amber': '#E0A96D',
+        'espresso': '#2A1E1A',
+        'mocha-grey': '#6B5B54',
+        'soft-stone': '#DED6CC',
+        
+        border: 'var(--color-border)',
+        input: 'var(--color-input)',
+        ring: 'var(--color-ring)',
+        background: 'var(--color-background)',
+        foreground: 'var(--color-foreground)',
         primary: {
-          DEFAULT: 'var(--color-primary)', // Warm terracotta
-          foreground: 'var(--color-primary-foreground)', // white
+          DEFAULT: 'var(--color-primary)',
+          foreground: 'var(--color-primary-foreground)',
         },
         secondary: {
-          DEFAULT: 'var(--color-secondary)', // Deep forest green
-          foreground: 'var(--color-secondary-foreground)', // white
+          DEFAULT: 'var(--color-secondary)',
+          foreground: 'var(--color-secondary-foreground)',
         },
         accent: {
-          DEFAULT: 'var(--color-accent)', // Energetic orange
-          foreground: 'var(--color-accent-foreground)', // white
+          DEFAULT: 'var(--color-accent)',
+          foreground: 'var(--color-accent-foreground)',
         },
         destructive: {
           DEFAULT: 'var(--color-destructive)', // red-600

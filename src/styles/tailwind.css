@@ -10,35 +10,35 @@
 @layer base {
   :root {
     /* Primary Colors */
-    --color-primary: #2E2E2E; /* Graphite */
-    --color-primary-foreground: #FFFFFF;
+    --color-primary: #6B3F26; /* Rich Walnut Brown */
+    --color-primary-foreground: #FAF8F4;
     
     /* Secondary Colors */
-    --color-secondary: #6B7280; /* Cool gray */
-    --color-secondary-foreground: #FFFFFF;
+    --color-secondary: #8B5A2B; /* Cocoa Brown */
+    --color-secondary-foreground: #FAF8F4;
     
     /* Accent Colors */
-    --color-accent: #C9A24D; /* Soft brass gold */
-    --color-accent-foreground: #1A1A1A;
+    --color-accent: #6B8E23; /* Olive Green */
+    --color-accent-foreground: #FAF8F4;
     
     /* Background Colors */
-    --color-background: #FAFAF8; /* Stone white */
-    --color-foreground: #1C1C1C;
+    --color-background: #FAF8F4; /* Soft Linen */
+    --color-foreground: #2A1E1A; /* Espresso */
     
     /* Surface Colors */
-    --color-card: #FFFFFF;
-    --color-card-foreground: #1C1C1C;
+    --color-card: #FFFFFF; /* Pure White */
+    --color-card-foreground: #2A1E1A;
     --color-popover: #FFFFFF;
-    --color-popover-foreground: #1C1C1C;
+    --color-popover-foreground: #2A1E1A;
     
     /* Muted Colors */
-    --color-muted: #F1F1EE;
-    --color-muted-foreground: #6B7280;
+    --color-muted: #E0A96D; /* Warm Amber */
+    --color-muted-foreground: #6B5B54; /* Mocha Grey */
     
     /* Border & Input */
-    --color-border: #E3E3DE;
-    --color-input: #F1F1EE;
-    --color-ring: #2E2E2E;
+    --color-border: #DED6CC; /* Soft Stone */
+    --color-input: #FAF8F4; /* Soft Linen */
+    --color-ring: #6B3F26; /* Rich Walnut Brown */
     
     /* Status Colors */
     --color-success: #16A34A;
@@ -59,45 +59,45 @@
 
   .dark {
     /* Primary Colors */
-    --color-primary: #E8934C; /* Adjusted terracotta for dark mode */
-    --color-primary-foreground: #0F0F0E; /* gray-950 */
+    --color-primary: #E0A96D; /* Light Warm Amber for dark mode */
+    --color-primary-foreground: #2A1E1A;
     
     /* Secondary Colors */
-    --color-secondary: #3D7A52; /* Lighter forest green */
-    --color-secondary-foreground: #FFFFFF; /* white */
+    --color-secondary: #8B5A2B; /* Cocoa Brown */
+    --color-secondary-foreground: #FAF8F4;
     
     /* Accent Colors */
-    --color-accent: #F5A962; /* Lighter orange */
-    --color-accent-foreground: #0F0F0E; /* gray-950 */
+    --color-accent: #6B8E23; /* Olive Green */
+    --color-accent-foreground: #FAF8F4;
     
     /* Background Colors */
-    --color-background: #0F0F0E; /* Warm dark base */
-    --color-foreground: rgba(255, 255, 255, 0.88); /* Reduced contrast white */
+    --color-background: #1A1410; /* Dark background */
+    --color-foreground: #FAF8F4; /* Light text */
     
     /* Surface Colors */
-    --color-card: #1C1C1A; /* Elevated surface */
-    --color-card-foreground: rgba(255, 255, 255, 0.88); /* Reduced contrast white */
-    --color-popover: #2A2A28; /* Higher elevation */
-    --color-popover-foreground: rgba(255, 255, 255, 0.88); /* Reduced contrast white */
+    --color-card: #2A1E1A; /* Dark card */
+    --color-card-foreground: #FAF8F4;
+    --color-popover: #2A1E1A;
+    --color-popover-foreground: #FAF8F4;
     
     /* Muted Colors */
-    --color-muted: #2A2A28; /* Elevated muted */
-    --color-muted-foreground: #A8A8A6; /* gray-400 */
+    --color-muted: #3A2F2A; /* Dark muted */
+    --color-muted-foreground: #E0A96D;
     
     /* Border & Input */
-    --color-border: rgba(255, 255, 255, 0.08); /* White with opacity */
-    --color-input: #2A2A28; /* Elevated surface */
-    --color-ring: #E8934C; /* Adjusted terracotta */
+    --color-border: #3A2F2A; /* Dark border */
+    --color-input: #2A1E1A; /* Dark input */
+    --color-ring: #E0A96D; /* Light ring */
     
     /* Status Colors */
-    --color-success: #22C55E; /* green-500 */
-    --color-success-foreground: #0F0F0E; /* gray-950 */
-    --color-warning: #F59E0B; /* amber-500 */
-    --color-warning-foreground: #0F0F0E; /* gray-950 */
-    --color-error: #EF4444; /* red-500 */
-    --color-error-foreground: #FFFFFF; /* white */
-    --color-destructive: #EF4444; /* red-500 */
-    --color-destructive-foreground: #FFFFFF; /* white */
+    --color-success: #22C55E;
+    --color-success-foreground: #1A1410;
+    --color-warning: #F59E0B;
+    --color-warning-foreground: #1A1410;
+    --color-error: #EF4444;
+    --color-error-foreground: #FFFFFF;
+    --color-destructive: #EF4444;
+    --color-destructive-foreground: #FFFFFF;
   }
 }
 

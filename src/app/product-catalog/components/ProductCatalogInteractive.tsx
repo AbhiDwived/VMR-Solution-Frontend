@@ -114,7 +114,7 @@ const ProductCatalogInteractive = () => {
               <div className="h-10 w-32 animate-pulse rounded bg-muted" />
               <div className="h-10 w-48 animate-pulse rounded bg-muted" />
             </div>
-            <div className="grid grid-cols-2 gap-1 sm:gap-6 lg:grid-cols-6">
+            <div className="grid grid-cols-2 gap-1 sm:gap-3 lg:grid-cols-5">
               {[...Array(8)].map((_, i) => (
                 <div key={i} className="h-96 animate-pulse rounded-lg bg-muted" />
               ))}
