@@ -2,6 +2,7 @@
 const nextConfig = {
   images: {
     unoptimized: true,
+    domains: [],
     remotePatterns: [
       {
         protocol: 'https',
@@ -11,6 +12,14 @@ const nextConfig = {
   },
   experimental: {
     esmExternals: false,
+  },
+  async rewrites() {
+    return [
+      {
+        source: '/assets/:path*',
+        destination: '/assets/:path*',
+      },
+    ]
   },
 }
 
