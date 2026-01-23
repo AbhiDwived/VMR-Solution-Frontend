@@ -21,7 +21,7 @@ const NewsletterSignup = () => {
 
   return (
     <section className="bg-gradient-to-r from-primary to-secondary py-16 sm:py-20">
-      <div className="mx-auto max-w-[800px] px-4 text-center sm:px-6">
+      <div className="mx-auto max-w-[800px] px-4 text-center sm:px-6" data-aos="fade-up">
         <div className="mb-6 flex justify-center">
           <div className="rounded-full bg-white/20 p-4">
             <Icon name="EnvelopeIcon" size={48} className="text-white" variant="solid" />

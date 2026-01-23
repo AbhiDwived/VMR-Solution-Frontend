@@ -78,7 +78,7 @@ const OffersSection = () => {
 
   return (
     <section className="mx-auto max-w-[1400px] px-4 py-12 sm:px-6 sm:py-16">
-      <div className="mb-8 text-center">
+      <div className="mb-8 text-center" data-aos="fade-up">
         <div className="mb-2 flex items-center justify-center space-x-2">
           <Icon name="TagIcon" size={32} className="text-accent" variant="solid" />
           <h2 className="font-heading text-3xl font-bold text-foreground sm:text-4xl">
@@ -91,10 +91,12 @@ const OffersSection = () => {
       </div>
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-        {offers.map((offer) => (
+        {offers.map((offer, index) => (
           <div
             key={offer.id}
             className={`relative overflow-hidden rounded-lg border border-border ${offer.bgColor} p-6 shadow-elevation-1 transition-smooth hover:shadow-elevation-2`}
+            data-aos="flip-left"
+            data-aos-delay={index * 200}
           >
             <div className="mb-4 flex items-start justify-between">
               <Icon name={offer.icon as any} size={40} className="text-primary" variant="solid" />

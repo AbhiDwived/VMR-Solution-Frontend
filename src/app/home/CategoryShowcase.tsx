@@ -17,42 +17,42 @@ const CategoryShowcase = () => {
   const categories: Category[] = [
     {
       id: '1',
-      name: 'Flower Pots',
-      itemCount: 45,
-      image: 'https://images.pexels.com/photos/1005058/pexels-photo-1005058.jpeg',
-      alt: 'Variety of ceramic and plastic flower pots with plants',
+      name: 'Planters',
+      itemCount: 10,
+      image: '/assets/products/vmr (9).jpg',
+      alt: 'Variety of plastic planters and flower pots',
       icon: 'SparklesIcon',
     },
     {
       id: '2',
       name: 'Mugs',
-      itemCount: 32,
-      image: 'https://images.pexels.com/photos/1251175/pexels-photo-1251175.jpeg',
+      itemCount: 8,
+      image: '/assets/products/vmr (1).jpg',
       alt: 'Colorful plastic mugs in different sizes',
       icon: 'CakeIcon',
     },
     {
       id: '3',
-      name: 'Containers',
-      itemCount: 67,
-      image: 'https://images.pexels.com/photos/4226881/pexels-photo-4226881.jpeg',
-      alt: 'Food storage containers with airtight lids',
+      name: 'Kitchen',
+      itemCount: 12,
+      image: '/assets/products/vmr (19).jpg',
+      alt: 'Kitchen items and storage containers',
       icon: 'ArchiveBoxIcon',
     },
     {
       id: '4',
       name: 'Buckets',
-      itemCount: 28,
-      image: 'https://images.pexels.com/photos/6195125/pexels-photo-6195125.jpeg',
+      itemCount: 50,
+      image: '/assets/products/1.jpg',
       alt: 'Heavy duty plastic buckets for household use',
       icon: 'BeakerIcon',
     },
     {
       id: '5',
-      name: 'Dustbins',
-      itemCount: 41,
-      image: 'https://images.pexels.com/photos/4099471/pexels-photo-4099471.jpeg',
-      alt: 'Modern pedal dustbins with lids',
+      name: 'Patlas',
+      itemCount: 20,
+      image: '/assets/products/55.jpg',
+      alt: 'Traditional plastic patlas and containers',
       icon: 'TrashIcon',
     },
   ];
@@ -60,7 +60,7 @@ const CategoryShowcase = () => {
   return (
     <section className="bg-muted/30 py-12 sm:py-16">
       <div className="mx-auto max-w-[1400px] px-4 sm:px-6">
-        <div className="mb-8 text-center">
+        <div className="mb-8 text-center" data-aos="fade-up">
           <h2 className="font-heading text-3xl font-bold text-foreground sm:text-4xl">
             Shop by Category
           </h2>
@@ -70,11 +70,13 @@ const CategoryShowcase = () => {
         </div>
 
         <div className="grid grid-cols-2 gap-4 sm:gap-6 md:grid-cols-3 lg:grid-cols-5">
-          {categories.map((category) => (
+          {categories.map((category, index) => (
             <Link
               key={category.id}
               href={`/product-catalog?category=${category.name}`}
               className="group relative overflow-hidden rounded-lg bg-card shadow-elevation-1 transition-smooth hover:shadow-elevation-3"
+              data-aos="zoom-in"
+              data-aos-delay={index * 100}
             >
               <div className="relative aspect-square overflow-hidden bg-muted">
                 <AppImage

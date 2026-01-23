@@ -55,7 +55,7 @@ const Testimonials = () => {
   return (
     <section className="bg-muted/30 py-12 sm:py-16">
       <div className="mx-auto max-w-[1400px] px-4 sm:px-6">
-        <div className="mb-8 text-center">
+        <div className="mb-8 text-center" data-aos="fade-up">
           <div className="mb-2 flex items-center justify-center space-x-2">
             <Icon name="ChatBubbleLeftRightIcon" size={32} className="text-secondary" variant="solid" />
             <h2 className="font-heading text-3xl font-bold text-foreground sm:text-4xl">
@@ -68,10 +68,12 @@ const Testimonials = () => {
         </div>
 
         <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-          {testimonials.map((testimonial) => (
+          {testimonials.map((testimonial, index) => (
             <div
               key={testimonial.id}
               className="rounded-lg border border-border bg-card p-6 shadow-elevation-1 transition-smooth hover:shadow-elevation-2"
+              data-aos="fade-up"
+              data-aos-delay={index * 200}
             >
               <div className="mb-4 flex items-start justify-between">
                 <div className="flex items-center space-x-3">

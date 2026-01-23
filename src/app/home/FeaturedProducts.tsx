@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import AppImage from '@/components/ui/AppImage';
 import Icon from '@/components/ui/AppIcon';
+import { products } from '@/data/products';
 
 interface FeaturedProduct {
   id: string;
@@ -19,57 +20,17 @@ interface FeaturedProduct {
 const FeaturedProducts = () => {
   const [scrollPosition, setScrollPosition] = useState(0);
 
-  const products: FeaturedProduct[] = [
-    {
-      id: '1',
-      name: 'Premium Ceramic Flower Pot with Drainage',
-      category: 'Flower Pots',
-      price: 299,
-      originalPrice: 499,
-      image: 'https://images.pexels.com/photos/1005058/pexels-photo-1005058.jpeg',
-      alt: 'White ceramic flower pot with green succulent plant',
-      rating: 4.5,
-    },
-    {
-      id: '2',
-      name: 'Colorful Plastic Mugs Set of 6',
-      category: 'Mugs',
-      price: 199,
-      originalPrice: 299,
-      image: 'https://images.pexels.com/photos/1251175/pexels-photo-1251175.jpeg',
-      alt: 'Set of six colorful plastic mugs in various colors',
-      rating: 4.2,
-    },
-    {
-      id: '3',
-      name: 'Airtight Food Storage Container Set',
-      category: 'Containers',
-      price: 599,
-      originalPrice: 899,
-      image: 'https://images.pexels.com/photos/4226881/pexels-photo-4226881.jpeg',
-      alt: 'Stack of transparent plastic food storage containers',
-      rating: 4.7,
-    },
-    {
-      id: '4',
-      name: 'Heavy Duty Plastic Bucket 20L',
-      category: 'Buckets',
-      price: 249,
-      image: 'https://images.pexels.com/photos/6195125/pexels-photo-6195125.jpeg',
-      alt: 'Blue plastic bucket with metal handle',
-      rating: 4.4,
-    },
-    {
-      id: '5',
-      name: 'Modern Pedal Dustbin with Lid',
-      category: 'Dustbins',
-      price: 449,
-      originalPrice: 699,
-      image: 'https://images.pexels.com/photos/4099471/pexels-photo-4099471.jpeg',
-      alt: 'Stainless steel pedal dustbin with black lid',
-      rating: 4.6,
-    },
-  ];
+  // Get featured products from real data
+  const featuredProducts: FeaturedProduct[] = products.slice(0, 12).map(product => ({
+    id: product.id.toString(),
+    name: product.name,
+    category: product.category,
+    price: product.price,
+    originalPrice: product.price > 100 ? Math.floor(product.price * 1.3) : undefined,
+    image: product.image,
+    alt: product.description,
+    rating: 4.5,
+  }));
 
   const scroll = (direction: 'left' | 'right') => {
     const container = document.getElementById('featured-carousel');
@@ -85,7 +46,7 @@ const FeaturedProducts = () => {
 
   return (
     <section className="mx-auto max-w-[1400px] px-4 py-12 sm:px-6 sm:py-16">
-      <div className="mb-8 flex items-center justify-between">
+      <div className="mb-8 flex items-center justify-between" data-aos="fade-up">
         <div>
           <h2 className="font-heading text-3xl font-bold text-foreground sm:text-4xl">
             Featured Products
@@ -103,7 +64,7 @@ const FeaturedProducts = () => {
         </Link>
       </div>
 
-      <div className="relative">
+      <div className="relative" data-aos="fade-up" data-aos-delay="200">
         <button
           onClick={() => scroll('left')}
           className="absolute -left-4 top-1/2 z-10 hidden -translate-y-1/2 rounded-full bg-card p-3 shadow-elevation-3 transition-smooth hover:scale-110 md:block"
@@ -116,7 +77,7 @@ const FeaturedProducts = () => {
           id="featured-carousel"
           className="flex gap-6 overflow-x-auto scroll-smooth pb-4 scrollbar-hide"
         >
-          {products.map((product) => {
+          {featuredProducts.map((product) => {
             const discount = product.originalPrice
               ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
               : 0;

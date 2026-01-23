@@ -7,6 +7,7 @@ import RelatedProducts from './RelatedProducts';
 import EmptyCart from './EmptyCart';
 import ClearCartModal from './ClearCartModal';
 import Icon from '@/components/ui/AppIcon';
+import { products } from '@/data/products';
 
 interface CartItemData {
   id: string;
@@ -54,14 +55,14 @@ export default function ShoppingCartInteractive() {
   const [cartItems, setCartItems] = useState<CartItemData[]>([
     {
       id: '1',
-      name: 'Premium Plastic Flower Pot Set',
-      image: 'https://images.pexels.com/photos/1301856/pexels-photo-1301856.jpeg',
-      alt: 'Set of three terracotta-colored plastic flower pots with drainage holes on wooden surface',
+      name: products[0].name,
+      image: products[0].image,
+      alt: products[0].description,
       size: 'Large',
-      color: 'Terracotta',
-      capacity: '5 Liters',
+      color: 'Blue',
+      capacity: '10 Liters',
       material: 'Virgin Plastic',
-      price: 299,
+      price: products[0].price,
       quantity: 2,
       minOrderQty: 1,
       isWholesale: false,
@@ -69,110 +70,59 @@ export default function ShoppingCartInteractive() {
     },
     {
       id: '2',
-      name: 'Insulated Coffee Mugs - Pack of 6',
-      image: 'https://images.pexels.com/photos/1251175/pexels-photo-1251175.jpeg',
-      alt: 'Six colorful insulated plastic coffee mugs with handles arranged in a row',
+      name: products[75].name,
+      image: products[75].image,
+      alt: products[75].description,
       size: 'Medium',
       color: 'Multicolor',
-      capacity: '350ml',
+      capacity: '200ml',
       material: 'Food Grade Plastic',
-      price: 449,
-      quantity: 1,
+      price: products[75].price,
+      quantity: 6,
       minOrderQty: 1,
       isWholesale: false,
       stock: 28,
     },
     {
       id: '3',
-      name: 'Airtight Storage Container Set',
-      image: 'https://images.pexels.com/photos/4226881/pexels-photo-4226881.jpeg',
-      alt: 'Stack of transparent plastic airtight containers with blue lids containing various food items',
-      size: 'Assorted',
-      color: 'Transparent',
-      capacity: '500ml to 2L',
-      material: 'BPA-Free Plastic',
-      price: 799,
-      quantity: 3,
+      name: products[55].name,
+      image: products[55].image,
+      alt: products[55].description,
+      size: 'Large',
+      color: 'White',
+      capacity: 'Standard',
+      material: 'High-Quality Plastic',
+      price: products[55].price,
+      quantity: 1,
       minOrderQty: 1,
       isWholesale: false,
       stock: 62,
     },
-    {
-      id: '4',
-      name: 'Heavy Duty Plastic Buckets - Wholesale',
-      image: 'https://images.pexels.com/photos/6419121/pexels-photo-6419121.jpeg',
-      alt: 'Stack of blue heavy-duty plastic buckets with metal handles in warehouse setting',
-      size: 'Large',
-      color: 'Blue',
-      capacity: '20 Liters',
-      material: 'High-Density Plastic',
-      price: 189,
-      quantity: 12,
-      minOrderQty: 10,
-      isWholesale: true,
-      stock: 150,
-    },
   ]);
 
-  const relatedProducts: RelatedProduct[] = [
-    {
-      id: '5',
-      name: 'Decorative Hanging Planters',
-      image: 'https://images.pexels.com/photos/6231579/pexels-photo-6231579.jpeg',
-      alt: 'White plastic hanging planters with green plants suspended from ceiling',
-      price: 349,
-      originalPrice: 499,
+  // Get related products from real data
+  const relatedProducts: RelatedProduct[] = products
+    .slice(10, 18)
+    .map(product => ({
+      id: product.id.toString(),
+      name: product.name,
+      image: product.image,
+      alt: product.description,
+      price: product.price,
+      originalPrice: Math.floor(product.price * 1.3),
       rating: 4.5,
-      reviews: 128,
-    },
-    {
-      id: '6',
-      name: 'Stackable Kitchen Containers',
-      image: 'https://images.pexels.com/photos/4226796/pexels-photo-4226796.jpeg',
-      alt: 'Set of stackable transparent plastic kitchen containers with colorful lids',
-      price: 599,
-      originalPrice: 799,
-      rating: 4.7,
-      reviews: 245,
-    },
-    {
-      id: '7',
-      name: 'Colorful Plastic Dustbins',
-      image: 'https://images.pexels.com/photos/3735218/pexels-photo-3735218.jpeg',
-      alt: 'Three colorful plastic dustbins with pedal lids in green, blue, and red',
-      price: 449,
-      originalPrice: 599,
-      rating: 4.3,
-      reviews: 89,
-    },
-    {
-      id: '8',
-      name: 'Water Storage Bottles Set',
-      image: 'https://images.pexels.com/photos/1000084/pexels-photo-1000084.jpeg',
-      alt: 'Set of five transparent plastic water bottles with different colored caps',
-      price: 299,
-      originalPrice: 399,
-      rating: 4.6,
-      reviews: 312,
-    },
-  ];
+      reviews: Math.floor(Math.random() * 200) + 50,
+    }));
 
-  const recentProducts: RecentProduct[] = [
-    {
-      id: '9',
-      name: 'Garden Tool Organizer',
-      image: 'https://images.pexels.com/photos/4505168/pexels-photo-4505168.jpeg',
-      alt: 'Green plastic garden tool organizer with multiple compartments holding tools',
-      price: 399,
-    },
-    {
-      id: '10',
-      name: 'Lunch Box Containers',
-      image: 'https://images.pexels.com/photos/4551832/pexels-photo-4551832.jpeg',
-      alt: 'Colorful plastic lunch box containers with compartments and secure lids',
-      price: 249,
-    },
-  ];
+  const recentProducts: RecentProduct[] = products
+    .slice(20, 22)
+    .map(product => ({
+      id: product.id.toString(),
+      name: product.name,
+      image: product.image,
+      alt: product.description,
+      price: product.price,
+    }));
 
   const handleQuantityChange = (id: string, newQuantity: number) => {
     setCartItems((prev) =>

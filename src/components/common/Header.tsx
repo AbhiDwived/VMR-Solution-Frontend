@@ -39,7 +39,7 @@ const Header = () => {
   };
 
   return (
-    <header className="sticky top-0 z-[100] w-full bg-card shadow-elevation-2 transition-smooth">
+    <header className="sticky top-0 z-[100] w-full bg-card shadow-elevation-2 transition-smooth" data-aos="fade-down">
       <div className="mx-auto w-full px-4 sm:px-6">
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}

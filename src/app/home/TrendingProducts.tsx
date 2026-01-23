@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import AppImage from '@/components/ui/AppImage';
 import Icon from '@/components/ui/AppIcon';
+import { products } from '@/data/products';
 
 interface TrendingProduct {
   id: string;
@@ -17,55 +18,25 @@ interface TrendingProduct {
 }
 
 const TrendingProducts = () => {
-  const products: TrendingProduct[] = [
-    {
-      id: '1',
-      name: 'Stackable Storage Bins Set',
-      category: 'Containers',
-      price: 799,
-      originalPrice: 1199,
-      image: 'https://images.pexels.com/photos/4226881/pexels-photo-4226881.jpeg',
-      alt: 'Stackable transparent storage bins with colorful lids',
-      rating: 4.8,
-      salesCount: 1250,
-    },
-    {
-      id: '2',
-      name: 'Designer Flower Pot Collection',
-      category: 'Flower Pots',
-      price: 449,
-      originalPrice: 699,
-      image: 'https://images.pexels.com/photos/1005058/pexels-photo-1005058.jpeg',
-      alt: 'Modern designer flower pots in various colors',
-      rating: 4.6,
-      salesCount: 980,
-    },
-    {
-      id: '3',
-      name: 'Premium Insulated Mugs',
-      category: 'Mugs',
-      price: 349,
-      image: 'https://images.pexels.com/photos/1251175/pexels-photo-1251175.jpeg',
-      alt: 'Insulated plastic mugs keeping beverages hot or cold',
-      rating: 4.5,
-      salesCount: 875,
-    },
-    {
-      id: '4',
-      name: 'Multi-Purpose Bucket Set',
-      category: 'Buckets',
-      price: 599,
-      originalPrice: 899,
-      image: 'https://images.pexels.com/photos/6195125/pexels-photo-6195125.jpeg',
-      alt: 'Set of three multi-purpose plastic buckets',
-      rating: 4.7,
-      salesCount: 756,
-    },
-  ];
+  // Get trending products from real data (patlas and furniture)
+  const trendingProducts: TrendingProduct[] = products
+    .filter(p => ['Patlas', 'Furniture', 'Mugs', 'Planters'].includes(p.category))
+    .slice(0, 8)
+    .map(product => ({
+      id: product.id.toString(),
+      name: product.name,
+      category: product.category,
+      price: product.price,
+      originalPrice: product.price > 50 ? Math.floor(product.price * 1.4) : undefined,
+      image: product.image,
+      alt: product.description,
+      rating: 4.5 + Math.random() * 0.5,
+      salesCount: Math.floor(Math.random() * 1000) + 500,
+    }));
 
   return (
     <section className="mx-auto max-w-[1400px] px-4 py-12 sm:px-6 sm:py-16">
-      <div className="mb-8 flex items-center justify-between">
+      <div className="mb-8 flex items-center justify-between" data-aos="fade-up">
         <div>
           <div className="mb-2 flex items-center space-x-2">
             <Icon name="FireIcon" size={32} className="text-accent" variant="solid" />
@@ -87,7 +58,7 @@ const TrendingProducts = () => {
       </div>
 
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-        {products.map((product) => {
+        {trendingProducts.map((product, index) => {
           const discount = product.originalPrice
             ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
             : 0;
@@ -97,6 +68,8 @@ const TrendingProducts = () => {
               key={product.id}
               href={`/product-details?id=${product.id}`}
               className="group relative overflow-hidden rounded-lg border border-border bg-card shadow-elevation-1 transition-smooth hover:shadow-elevation-2"
+              data-aos="fade-up"
+              data-aos-delay={index * 100}
             >
               <div className="absolute left-2 top-2 z-10 flex items-center space-x-1 rounded-md bg-accent px-2 py-1 text-xs font-medium text-accent-foreground">
                 <Icon name="FireIcon" size={12} variant="solid" />
@@ -129,7 +102,7 @@ const TrendingProducts = () => {
                       className={i < Math.floor(product.rating) ? 'text-accent' : 'text-muted-foreground'}
                     />
                   ))}
-                  <span className="caption text-muted-foreground">({product.rating})</span>
+                  <span className="caption text-muted-foreground">({product.rating.toFixed(1)})</span>
                 </div>
                 <div className="flex items-baseline space-x-2">
                   <span className="text-lg font-semibold text-primary">

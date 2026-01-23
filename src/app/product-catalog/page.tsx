@@ -13,7 +13,7 @@ export default function ProductCatalogPage() {
       <main className="mx-auto max-w-[1400px] px-4 py-6 sm:px-6">
         <Breadcrumb />
         
-        <div className="mb-8">
+        <div className="mb-8" data-aos="fade-up">
           <h1 className="mb-2 font-heading text-3xl font-bold text-foreground sm:text-4xl">
             Product Catalog
           </h1>
@@ -22,7 +22,9 @@ export default function ProductCatalogPage() {
           </p>
         </div>
 
-        <ProductCatalogInteractive />
+        <div data-aos="fade-up" data-aos-delay="200">
+          <ProductCatalogInteractive />
+        </div>
       </main>
     </div>
   );

@@ -19,39 +19,39 @@ const BlogSection = () => {
   const posts: BlogPost[] = [
     {
       id: '1',
-      title: '10 Creative Ways to Use Plastic Containers in Your Kitchen',
-      excerpt: 'Discover innovative storage solutions and organization hacks using our versatile plastic containers.',
-      image: 'https://images.pexels.com/photos/4226881/pexels-photo-4226881.jpeg',
-      alt: 'Organized kitchen with plastic containers storing various food items',
-      category: 'Organization Tips',
-      date: 'Jan 15, 2026',
+      title: 'Best Plastic Buckets for Every Household Need in 2025',
+      excerpt: 'Discover our range of durable plastic buckets from 5L to 25L capacity. Perfect for cleaning, storage, and industrial use.',
+      image: '/assets/products/1.jpg',
+      alt: 'VMR Solution plastic buckets in different sizes and colors',
+      category: 'Product Guide',
+      date: 'Jan 15, 2025',
       readTime: '5 min read',
     },
     {
       id: '2',
-      title: 'The Ultimate Guide to Indoor Plant Care with Self-Watering Pots',
-      excerpt: 'Learn how to keep your plants thriving with our innovative self-watering planter pots.',
-      image: 'https://images.pexels.com/photos/1005058/pexels-photo-1005058.jpeg',
-      alt: 'Beautiful indoor plants in self-watering pots on windowsill',
-      category: 'Plant Care',
-      date: 'Jan 12, 2026',
+      title: 'Traditional Patlas: Modern Manufacturing, Timeless Design',
+      excerpt: 'Learn about our premium quality patlas made with food-grade plastic. From Pancham to Elephanta designs.',
+      image: '/assets/products/55.jpg',
+      alt: 'Traditional plastic patlas showcasing various designs and sizes',
+      category: 'Heritage Products',
+      date: 'Jan 12, 2025',
       readTime: '7 min read',
     },
     {
       id: '3',
-      title: 'Sustainable Living: How to Reduce Plastic Waste at Home',
-      excerpt: 'Practical tips for using reusable plastic products to minimize environmental impact.',
-      image: 'https://images.pexels.com/photos/4099471/pexels-photo-4099471.jpeg',
-      alt: 'Eco-friendly reusable plastic products arranged on wooden table',
-      category: 'Sustainability',
-      date: 'Jan 8, 2026',
+      title: 'Kitchen Organization Made Easy with VMR Containers',
+      excerpt: 'Transform your kitchen with our range of storage containers, lunch boxes, and kitchen accessories.',
+      image: '/assets/products/vmr (19).jpg',
+      alt: 'VMR kitchen products including containers and storage solutions',
+      category: 'Home Tips',
+      date: 'Jan 8, 2025',
       readTime: '6 min read',
     },
   ];
 
   return (
     <section className="mx-auto max-w-[1400px] px-4 py-12 sm:px-6 sm:py-16">
-      <div className="mb-8 flex items-center justify-between">
+      <div className="mb-8 flex items-center justify-between" data-aos="fade-up">
         <div>
           <div className="mb-2 flex items-center space-x-2">
             <Icon name="NewspaperIcon" size={32} className="text-primary" variant="solid" />
@@ -73,10 +73,12 @@ const BlogSection = () => {
       </div>
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-        {posts.map((post) => (
+        {posts.map((post, index) => (
           <article
             key={post.id}
             className="group overflow-hidden rounded-lg border border-border bg-card shadow-elevation-1 transition-smooth hover:shadow-elevation-2"
+            data-aos="fade-up"
+            data-aos-delay={index * 150}
           >
             <div className="relative aspect-[16/9] overflow-hidden bg-muted">
               <AppImage

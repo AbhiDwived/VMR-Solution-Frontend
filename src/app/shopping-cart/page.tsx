@@ -11,8 +11,12 @@ export default function ShoppingCartPage() {
   return (
     <main className="min-h-screen bg-background">
       <div className="mx-auto max-w-[1200px] px-4 py-6 sm:px-6">
-        <Breadcrumb />
-        <ShoppingCartInteractive />
+        <div data-aos="fade-down">
+          <Breadcrumb />
+        </div>
+        <div data-aos="fade-up" data-aos-delay="200">
+          <ShoppingCartInteractive />
+        </div>
       </div>
     </main>
   );
