@@ -106,7 +106,7 @@ const Footer = () => {
           </div>
 
           {/* Desktop Layout - Hidden on Mobile */}
-          <div className="hidden lg:block" data-aos="fade-up" data-aos-delay="100">
+          <div className="hidden lg:block" data-aos="fade-up">
             <h4 className="font-semibold text-foreground mb-4">Quick Links</h4>
             <ul className="space-y-2 text-sm">
               <li><Link href="/" className="text-muted-foreground hover:text-primary transition-smooth">Home</Link></li>
@@ -118,7 +118,7 @@ const Footer = () => {
             </ul>
           </div>
 
-          <div className="hidden lg:block" data-aos="fade-up" data-aos-delay="200">
+          <div className="hidden lg:block" data-aos="fade-up">
             <h4 className="font-semibold text-foreground mb-4">Categories</h4>
             <ul className="space-y-2 text-sm">
               <li><Link href="/product-catalog" className="text-muted-foreground hover:text-primary transition-smooth">Flower Pots</Link></li>
@@ -129,7 +129,7 @@ const Footer = () => {
             </ul>
           </div>
 
-          <div className="hidden lg:block" data-aos="fade-up" data-aos-delay="300">
+          <div className="hidden lg:block" data-aos="fade-up">
             <h4 className="font-semibold text-foreground mb-4">Support</h4>
             <ul className="space-y-2 text-sm">
               <li><Link href="#" className="text-muted-foreground hover:text-primary transition-smooth">FAQs</Link></li>
@@ -142,7 +142,7 @@ const Footer = () => {
           </div>
 
           {/* Contact & Social */}
-          <div data-aos="fade-left" data-aos-delay="400">
+          <div data-aos="fade-left">
             <h4 className="font-semibold text-foreground mb-4">Contact & Follow</h4>
             <div className="space-y-2 text-sm text-muted-foreground mb-4">
               <p className="flex items-center gap-2"><Icon name="PhoneIcon" size={16} />+91 98765 43210</p>

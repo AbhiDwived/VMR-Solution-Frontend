@@ -2,9 +2,7 @@
 module.exports = {
   darkMode: ['class'],
   content: [
-    './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
-    './src/components/**/*.{js,ts,jsx,tsx,mdx}',
-    './src/app/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/**/*.{js,ts,jsx,tsx,mdx}',
   ],
   theme: {
     container: {
@@ -48,39 +46,39 @@ module.exports = {
           foreground: 'var(--color-accent-foreground)',
         },
         destructive: {
-          DEFAULT: 'var(--color-destructive)', // red-600
-          foreground: 'var(--color-destructive-foreground)', // white
+          DEFAULT: 'var(--color-destructive)',
+          foreground: 'var(--color-destructive-foreground)',
         },
         success: {
-          DEFAULT: 'var(--color-success)', // green-600
-          foreground: 'var(--color-success-foreground)', // white
+          DEFAULT: 'var(--color-success)',
+          foreground: 'var(--color-success-foreground)',
         },
         warning: {
-          DEFAULT: 'var(--color-warning)', // amber-600
-          foreground: 'var(--color-warning-foreground)', // white
+          DEFAULT: 'var(--color-warning)',
+          foreground: 'var(--color-warning-foreground)',
         },
         error: {
-          DEFAULT: 'var(--color-error)', // red-600
-          foreground: 'var(--color-error-foreground)', // white
+          DEFAULT: 'var(--color-error)',
+          foreground: 'var(--color-error-foreground)',
         },
         muted: {
-          DEFAULT: 'var(--color-muted)', // stone-100
-          foreground: 'var(--color-muted-foreground)', // gray-600
+          DEFAULT: 'var(--color-muted)',
+          foreground: 'var(--color-muted-foreground)',
         },
         card: {
-          DEFAULT: 'var(--color-card)', // Pure white
-          foreground: 'var(--color-card-foreground)', // On-surface text
+          DEFAULT: 'var(--color-card)',
+          foreground: 'var(--color-card-foreground)',
         },
         popover: {
-          DEFAULT: 'var(--color-popover)', // white
-          foreground: 'var(--color-popover-foreground)', // gray-800
+          DEFAULT: 'var(--color-popover)',
+          foreground: 'var(--color-popover-foreground)',
         },
       },
       borderRadius: {
-        sm: 'var(--radius-sm)', // 6px
-        md: 'var(--radius-md)', // 12px
-        lg: 'var(--radius-lg)', // 18px
-        xl: 'var(--radius-xl)', // 24px
+        sm: 'var(--radius-sm)',
+        md: 'var(--radius-md)',
+        lg: 'var(--radius-lg)',
+        xl: 'var(--radius-xl)',
       },
       fontFamily: {
         heading: ['Crimson Pro', 'serif'],

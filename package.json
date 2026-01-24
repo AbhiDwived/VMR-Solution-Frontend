@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev -p 4028",
+    "dev": "next dev --turbo -p 4028",
     "build": "next build",
     "start": "next start -p 4028",
     "serve": "next start -p 4028",
@@ -15,8 +15,6 @@
     "@reduxjs/toolkit": "^2.11.2",
     "@tailwindcss/forms": "^0.5.10",
     "@tailwindcss/typography": "^0.5.16",
-    "@types/aos": "^3.0.7",
-    "aos": "^2.3.4",
     "next": "^15.2.4",
     "react": "^19.0.3",
     "react-dom": "^19.0.3",

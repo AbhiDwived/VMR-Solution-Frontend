@@ -14,7 +14,7 @@ export default function ShoppingCartPage() {
         <div data-aos="fade-down">
           <Breadcrumb />
         </div>
-        <div data-aos="fade-up" data-aos-delay="200">
+        <div data-aos="fade-up">
           <ShoppingCartInteractive />
         </div>
       </div>

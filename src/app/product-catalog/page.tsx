@@ -22,7 +22,7 @@ export default function ProductCatalogPage() {
           </p>
         </div>
 
-        <div data-aos="fade-up" data-aos-delay="200">
+        <div data-aos="fade-up">
           <ProductCatalogInteractive />
         </div>
       </main>

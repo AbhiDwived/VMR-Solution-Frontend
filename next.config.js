@@ -11,8 +11,22 @@ const nextConfig = {
     ],
   },
   experimental: {
-    esmExternals: false,
+    turbo: {
+      rules: {
+        '*.svg': {
+          loaders: ['@svgr/webpack'],
+          as: '*.js',
+        },
+      },
+    },
+    optimizePackageImports: ['@heroicons/react'],
   },
+  compiler: {
+    removeConsole: process.env.NODE_ENV === 'production',
+  },
+  swcMinify: true,
+  poweredByHeader: false,
+  compress: true,
   async rewrites() {
     return [
       {

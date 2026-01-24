@@ -64,7 +64,7 @@ const FeaturedProducts = () => {
         </Link>
       </div>
 
-      <div className="relative" data-aos="fade-up" data-aos-delay="200">
+      <div className="relative" data-aos="fade-up">
         <button
           onClick={() => scroll('left')}
           className="absolute -left-2 top-1/2 z-10 hidden -translate-y-1/2 rounded-full bg-card p-2 shadow-elevation-3 transition-smooth hover:scale-110 lg:block"

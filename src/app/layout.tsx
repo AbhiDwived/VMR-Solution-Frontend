@@ -1,10 +1,10 @@
 import React from 'react';
 import type { Metadata, Viewport } from 'next';
-import Header from '@/components/common/Header';
-import Footer from '@/components/common/Footer';
 import { StoreProvider } from '@/lib/providers/StoreProvider';
-import AOSProvider from '@/lib/providers/AOSProvider';
 import '../styles/index.css';
+
+const Header = React.lazy(() => import('@/components/common/Header'));
+const Footer = React.lazy(() => import('@/components/common/Footer'));
 
 export const viewport: Viewport = {
   width: 'device-width',
@@ -12,12 +12,10 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: 'Next.js with Tailwind CSS',
-  description: 'A boilerplate project with Next.js and Tailwind CSS',
+  title: 'VMR Solution - Quality Plastic Products',
+  description: 'Premium plastic household products with fast delivery',
   icons: {
-    icon: [
-      { url: '/favicon.ico', type: 'image/x-icon' }
-    ],
+    icon: '/favicon.ico',
   },
 };
 
@@ -30,15 +28,14 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <StoreProvider>
-          <AOSProvider>
+          <React.Suspense fallback={<div className="h-16 bg-card border-b" />}>
             <Header />
-            {children}
+          </React.Suspense>
+          {children}
+          <React.Suspense fallback={<div className="h-32 bg-muted" />}>
             <Footer />
-          </AOSProvider>
+          </React.Suspense>
         </StoreProvider>
-
-        <script type="module" async src="https://static.rocket.new/rocket-web.js?_cfg=https%3A%2F%2Fplasticmar3871back.builtwithrocket.new&_be=https%3A%2F%2Fappanalytics.rocket.new&_v=0.1.14" />
-        <script type="module" defer src="https://static.rocket.new/rocket-shot.js?v=0.0.2" />
       </body>
     </html>
   );

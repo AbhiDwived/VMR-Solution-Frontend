@@ -34,8 +34,6 @@ const ProductCard = ({
   return (
     <div
       className="group relative overflow-hidden rounded-xl border border-border bg-white shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg"
-      data-aos="fade-up"
-      data-aos-delay={animationDelay}
     >
       {/* Top Left: Discount */}
       {discount > 0 && (
