@@ -2,8 +2,8 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import AppImage from '@/components/ui/AppImage';
 import Icon from '@/components/ui/AppIcon';
+import ProductCard from '@/components/ui/ProductCard';
 import { products } from '@/data/products';
 
 interface FeaturedProduct {
@@ -75,59 +75,28 @@ const FeaturedProducts = () => {
 
         <div
           id="featured-carousel"
-          className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-6 lg:gap-6"
+          className="grid grid-cols-2 gap-1 sm:gap-2 lg:grid-cols-6"
         >
-          {featuredProducts.map((product) => {
+          {featuredProducts.map((product, index) => {
             const discount = product.originalPrice
               ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
               : 0;
 
             return (
-              <Link
+              <ProductCard
                 key={product.id}
-                href={`/product-details?id=${product.id}`}
-                className="group flex-shrink-0 rounded-lg border border-border bg-card shadow-elevation-1 transition-smooth hover:shadow-elevation-2"
-              >
-                <div className="relative overflow-hidden rounded-t-lg bg-muted h-[150px] sm:h-[180px] lg:h-[200px]">
-                  <AppImage
-                    src={product.image}
-                    alt={product.alt}
-                    className="h-full w-full object-cover transition-smooth group-hover:scale-105"
-                  />
-                  {discount > 0 && (
-                    <div className="absolute right-2 top-2 rounded-md bg-error px-2 py-1 text-xs font-medium text-error-foreground">
-                      {discount}% OFF
-                    </div>
-                  )}
-                </div>
-                <div className="p-3 sm:p-4">
-                  <p className="caption mb-1 text-muted-foreground">{product.category}</p>
-                  <h3 className="mb-2 text-sm font-medium text-card-foreground line-clamp-2 sm:text-base">
-                    {product.name}
-                  </h3>
-                  <div className="mb-2 flex items-center space-x-1 sm:mb-3">
-                    {[...Array(5)].map((_, i) => (
-                      <Icon
-                        key={i}
-                        name="StarIcon"
-                        size={12}
-                        variant={i < Math.floor(product.rating) ? 'solid' : 'outline'}
-                        className={i < Math.floor(product.rating) ? 'text-accent' : 'text-muted-foreground'}
-                      />
-                    ))}
-                  </div>
-                  <div className="flex items-baseline space-x-2">
-                    <span className="text-base font-semibold text-primary sm:text-lg">
-                      ₹{product.price.toLocaleString('en-IN')}
-                    </span>
-                    {product.originalPrice && (
-                      <span className="text-xs text-muted-foreground line-through sm:text-sm">
-                        ₹{product.originalPrice.toLocaleString('en-IN')}
-                      </span>
-                    )}
-                  </div>
-                </div>
-              </Link>
+                id={product.id}
+                name={product.name}
+                category={product.category}
+                price={product.price}
+                originalPrice={product.originalPrice}
+                image={product.image}
+                alt={product.alt}
+                rating={product.rating}
+                discount={discount}
+                showThumbnails={false}
+                animationDelay={0}
+              />
             );
           })}
         </div>

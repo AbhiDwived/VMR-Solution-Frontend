@@ -12,6 +12,7 @@ const Header = () => {
     { label: 'Shop', path: '/shop', icon: 'ShoppingBagIcon' },
     { label: 'Products', path: '/product-catalog', icon: 'ShoppingBagIcon' },
     { label: 'Categories', path: '/categories', icon: 'TagIcon' },
+    { label: 'Blog', path: '/blog', icon: 'DocumentTextIcon' },
     { label: 'About Us', path: '/about', icon: 'InformationCircleIcon' },
     { label: 'Contact Us', path: '/contact', icon: 'PhoneIcon' },
     { label: 'Bulk Orders', path: '/bulk-orders', icon: 'TruckIcon' },

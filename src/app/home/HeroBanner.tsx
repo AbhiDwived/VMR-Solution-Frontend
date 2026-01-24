@@ -40,7 +40,7 @@ const HeroBanner = ({
         <div className="relative flex h-full gap-2 p-2 sm:gap-4 sm:p-4">
           {/* Left section - 2 horizontal images (70% width) */}
           <div className="w-[70%] flex flex-col gap-2">
-            <div className="h-[70%] group relative overflow-hidden rounded-lg bg-white p-1 sm:p-2 shadow-md transition-transform hover:scale-105">
+            <div className="h-[70%] group relative overflow-hidden rounded-lg bg-white p-1 sm:p-2 shadow-md">
               <Image
                 src={categoryImages[0].src}
                 alt={categoryImages[0].alt}
@@ -48,7 +48,7 @@ const HeroBanner = ({
                 className="object-fill"
               />
             </div>
-            <div className="h-[30%] group relative overflow-hidden rounded-lg bg-white p-1 sm:p-2 shadow-md transition-transform hover:scale-105">
+            <div className="h-[30%] group relative overflow-hidden rounded-lg bg-white p-1 sm:p-2 shadow-md">
               <Image
                 src={categoryImages[1].src}
                 alt={categoryImages[1].alt}
@@ -76,7 +76,7 @@ const HeroBanner = ({
                     <p className="text-xs sm:text-sm">All Sizes Available</p>
                     <Link
                       href="/product-catalog"
-                      className="inline-block rounded-full bg-gradient-to-r from-blue-500 to-green-500 px-2 py-1 text-xs font-semibold text-white shadow-lg transition-transform hover:scale-105 sm:px-3 sm:py-1.5 md:px-4 md:py-2 md:text-sm"
+                      className="inline-block rounded-full bg-gradient-to-r from-blue-500 to-green-500 px-2 py-1 text-xs font-semibold text-white shadow-lg sm:px-3 sm:py-1.5 md:px-4 md:py-2 md:text-sm"
                     >
                       Shop Now
                     </Link>

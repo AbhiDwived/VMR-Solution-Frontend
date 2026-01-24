@@ -1,8 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import ProductCard, { Product } from './ProductCard';
+import ProductCard from '@/components/ui/ProductCard';
 import Icon from '@/components/ui/AppIcon';
+import { Product } from './ProductCard';
 
 interface ProductGridProps {
   products: Product[];
@@ -13,7 +14,7 @@ const ProductGrid = ({ products, onAddToCart }: ProductGridProps) => {
   const [displayedProducts, setDisplayedProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
-  const itemsPerPage = 12;
+  const itemsPerPage = 30;
 
   useEffect(() => {
     setDisplayedProducts(products.slice(0, itemsPerPage));
@@ -48,19 +49,30 @@ const ProductGrid = ({ products, onAddToCart }: ProductGridProps) => {
 
   return (
     <div className="space-y-4 sm:space-y-8">
-      <div className="grid grid-cols-2 gap-2 sm:gap-3 lg:grid-cols-5">
-        {displayedProducts.map((product) => (
-          <ProductCard
-            key={product.id}
-            product={product}
-            onAddToCart={onAddToCart}
-          />
-        ))}
+      <div className="grid grid-cols-2 gap-1 sm:gap-2 lg:grid-cols-5">
+        {displayedProducts.map((product, index) => {
+          const discount = Math.floor(Math.random() * 30) + 10;
+          return (
+            <ProductCard
+              key={product.id}
+              id={product.id}
+              name={product.name}
+              category={product.category}
+              price={product.price}
+              image={product.image}
+              alt={product.alt}
+              rating={product.rating}
+              discount={discount}
+              showThumbnails={false}
+              animationDelay={index * 50}
+            />
+          );
+        })}
       </div>
 
       {/* Loading Skeletons */}
       {isLoading && (
-        <div className="grid grid-cols-2 gap-2 sm:gap-3 lg:grid-cols-5">
+        <div className="grid grid-cols-2 gap-1 sm:gap-2 lg:grid-cols-5">
           {[...Array(4)].map((_, i) => (
             <div
               key={i}
