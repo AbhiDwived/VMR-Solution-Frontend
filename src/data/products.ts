@@ -155,3 +155,6 @@ export const categories = [
   "Bathroom",
   "Cleaning"
 ];
+
+
+

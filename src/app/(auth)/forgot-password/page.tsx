@@ -1,13 +1,11 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import FormInput from '../../../features/auth/components/FormInput';
 import { useForgotPasswordMutation } from '../../../store/api/authApi';
 
 export default function ForgotPasswordPage() {
-  // const router = useRouter();
   const [forgotPasswordMutation, { isLoading }] = useForgotPasswordMutation();
   
   const [emailOrMobile, setEmailOrMobile] = useState('');
@@ -40,7 +38,7 @@ export default function ForgotPasswordPage() {
       await forgotPasswordMutation({ emailOrMobile }).unwrap();
       setSuccess(true);
       setError('');
-    } catch (error) {
+    } catch (_error) {
       // Show success message even if user doesn't exist (security best practice)
       setSuccess(true);
       setError('');
@@ -162,3 +160,6 @@ export default function ForgotPasswordPage() {
     </div>
   );
 }
+
+
+

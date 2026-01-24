@@ -93,7 +93,7 @@ export default function LoginPage() {
               name="emailOrMobile"
               value={formData.emailOrMobile}
               onChange={handleChange}
-              error={errors.emailOrMobile}
+              error={errors.emailOrMobile || ''}
               placeholder="Enter email or mobile number"
               required
             />
@@ -104,7 +104,7 @@ export default function LoginPage() {
               name="password"
               value={formData.password}
               onChange={handleChange}
-              error={errors.password}
+              error={errors.password || ''}
               placeholder="Enter your password"
               required
             />
@@ -168,3 +168,6 @@ export default function LoginPage() {
     </div>
   );
 }
+
+
+

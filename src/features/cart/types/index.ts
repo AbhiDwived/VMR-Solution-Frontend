@@ -22,3 +22,6 @@ export interface CartActions {
   clearCart: () => void
   toggleCart: () => void
 }
+
+
+

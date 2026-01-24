@@ -121,3 +121,6 @@ const BulkPricingCalculator = ({ pricingTiers, basePrice }: BulkPricingCalculato
 };
 
 export default BulkPricingCalculator;
+
+
+

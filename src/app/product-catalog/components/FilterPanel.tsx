@@ -249,3 +249,6 @@ const FilterPanel = ({ onFilterChange, productCount }: FilterPanelProps) => {
 };
 
 export default FilterPanel;
+
+
+

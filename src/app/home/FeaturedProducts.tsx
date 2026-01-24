@@ -114,3 +114,6 @@ const FeaturedProducts = () => {
 };
 
 export default FeaturedProducts;
+
+
+

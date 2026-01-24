@@ -59,3 +59,6 @@ const CheckoutProgress = ({ currentStep }: CheckoutProgressProps) => {
 };
 
 export default CheckoutProgress;
+
+
+

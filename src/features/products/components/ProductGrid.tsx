@@ -102,3 +102,6 @@ const ProductGrid = ({ products, onAddToCart }: ProductGridProps) => {
 };
 
 export default ProductGrid;
+
+
+

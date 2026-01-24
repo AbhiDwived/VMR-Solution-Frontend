@@ -86,3 +86,6 @@ const ExitIntentPopup = ({ onClose }: ExitIntentPopupProps) => {
 };
 
 export default ExitIntentPopup;
+
+
+

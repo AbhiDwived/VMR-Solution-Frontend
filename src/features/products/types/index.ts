@@ -22,3 +22,6 @@ export interface ProductSort {
   field: 'name' | 'price' | 'rating'
   direction: 'asc' | 'desc'
 }
+
+
+

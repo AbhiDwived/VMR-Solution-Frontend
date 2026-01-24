@@ -104,3 +104,6 @@ const RelatedProducts = ({ products }: RelatedProductsProps) => {
 };
 
 export default RelatedProducts;
+
+
+

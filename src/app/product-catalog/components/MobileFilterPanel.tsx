@@ -73,3 +73,6 @@ const MobileFilterPanel = ({ onFilterChange, productCount }: MobileFilterPanelPr
 };
 
 export default MobileFilterPanel;
+
+
+

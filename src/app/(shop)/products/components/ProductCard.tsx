@@ -275,3 +275,6 @@ const ProductCard = ({ product, onAddToCart }: ProductCardProps) => {
 };
 
 export default ProductCard;
+
+
+

@@ -9,7 +9,7 @@ interface FormInputProps {
   name: string;
   value: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  error?: string;
+  error?: string | undefined;
   placeholder?: string;
   required?: boolean;
   disabled?: boolean;
@@ -73,3 +73,6 @@ export default function FormInput({
     </div>
   );
 }
+
+
+

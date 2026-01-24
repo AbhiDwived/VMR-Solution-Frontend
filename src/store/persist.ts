@@ -17,3 +17,6 @@ const rootReducer = combineReducers({
 
 export const persistedReducer = persistReducer(persistConfig, rootReducer)
 export const persistor = persistStore
+
+
+

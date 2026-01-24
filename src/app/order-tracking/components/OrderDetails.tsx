@@ -90,3 +90,6 @@ const OrderDetails = ({ items, subtotal, gst, deliveryCharges, total }: OrderDet
 };
 
 export default OrderDetails;
+
+
+

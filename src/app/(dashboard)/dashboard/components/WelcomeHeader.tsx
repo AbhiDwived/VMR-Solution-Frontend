@@ -78,3 +78,6 @@ const WelcomeHeader = ({ userName, accountStatus, loyaltyPoints }: WelcomeHeader
 };
 
 export default WelcomeHeader;
+
+
+

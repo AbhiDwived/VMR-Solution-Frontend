@@ -85,3 +85,6 @@ const TrendingProducts = () => {
 };
 
 export default TrendingProducts;
+
+
+

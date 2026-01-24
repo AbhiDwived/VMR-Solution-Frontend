@@ -12,3 +12,6 @@ export const formatDate = (date: Date): string => {
     day: 'numeric'
   }).format(date)
 }
+
+
+

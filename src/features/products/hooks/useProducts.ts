@@ -11,3 +11,6 @@ export const useProduct = (id: string) => {
 export const useCategories = () => {
   return useGetCategoriesQuery()
 }
+
+
+

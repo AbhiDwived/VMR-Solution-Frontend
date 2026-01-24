@@ -49,3 +49,6 @@ export default function ClearCartModal({ isOpen, onClose, onConfirm }: ClearCart
     </>
   );
 }
+
+
+

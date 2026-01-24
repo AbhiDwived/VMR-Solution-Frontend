@@ -195,3 +195,6 @@ const ProductTabs = ({
 };
 
 export default ProductTabs;
+
+
+

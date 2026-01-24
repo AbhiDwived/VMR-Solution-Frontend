@@ -22,6 +22,7 @@ function AuthSuccessContent() {
 
       return () => clearTimeout(timer);
     }
+    return undefined;
   }, [router, redirectTo, autoRedirect]);
 
   const getIcon = () => {
@@ -162,3 +163,6 @@ export default function AuthSuccessPage() {
     </Suspense>
   );
 }
+
+
+

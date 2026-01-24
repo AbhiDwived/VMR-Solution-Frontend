@@ -166,3 +166,6 @@ const ProductCatalogInteractive = () => {
 };
 
 export default ProductCatalogInteractive;
+
+
+

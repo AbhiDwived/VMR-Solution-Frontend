@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, Suspense } from 'react';
+import { useState, useEffect, Suspense, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import OTPInput from '../../../features/auth/components/OTPInput';
@@ -19,27 +19,10 @@ function VerifyOTPContent() {
   const [otp, setOtp] = useState('');
   const [timer, setTimer] = useState(60);
   const [canResend, setCanResend] = useState(false);
-  const [error, setError] = useState('');
+  const [_error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
-  useEffect(() => {
-    if (timer > 0) {
-      const interval = setInterval(() => {
-        setTimer(prev => prev - 1);
-      }, 1000);
-      return () => clearInterval(interval);
-    } else {
-      setCanResend(true);
-    }
-  }, [timer]);
-
-  useEffect(() => {
-    if (otp.length === 6) {
-      handleVerifyOTP();
-    }
-  }, [otp]);
-
-  const handleVerifyOTP = async () => {
+  const handleVerifyOTP = useCallback(async () => {
     if (otp.length !== 6) return;
 
     try {
@@ -58,7 +41,23 @@ function VerifyOTPContent() {
       setError(error?.data?.message || 'Invalid OTP. Please try again.');
       setOtp('');
     }
-  };
+  }, [otp, verifyOTPMutation, contact, login, router]);
+
+  useEffect(() => {
+    if (timer > 0) {
+      const interval = setInterval(() => {
+        setTimer(prev => prev - 1);
+      }, 1000);
+      return () => clearInterval(interval);
+    }
+    setCanResend(true);
+  }, [timer]);
+
+  useEffect(() => {
+    if (otp.length === 6) {
+      handleVerifyOTP();
+    }
+  }, [otp, handleVerifyOTP]);
 
   const handleResendOTP = async () => {
     if (!canResend) return;
@@ -96,9 +95,9 @@ function VerifyOTPContent() {
 
         <div className="bg-white rounded-xl shadow-lg p-8">
           <div className="space-y-6">
-            {error && (
+            {_error && (
               <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-center">
-                {error}
+                {_error}
               </div>
             )}
 
@@ -175,3 +174,6 @@ export default function VerifyOTPPage() {
     </Suspense>
   );
 }
+
+
+
