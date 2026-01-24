@@ -19,13 +19,13 @@ const HeroBanner = ({
   title = "PAY DAY",
   discount = "UP TO 50% OFF",
   productImages = [
-    { src: "/assets/products/bucket (1).jpg", alt: "Plastic Bucket" },
+    { src: "/assets/images/vertical-banner.png", alt: "Plastic Bucket" },
     { src: "/assets/products/vmr (15).jpg", alt: "Plastic Dustbin" },
     { src: "/assets/products/vmr (25).jpg", alt: "Plastic Container" }
   ],
   categoryImages = [
-    { src: "/assets/products/vmr (5).jpg", alt: "Plastic Gamla (Flower Pot)" },
-    { src: "/assets/products/bucket (3).jpg", alt: "Plastic Bucket" }
+    { src: "/assets/images/Top-banner.png", alt: "VMR Solution Top Banner" },
+    { src: "/assets/images/bottom-banner.png", alt: "Plastic Bucket" }
   ]
 }: HeroBannerProps) => {
   return (
@@ -44,18 +44,16 @@ const HeroBanner = ({
               <Image
                 src={categoryImages[0].src}
                 alt={categoryImages[0].alt}
-                width={500}
-                height={350}
-                className="h-full w-full object-cover"
+                fill
+                className="object-fill"
               />
             </div>
             <div className="h-[30%] group relative overflow-hidden rounded-lg bg-white p-1 sm:p-2 shadow-md transition-transform hover:scale-105">
               <Image
                 src={categoryImages[1].src}
                 alt={categoryImages[1].alt}
-                width={500}
-                height={150}
-                className="h-full w-full object-cover"
+                fill
+                className="object-fill"
               />
             </div>
           </div>
@@ -66,9 +64,8 @@ const HeroBanner = ({
               <Image
                 src={productImages[0].src}
                 alt={productImages[0].alt}
-                width={300}
-                height={500}
-                className="h-full w-full object-cover"
+                fill
+                className="object-fill"
               />
               <div className="absolute inset-0 bg-black/30">
                 <div className="flex h-full items-center justify-center">

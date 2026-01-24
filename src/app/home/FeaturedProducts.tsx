@@ -21,7 +21,7 @@ const FeaturedProducts = () => {
   const [scrollPosition, setScrollPosition] = useState(0);
 
   // Get featured products from real data
-  const featuredProducts: FeaturedProduct[] = products.slice(0, 12).map(product => ({
+  const featuredProducts: FeaturedProduct[] = products.slice(0, 36).map(product => ({
     id: product.id.toString(),
     name: product.name,
     category: product.category,
@@ -49,7 +49,7 @@ const FeaturedProducts = () => {
       <div className="mb-6 flex items-center justify-between sm:mb-8" data-aos="fade-up">
         <div>
           <h2 className="font-heading text-2xl font-bold text-foreground sm:text-3xl lg:text-4xl">
-            Featured Products
+            Our Products
           </h2>
           <p className="mt-1 text-sm text-muted-foreground sm:mt-2 sm:text-base">
             Handpicked items just for you

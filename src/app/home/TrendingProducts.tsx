@@ -21,7 +21,7 @@ const TrendingProducts = () => {
   // Get trending products from real data (patlas and furniture)
   const trendingProducts: TrendingProduct[] = products
     .filter(p => ['Patlas', 'Furniture', 'Mugs', 'Planters'].includes(p.category))
-    .slice(0, 8)
+    .slice(0, 6)
     .map(product => ({
       id: product.id.toString(),
       name: product.name,
