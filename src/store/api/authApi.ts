@@ -7,7 +7,7 @@ import type {
   ResetPasswordRequest, 
   ChangePasswordRequest,
   AuthResponse 
-} from '../types';
+} from '@/features/auth/types';
 
 export const authApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({

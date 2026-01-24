@@ -20,10 +20,10 @@ export default function AuthGuard({
   redirectTo = '/auth/login'
 }: AuthGuardProps) {
   const router = useRouter();
-  const { isAuthenticated, isVerified, hasRole, user, isLoading } = useAuth();
+  const { isAuthenticated, isVerified, hasRole, user, loading } = useAuth();
 
   useEffect(() => {
-    if (isLoading) return;
+    if (loading) return;
 
     // Check if authentication is required
     if (requireAuth && !isAuthenticated()) {
@@ -33,7 +33,7 @@ export default function AuthGuard({
 
     // Check if verification is required
     if (requireVerification && !isVerified()) {
-      router.push(`/auth/verify-otp?contact=${encodeURIComponent(user?.email || user?.mobile || '')}`);
+      router.push(`/auth/verify-otp?contact=${encodeURIComponent(user?.email || '')}`);
       return;
     }
 
@@ -45,10 +45,10 @@ export default function AuthGuard({
         return;
       }
     }
-  }, [isAuthenticated, isVerified, hasRole, user, isLoading, requireAuth, requireVerification, allowedRoles, router, redirectTo]);
+  }, [isAuthenticated, isVerified, hasRole, user, loading, requireAuth, requireVerification, allowedRoles, router, redirectTo]);
 
   // Show loading state while checking auth
-  if (isLoading) {
+  if (loading) {
     return (
       <div className="min-h-screen bg-soft-linen flex items-center justify-center">
         <div className="text-center">

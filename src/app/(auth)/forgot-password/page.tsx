@@ -7,7 +7,7 @@ import FormInput from '../../../features/auth/components/FormInput';
 import { useForgotPasswordMutation } from '../../../store/api/authApi';
 
 export default function ForgotPasswordPage() {
-  const router = useRouter();
+  // const router = useRouter();
   const [forgotPasswordMutation, { isLoading }] = useForgotPasswordMutation();
   
   const [emailOrMobile, setEmailOrMobile] = useState('');
@@ -20,7 +20,7 @@ export default function ForgotPasswordPage() {
       return false;
     }
     
-    const isEmail = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(emailOrMobile);
+    const isEmail = /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/.test(emailOrMobile);
     const isMobile = /^[6-9]\d{9}$/.test(emailOrMobile);
     
     if (!isEmail && !isMobile) {
@@ -40,7 +40,7 @@ export default function ForgotPasswordPage() {
       await forgotPasswordMutation({ emailOrMobile }).unwrap();
       setSuccess(true);
       setError('');
-    } catch (error: any) {
+    } catch (error) {
       // Show success message even if user doesn't exist (security best practice)
       setSuccess(true);
       setError('');

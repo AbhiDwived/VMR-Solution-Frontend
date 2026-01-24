@@ -142,10 +142,10 @@ const EnhancedHeader = () => {
                   <div className="absolute right-0 top-full z-[200] mt-2 w-56 rounded-md bg-popover shadow-elevation-3 transition-smooth">
                     <div className="p-4">
                       <p className="text-sm font-medium text-popover-foreground">
-                        {isAuthenticated ? `Welcome, ${user?.name}` : 'Welcome, Guest'}
+                        {isAuthenticated() ? `Welcome, ${user?.fullName}` : 'Welcome, Guest'}
                       </p>
                       <p className="caption text-muted-foreground">
-                        {isAuthenticated ? 'Manage your account' : 'Sign in to access your account'}
+                        {isAuthenticated() ? 'Manage your account' : 'Sign in to access your account'}
                       </p>
                     </div>
                     <div className="border-t border-border">
@@ -167,7 +167,7 @@ const EnhancedHeader = () => {
                       </Link>
                     </div>
                     <div className="border-t border-border p-3">
-                      {isAuthenticated ? (
+                      {isAuthenticated() ? (
                         <button 
                           onClick={() => {
                             logout();

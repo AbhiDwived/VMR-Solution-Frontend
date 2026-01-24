@@ -32,7 +32,7 @@ export default function RegisterPage() {
     
     if (!formData.email.trim()) {
       newErrors.email = 'Email is required';
-    } else if (!/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(formData.email)) {
+    } else if (!/^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/.test(formData.email)) {
       newErrors.email = 'Enter a valid email address';
     }
     
@@ -70,7 +70,7 @@ export default function RegisterPage() {
     if (!validateForm()) return;
 
     try {
-      const result = await registerMutation(formData).unwrap();
+      await registerMutation(formData).unwrap();
       router.push(`/verify-otp?contact=${encodeURIComponent(formData.email)}`);
     } catch (error: any) {
       setErrors({ 

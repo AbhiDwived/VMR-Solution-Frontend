@@ -27,7 +27,7 @@ export default function LoginOTPPage() {
       return false;
     }
     
-    const isEmail = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(emailOrMobile);
+    const isEmail = /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/.test(emailOrMobile);
     const isMobile = /^[6-9]\d{9}$/.test(emailOrMobile);
     
     if (!isEmail && !isMobile) {

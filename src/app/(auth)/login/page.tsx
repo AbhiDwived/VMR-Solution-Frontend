@@ -24,7 +24,7 @@ export default function LoginPage() {
     
     if (!formData.emailOrMobile.trim()) {
       newErrors.emailOrMobile = 'Email or mobile number is required';
-    } else if (!/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(formData.emailOrMobile) && 
+    } else if (!/^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/.test(formData.emailOrMobile) && 
                !/^[6-9]\d{9}$/.test(formData.emailOrMobile)) {
       newErrors.emailOrMobile = 'Enter valid email or 10-digit mobile number';
     }

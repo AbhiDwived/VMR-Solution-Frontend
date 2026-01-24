@@ -11,20 +11,19 @@ const nextConfig = {
     ],
   },
   experimental: {
-    turbo: {
-      rules: {
-        '*.svg': {
-          loaders: ['@svgr/webpack'],
-          as: '*.js',
-        },
+    optimizePackageImports: ['@heroicons/react'],
+  },
+  turbopack: {
+    rules: {
+      '*.svg': {
+        loaders: ['@svgr/webpack'],
+        as: '*.js',
       },
     },
-    optimizePackageImports: ['@heroicons/react'],
   },
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production',
   },
-  swcMinify: true,
   poweredByHeader: false,
   compress: true,
   async rewrites() {
