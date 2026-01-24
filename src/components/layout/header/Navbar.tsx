@@ -2,34 +2,13 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
 import Icon from '@/components/ui/AppIcon';
-import { useAuth } from '@/features/auth/hooks/useAuth';
-import { useCart } from '@/features/cart/hooks/useCart';
 
-interface NavigationItem {
-  label: string;
-  path: string;
-  icon: string;
-}
-
-const EnhancedHeader = () => {
-  const pathname = usePathname();
+const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
-  
-  const { user, isAuthenticated, logout } = useAuth();
-  const { itemCount, toggleCart } = useCart();
 
-  const navigationItems: NavigationItem[] = [
-    { label: 'Home', path: '/', icon: 'HomeIcon' },
-    { label: 'Products', path: '/product-catalog', icon: 'ShoppingBagIcon' },
-    { label: 'Cart', path: '/shopping-cart', icon: 'ShoppingCartIcon' },
-    { label: 'Checkout', path: '/checkout-process', icon: 'CreditCardIcon' },
-    { label: 'My Account', path: '/user-dashboard', icon: 'UserCircleIcon' },
-  ];
 
-  const isActivePath = (path: string) => pathname === path;
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
@@ -45,8 +24,8 @@ const EnhancedHeader = () => {
 
   return (
     <header className="sticky top-0 z-[100] w-full bg-card shadow-elevation-2 transition-smooth">
-      <div className="mx-auto w-full px-4 sm:px-6">
-        <div className="flex h-16 items-center justify-between">
+      <div className="mx-auto w-full">
+        <div className="flex h-16 items-center justify-between px-4 sm:px-6">
           {/* Logo */}
           <Link 
             href="/" 
@@ -81,25 +60,33 @@ const EnhancedHeader = () => {
             </div>
           </div>
 
-          {/* Right Section - Navigation, Cart, User Menu */}
+          {/* Right Section - User Actions */}
           <div className="flex items-center space-x-3">
-            {/* Desktop Navigation */}
-            <nav className="hidden items-center space-x-1 md:flex">
-              {navigationItems.map((item, index) => (
-                <Link
-                  key={`desktop-${item.path}`}
-                  href={item.path}
-                  className={`flex items-center space-x-2 rounded-md px-4 py-2 text-sm font-medium transition-smooth hover:bg-muted ${
-                    isActivePath(item.path)
-                      ? 'bg-primary text-primary-foreground'
-                      : 'text-foreground'
-                  }`}
-                >
-                  <Icon name={item.icon as any} size={20} />
-                  <span>{item.label}</span>
-                </Link>
-              ))}
-            </nav>
+            {/* Login */}
+            <Link
+              href="/login"
+              className="text-sm font-medium text-foreground hover:text-primary transition-smooth"
+            >
+              Login
+            </Link>
+
+            {/* Wishlist */}
+            <Link
+              href="/wishlist"
+              className="flex h-10 w-10 items-center justify-center rounded-md text-foreground transition-smooth hover:bg-muted"
+              aria-label="Wishlist"
+            >
+              <Icon name="HeartIcon" size={20} />
+            </Link>
+
+            {/* Cart */}
+            <Link
+              href="/cart"
+              className="flex h-10 w-10 items-center justify-center rounded-md text-foreground transition-smooth hover:bg-muted"
+              aria-label="Shopping cart"
+            >
+              <Icon name="ShoppingCartIcon" size={20} />
+            </Link>
 
             {/* Mobile Search Button */}
             <button
@@ -107,20 +94,6 @@ const EnhancedHeader = () => {
               aria-label="Search products"
             >
               <Icon name="MagnifyingGlassIcon" size={20} />
-            </button>
-
-            {/* Cart Button with Count */}
-            <button
-              onClick={toggleCart}
-              className="relative flex h-10 w-10 items-center justify-center rounded-md text-foreground transition-smooth hover:bg-muted"
-              aria-label="Shopping cart"
-            >
-              <Icon name="ShoppingCartIcon" size={20} />
-              {itemCount > 0 && (
-                <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-xs font-medium text-primary-foreground">
-                  {itemCount}
-                </span>
-              )}
             </button>
 
             {/* User Menu */}
@@ -142,10 +115,10 @@ const EnhancedHeader = () => {
                   <div className="absolute right-0 top-full z-[200] mt-2 w-56 rounded-md bg-popover shadow-elevation-3 transition-smooth">
                     <div className="p-4">
                       <p className="text-sm font-medium text-popover-foreground">
-                        {isAuthenticated ? `Welcome, ${user?.name}` : 'Welcome, Guest'}
+                        Welcome, Guest
                       </p>
                       <p className="caption text-muted-foreground">
-                        {isAuthenticated ? 'Manage your account' : 'Sign in to access your account'}
+                        Sign in to access your account
                       </p>
                     </div>
                     <div className="border-t border-border">
@@ -167,21 +140,9 @@ const EnhancedHeader = () => {
                       </Link>
                     </div>
                     <div className="border-t border-border p-3">
-                      {isAuthenticated ? (
-                        <button 
-                          onClick={() => {
-                            logout();
-                            setIsUserMenuOpen(false);
-                          }}
-                          className="w-full rounded-md bg-destructive px-4 py-2 text-sm font-medium text-destructive-foreground transition-smooth hover:scale-[0.97]"
-                        >
-                          Sign Out
-                        </button>
-                      ) : (
-                        <button className="w-full rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-smooth hover:scale-[0.97]">
-                          Sign In
-                        </button>
-                      )}
+                      <button className="w-full rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-smooth hover:scale-[0.97]">
+                        Sign In
+                      </button>
                     </div>
                   </div>
                 </>
@@ -209,21 +170,7 @@ const EnhancedHeader = () => {
           />
           <nav className="fixed left-0 top-16 z-[300] h-[calc(100vh-4rem)] w-64 overflow-y-auto bg-card shadow-elevation-4 md:hidden">
             <div className="space-y-1 p-4">
-              {navigationItems.map((item, index) => (
-                <Link
-                  key={`mobile-${item.path}`}
-                  href={item.path}
-                  onClick={closeMobileMenu}
-                  className={`flex items-center space-x-3 rounded-md px-4 py-3 text-sm font-medium transition-smooth ${
-                    isActivePath(item.path)
-                      ? 'bg-primary text-primary-foreground'
-                      : 'text-foreground hover:bg-muted'
-                  }`}
-                >
-                  <Icon name={item.icon as any} size={20} />
-                  <span>{item.label}</span>
-                </Link>
-              ))}
+              <p className="text-sm text-muted-foreground px-4 py-2">Use navigation below</p>
             </div>
           </nav>
         </>
@@ -232,4 +179,4 @@ const EnhancedHeader = () => {
   );
 };
 
-export default EnhancedHeader;
+export default Navbar;

@@ -22,7 +22,7 @@ const TrendingProducts = () => {
   const trendingProducts: TrendingProduct[] = products
     .filter(p => ['Patlas', 'Furniture', 'Mugs', 'Planters'].includes(p.category))
     .slice(0, 6)
-    .map(product => ({
+    .map((product, index) => ({
       id: product.id.toString(),
       name: product.name,
       category: product.category,
@@ -30,8 +30,8 @@ const TrendingProducts = () => {
       originalPrice: product.price > 50 ? Math.floor(product.price * 1.4) : undefined,
       image: product.image,
       alt: product.description,
-      rating: 4.5 + Math.random() * 0.5,
-      salesCount: Math.floor(Math.random() * 1000) + 500,
+      rating: 4.5,
+      salesCount: 500 + (index * 100),
     }));
 
   return (
