@@ -91,18 +91,14 @@ const DashboardInteractive = () => {
   });
 
   const [activeTab, setActiveTab] = useState<'orders' | 'wishlist' | 'addresses' | 'profile'>('orders');
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const [mounted, setMounted] = useState(true);
 
   const user = profileDataResponse?.user || localUser;
   const isAdmin = user?.role === 'admin';
 
   useEffect(() => {
     if (mounted) {
-      console.log('Detected Role:', user?.role, 'isAdmin:', isAdmin);
+      // Role detection logic
     }
   }, [mounted, user, isAdmin]);
 
@@ -338,28 +334,28 @@ const DashboardInteractive = () => {
   };
 
   const handleRemoveFromWishlist = (productId: string) => {
-    console.log('Remove from wishlist:', productId);
+    // Remove from wishlist logic
   };
 
   const handleAddToCart = (productId: string) => {
-    console.log('Add to cart:', productId);
+    // Add to cart logic
     router.push('/shopping-cart');
   };
 
   const handleEditAddress = (addressId: string) => {
-    console.log('Edit address:', addressId);
+    // Edit address logic
   };
 
   const handleDeleteAddress = (addressId: string) => {
-    console.log('Delete address:', addressId);
+    // Delete address logic
   };
 
   const handleSetDefaultAddress = (addressId: string) => {
-    console.log('Set default address:', addressId);
+    // Set default address logic
   };
 
   const handleSaveProfile = (data: ProfileData) => {
-    console.log('Save profile:', data);
+    // Save profile logic
   };
 
   const tabs = [

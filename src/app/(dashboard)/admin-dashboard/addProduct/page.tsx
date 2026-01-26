@@ -9,7 +9,6 @@ import AdminSidebar from '../components/AdminSidebar';
 
 const AddProductPage = () => {
     const router = useRouter();
-    const { user } = useAuth();
     const [loading, setLoading] = useState(false);
 
     const [formData, setFormData] = useState({

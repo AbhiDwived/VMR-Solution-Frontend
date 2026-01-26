@@ -18,7 +18,7 @@ const EnhancedHeader = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
 
-  const { user, isAuthenticated, logout } = useAuth();
+  const { user, logout } = useAuth();
   const { itemCount, toggleCart } = useCart();
 
   const navigationItems: NavigationItem[] = [
@@ -89,7 +89,7 @@ const EnhancedHeader = () => {
           <div className="flex items-center space-x-3">
             {/* Desktop Navigation */}
             <nav className="hidden items-center space-x-1 md:flex">
-              {navigationItems.map((item, index) => (
+              {navigationItems.map((item) => (
                 <Link
                   key={`desktop-${item.path}`}
                   href={item.path}
@@ -218,7 +218,7 @@ const EnhancedHeader = () => {
           />
           <nav className="fixed left-0 top-16 z-[300] h-[calc(100vh-4rem)] w-64 overflow-y-auto bg-card shadow-elevation-4 md:hidden">
             <div className="space-y-1 p-4">
-              {navigationItems.map((item, index) => (
+              {navigationItems.map((item) => (
                 <Link
                   key={`mobile-${item.path}`}
                   href={item.path}

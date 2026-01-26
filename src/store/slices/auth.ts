@@ -31,7 +31,7 @@ const getInitialState = (): AuthState => {
         isAuthenticated: true,
         loading: false,
       };
-    } catch (e) {
+    } catch {
       console.error('Error parsing user data from localStorage');
     }
   }

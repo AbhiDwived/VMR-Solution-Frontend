@@ -39,7 +39,7 @@ export default function ForgotPasswordPage() {
     try {
       await forgotPasswordMutation({ emailOrMobile }).unwrap();
       router.push(`/reset-password?contact=${encodeURIComponent(emailOrMobile)}`);
-    } catch (_error) {
+    } catch {
       // Even on error, we might want to redirect for security, 
       // but usually for dev/better UX we show error if it's "not found"
       setError('Account not found with this email/mobile');

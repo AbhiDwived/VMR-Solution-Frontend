@@ -49,8 +49,9 @@ function VerifyOTPContent() {
         setTimer(prev => prev - 1);
       }, 1000);
       return () => clearInterval(interval);
+    } else {
+      setCanResend(true);
     }
-    setCanResend(true);
   }, [timer]);
 
   const handleResendOTP = async () => {

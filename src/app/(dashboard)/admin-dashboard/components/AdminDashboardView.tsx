@@ -58,7 +58,7 @@ const AdminDashboardView = () => {
                                     </div>
                                 </div>
                                 <div className="text-right">
-                                    <p className="font-bold text-espresso">₹{(Math.random() * 5000).toFixed(0)}</p>
+                                    <p className="font-bold text-espresso">₹{1000 + (i * 500)}</p>
                                     <span className="text-[10px] px-2 py-1 bg-yellow-100 text-yellow-700 rounded-full font-bold uppercase tracking-wider">Pending</span>
                                 </div>
                             </div>
