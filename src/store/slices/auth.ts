@@ -11,6 +11,7 @@ interface AuthState {
 // Helper to get initial state from localStorage
 const getInitialState = (): AuthState => {
   if (typeof window === 'undefined') {
+    console.log('🔄 Auth: Server-side, returning empty state');
     return {
       user: null,
       token: null,
@@ -21,10 +22,17 @@ const getInitialState = (): AuthState => {
 
   const token = localStorage.getItem('auth_token');
   const userData = localStorage.getItem('user_data');
+  
+  console.log('🔄 Auth: Initializing from localStorage:', { 
+    hasToken: !!token, 
+    hasUserData: !!userData,
+    token: token?.substring(0, 20) + '...'
+  });
 
   if (token && userData) {
     try {
       const user = JSON.parse(userData);
+      console.log('🔄 Auth: Parsed user data:', { id: user.id, role: user.role, isVerified: user.isVerified });
       return {
         user,
         token,
@@ -32,10 +40,11 @@ const getInitialState = (): AuthState => {
         loading: false,
       };
     } catch {
-      console.error('Error parsing user data from localStorage');
+      console.error('🔄 Auth: Error parsing user data from localStorage');
     }
   }
 
+  console.log('🔄 Auth: No valid auth data found, returning empty state');
   return {
     user: null,
     token: null,

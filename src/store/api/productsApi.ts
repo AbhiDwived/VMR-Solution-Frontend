@@ -39,6 +39,14 @@ export const productsApi = baseApi.injectEndpoints({
       query: () => '/products/categories',
       providesTags: ['Product'],
     }),
+    addAdminProduct: builder.mutation<any, any>({
+      query: (productData) => ({
+        url: '/admin/product',
+        method: 'POST',
+        body: productData,
+      }),
+      invalidatesTags: ['Product'],
+    }),
   }),
 })
 
@@ -46,6 +54,7 @@ export const {
   useGetProductsQuery,
   useGetProductQuery,
   useGetCategoriesQuery,
+  useAddAdminProductMutation,
 } = productsApi
 
 

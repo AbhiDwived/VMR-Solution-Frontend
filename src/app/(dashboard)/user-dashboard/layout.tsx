@@ -7,7 +7,7 @@ export default function UserDashboardLayout({ children }: { children: React.Reac
     <AuthGuard
       requireAuth={true}
       requireVerification={false}
-      allowedRoles={['retail', 'bulk', 'user']}
+      allowedRoles={['user', 'admin']}
     >
       <div className="min-h-screen bg-background">
         <main className="flex">

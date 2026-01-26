@@ -1,5 +1,5 @@
 export const config = {
-  apiUrl: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api',
+  apiUrl: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api',
   appName: 'VMR Solution',
   version: '1.0.0'
 }

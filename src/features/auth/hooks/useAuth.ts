@@ -27,21 +27,33 @@ export const useAuth = () => {
   };
 
   const isAuthenticated = () => {
-    return !!auth.token && !!auth.user;
+    const result = !!auth.token && !!auth.user;
+    console.log('🔍 isAuthenticated check:', { 
+      hasToken: !!auth.token, 
+      hasUser: !!auth.user, 
+      result,
+      token: auth.token?.substring(0, 20) + '...'
+    });
+    return result;
   };
 
-  const hasRole = (role: 'retail' | 'bulk' | 'user' | 'admin') => {
-    // Handle both user and admin roles
-    if (role === 'user') {
-      return (
-        auth.user?.role === 'user' || auth.user?.role === 'retail' || auth.user?.role === 'bulk'
-      );
-    }
-    return auth.user?.role === role;
+  const hasRole = (role: 'user' | 'admin') => {
+    const result = auth.user?.role === role;
+    console.log('🔍 hasRole check:', { 
+      userRole: auth.user?.role, 
+      requiredRole: role, 
+      result 
+    });
+    return result;
   };
 
   const isVerified = () => {
-    return auth.user?.isVerified === true;
+    const result = auth.user?.isVerified === true;
+    console.log('🔍 isVerified check:', { 
+      userVerified: auth.user?.isVerified, 
+      result 
+    });
+    return result;
   };
 
   return {
