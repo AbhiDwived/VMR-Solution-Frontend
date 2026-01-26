@@ -12,10 +12,10 @@ function VerifyOTPContent() {
   const searchParams = useSearchParams();
   const contact = searchParams.get('contact') || '';
   const { login } = useAuth();
-  
+
   const [verifyOTPMutation, { isLoading: isVerifying }] = useVerifyOTPMutation();
   const [resendOTPMutation, { isLoading: isResending }] = useResendOTPMutation();
-  
+
   const [otp, setOtp] = useState('');
   const [timer, setTimer] = useState(60);
   const [canResend, setCanResend] = useState(false);
@@ -30,10 +30,10 @@ function VerifyOTPContent() {
         emailOrMobile: contact,
         otp
       }).unwrap();
-      
+
       login(result.user, result.token);
       setSuccess('Account verified successfully!');
-      
+
       setTimeout(() => {
         router.push('/dashboard');
       }, 2000);
@@ -52,12 +52,6 @@ function VerifyOTPContent() {
     }
     setCanResend(true);
   }, [timer]);
-
-  useEffect(() => {
-    if (otp.length === 6) {
-      handleVerifyOTP();
-    }
-  }, [otp, handleVerifyOTP]);
 
   const handleResendOTP = async () => {
     if (!canResend) return;
@@ -111,12 +105,20 @@ function VerifyOTPContent() {
               <label className="block text-sm font-medium text-espresso text-center">
                 Enter OTP
               </label>
-              
+
               <OTPInput
                 value={otp}
                 onChange={setOtp}
                 disabled={isVerifying}
               />
+
+              <button
+                onClick={handleVerifyOTP}
+                disabled={isVerifying || otp.length !== 6}
+                className="w-full bg-primary text-primary-foreground py-3 px-4 rounded-lg hover:bg-secondary focus:ring-2 focus:ring-primary focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isVerifying ? 'Verifying...' : 'Verify OTP'}
+              </button>
             </div>
 
             <div className="text-center space-y-4">
@@ -135,8 +137,8 @@ function VerifyOTPContent() {
               )}
 
               <div className="pt-4">
-                <Link 
-                  href="/login" 
+                <Link
+                  href="/login"
                   className="text-mocha-grey hover:text-espresso transition-colors"
                 >
                   ← Back to Login
@@ -148,8 +150,8 @@ function VerifyOTPContent() {
 
         <div className="text-center text-sm text-mocha-grey">
           <p>Didn't receive the code? Check your spam folder or</p>
-          <Link 
-            href="/register" 
+          <Link
+            href="/register"
             className="text-olive-green hover:text-cocoa-brown transition-colors"
           >
             try with a different email/mobile

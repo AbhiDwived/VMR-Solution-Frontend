@@ -7,17 +7,16 @@
   },
   "typescript.preferences.importModuleSpecifier": "relative",
   "typescript.suggest.autoImports": true,
-  "eslint.validate": [
-    "javascript",
-    "javascriptreact",
-    "typescript",
-    "typescriptreact"
-  ],
+  "eslint.validate": ["javascript", "javascriptreact", "typescript", "typescriptreact"],
   "files.associations": {
     "*.css": "tailwindcss"
   },
   "emmet.includeLanguages": {
     "javascript": "javascriptreact",
     "typescript": "typescriptreact"
+  },
+  "sonarlint.connectedMode.project": {
+    "connectionId": "abhidwived",
+    "projectKey": "AbhiDwived_VMR-Solution-Frontend"
   }
 }

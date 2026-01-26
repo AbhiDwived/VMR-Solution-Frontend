@@ -30,7 +30,7 @@ export const useAuth = () => {
     return !!auth.token && !!auth.user
   }
 
-  const hasRole = (role: 'retail' | 'bulk') => {
+  const hasRole = (role: 'retail' | 'bulk' | 'user' | 'admin') => {
     return auth.user?.role === role
   }
 

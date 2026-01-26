@@ -1,16 +1,24 @@
 import { baseApi } from '@/store/api/baseApi';
-import type { 
-  LoginRequest, 
-  RegisterRequest, 
-  OTPRequest, 
-  ForgotPasswordRequest, 
-  ResetPasswordRequest, 
+import type {
+  LoginRequest,
+  RegisterRequest,
+  OTPRequest,
+  ForgotPasswordRequest,
+  ResetPasswordRequest,
   ChangePasswordRequest,
-  AuthResponse 
+  AuthResponse,
+  User
 } from '@/features/auth/types';
 
 export const authApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
+    getProfile: builder.query<{ user: User }, void>({
+      query: () => ({
+        url: '/auth/profile',
+        method: 'GET',
+      }),
+    }),
+
     login: builder.mutation<AuthResponse, LoginRequest>({
       query: (credentials) => ({
         url: '/auth/login',
@@ -18,7 +26,7 @@ export const authApi = baseApi.injectEndpoints({
         body: credentials,
       }),
     }),
-    
+
     register: builder.mutation<{ message: string; userId: string }, RegisterRequest>({
       query: (userData) => ({
         url: '/auth/register',
@@ -26,7 +34,7 @@ export const authApi = baseApi.injectEndpoints({
         body: userData,
       }),
     }),
-    
+
     verifyOTP: builder.mutation<AuthResponse, OTPRequest>({
       query: (otpData) => ({
         url: '/auth/verify-otp',
@@ -34,7 +42,7 @@ export const authApi = baseApi.injectEndpoints({
         body: otpData,
       }),
     }),
-    
+
     resendOTP: builder.mutation<{ message: string }, { emailOrMobile: string }>({
       query: (data) => ({
         url: '/auth/resend-otp',
@@ -42,7 +50,7 @@ export const authApi = baseApi.injectEndpoints({
         body: data,
       }),
     }),
-    
+
     forgotPassword: builder.mutation<{ message: string }, ForgotPasswordRequest>({
       query: (data) => ({
         url: '/auth/forgot-password',
@@ -50,7 +58,7 @@ export const authApi = baseApi.injectEndpoints({
         body: data,
       }),
     }),
-    
+
     resetPassword: builder.mutation<{ message: string }, ResetPasswordRequest>({
       query: (data) => ({
         url: '/auth/reset-password',
@@ -58,7 +66,7 @@ export const authApi = baseApi.injectEndpoints({
         body: data,
       }),
     }),
-    
+
     changePassword: builder.mutation<{ message: string }, ChangePasswordRequest>({
       query: (data) => ({
         url: '/auth/change-password',
@@ -66,7 +74,23 @@ export const authApi = baseApi.injectEndpoints({
         body: data,
       }),
     }),
-    
+
+    sendLoginOTP: builder.mutation<{ message: string }, { emailOrMobile: string }>({
+      query: (data) => ({
+        url: '/auth/send-login-otp',
+        method: 'POST',
+        body: data,
+      }),
+    }),
+
+    verifyLoginOTP: builder.mutation<AuthResponse, OTPRequest>({
+      query: (otpData) => ({
+        url: '/auth/verify-login-otp',
+        method: 'POST',
+        body: otpData,
+      }),
+    }),
+
     logout: builder.mutation<{ message: string }, void>({
       query: () => ({
         url: '/auth/logout',
@@ -77,6 +101,7 @@ export const authApi = baseApi.injectEndpoints({
 });
 
 export const {
+  useGetProfileQuery,
   useLoginMutation,
   useRegisterMutation,
   useVerifyOTPMutation,
@@ -84,6 +109,8 @@ export const {
   useForgotPasswordMutation,
   useResetPasswordMutation,
   useChangePasswordMutation,
+  useSendLoginOTPMutation,
+  useVerifyLoginOTPMutation,
   useLogoutMutation,
 } = authApi;
 

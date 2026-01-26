@@ -5,16 +5,16 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import FormInput from '../../../features/auth/components/FormInput';
 import OTPInput from '../../../features/auth/components/OTPInput';
-import { useResendOTPMutation, useVerifyOTPMutation } from '../../../store/api/authApi';
+import { useSendLoginOTPMutation, useVerifyLoginOTPMutation } from '../../../store/api/authApi';
 import { useAuth } from '../../../features/auth/hooks/useAuth';
 
 export default function LoginOTPPage() {
   const router = useRouter();
   const { login } = useAuth();
-  
-  const [resendOTPMutation, { isLoading: isSending }] = useResendOTPMutation();
-  const [verifyOTPMutation, { isLoading: isVerifying }] = useVerifyOTPMutation();
-  
+
+  const [sendLoginOTP, { isLoading: isSending }] = useSendLoginOTPMutation();
+  const [verifyLoginOTP, { isLoading: isVerifying }] = useVerifyLoginOTPMutation();
+
   const [step, setStep] = useState<'phone' | 'otp'>('phone');
   const [emailOrMobile, setEmailOrMobile] = useState('');
   const [otp, setOtp] = useState('');
@@ -26,29 +26,29 @@ export default function LoginOTPPage() {
       setError('Email or mobile number is required');
       return false;
     }
-    
+
     const isEmail = /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/.test(emailOrMobile);
     const isMobile = /^[6-9]\d{9}$/.test(emailOrMobile);
-    
+
     if (!isEmail && !isMobile) {
       setError('Enter a valid email or 10-digit mobile number');
       return false;
     }
-    
+
     return true;
   };
 
   const handleSendOTP = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateContact()) return;
 
     try {
-      await resendOTPMutation({ emailOrMobile }).unwrap();
+      await sendLoginOTP({ emailOrMobile }).unwrap();
       setStep('otp');
       setTimer(60);
       setError('');
-      
+
       // Start timer
       const interval = setInterval(() => {
         setTimer(prev => {
@@ -68,11 +68,11 @@ export default function LoginOTPPage() {
     if (otp.length !== 6) return;
 
     try {
-      const result = await verifyOTPMutation({
+      const result = await verifyLoginOTP({
         emailOrMobile,
         otp
       }).unwrap();
-      
+
       login(result.user, result.token);
       router.push('/dashboard');
     } catch (error: any) {
@@ -85,11 +85,11 @@ export default function LoginOTPPage() {
     if (timer > 0) return;
 
     try {
-      await resendOTPMutation({ emailOrMobile }).unwrap();
+      await sendLoginOTP({ emailOrMobile }).unwrap();
       setTimer(60);
       setError('');
       setOtp('');
-      
+
       const interval = setInterval(() => {
         setTimer(prev => {
           if (prev <= 1) {
@@ -118,7 +118,7 @@ export default function LoginOTPPage() {
             {step === 'phone' ? 'Login with OTP' : 'Enter OTP'}
           </h2>
           <p className="mt-2 text-mocha-grey">
-            {step === 'phone' 
+            {step === 'phone'
               ? 'Quick and secure login for Indian users'
               : `Enter the 6-digit code sent to ${emailOrMobile}`
             }
@@ -157,8 +157,8 @@ export default function LoginOTPPage() {
               </button>
 
               <div className="text-center">
-                <Link 
-                  href="/login" 
+                <Link
+                  href="/login"
                   className="text-mocha-grey hover:text-espresso transition-colors"
                 >
                   ← Back to Password Login
@@ -177,7 +177,7 @@ export default function LoginOTPPage() {
                 <label className="block text-sm font-medium text-espresso text-center">
                   Enter OTP
                 </label>
-                
+
                 <OTPInput
                   value={otp}
                   onChange={(value) => {
@@ -223,8 +223,8 @@ export default function LoginOTPPage() {
 
         <div className="text-center text-sm text-mocha-grey">
           <p>Don't have an account? </p>
-          <Link 
-            href="/register" 
+          <Link
+            href="/register"
             className="text-olive-green hover:text-cocoa-brown transition-colors"
           >
             Create account

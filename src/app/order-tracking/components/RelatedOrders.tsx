@@ -73,7 +73,7 @@ const RelatedOrders = ({ orders }: RelatedOrdersProps) => {
       </div>
 
       <Link
-        href="/user-dashboard"
+        href="/dashboard"
         className="mt-4 flex items-center justify-center space-x-2 rounded-md border border-border bg-background px-4 py-2 text-sm font-medium text-foreground transition-smooth hover:bg-muted"
       >
         <span>View All Orders</span>

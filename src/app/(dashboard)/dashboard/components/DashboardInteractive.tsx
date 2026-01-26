@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import WelcomeHeader from './WelcomeHeader';
 import QuickActionCard from './QuickActionCard';
@@ -11,6 +11,10 @@ import RecommendedProduct from './RecommendedProduct';
 import ActivityFeedItem from './ActivityFeedItem';
 import ProfileSection from './ProfileSection';
 import Icon from '@/components/ui/AppIcon';
+import AdminSidebar from '../../admin-dashboard/components/AdminSidebar';
+import AdminDashboardView from '../../admin-dashboard/components/AdminDashboardView';
+import { useAuth } from '@/features/auth/hooks/useAuth';
+import { useGetProfileQuery } from '@/store/api/authApi';
 
 interface Order {
   orderId: string;
@@ -80,18 +84,49 @@ interface ProfileData {
 
 const DashboardInteractive = () => {
   const router = useRouter();
+  const { user: localUser, isAuthenticated } = useAuth();
+  const { data: profileDataResponse, isLoading: profileLoading } = useGetProfileQuery(undefined, {
+    skip: !isAuthenticated(),
+    refetchOnMountOrArgChange: true,
+  });
+
   const [activeTab, setActiveTab] = useState<'orders' | 'wishlist' | 'addresses' | 'profile'>('orders');
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const user = profileDataResponse?.user || localUser;
+  const isAdmin = user?.role === 'admin';
+
+  useEffect(() => {
+    if (mounted) {
+      console.log('Detected Role:', user?.role, 'isAdmin:', isAdmin);
+    }
+  }, [mounted, user, isAdmin]);
+
+  if (!mounted || profileLoading) return (
+    <div className="flex items-center justify-center p-20">
+      <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary"></div>
+    </div>
+  );
+
+  if (isAdmin) {
+    return (
+      <div className="flex gap-8 items-start">
+        <AdminSidebar />
+        <div className="flex-1">
+          <AdminDashboardView />
+        </div>
+      </div>
+    );
+  }
 
   const userData = {
-    name: 'Rajesh Kumar',
+    name: user?.fullName || 'User',
     accountStatus: 'Premium Member',
     loyaltyPoints: 2450,
-  };
-
-  const quickStats = {
-    totalOrders: 12,
-    activeOrders: 3,
-    wishlistItems: 8,
   };
 
   const orders: Order[] = [
@@ -197,6 +232,12 @@ const DashboardInteractive = () => {
     },
   ];
 
+  const quickStats = {
+    totalOrders: orders.length,
+    activeOrders: orders.filter((o) => o.status === 'In Transit').length,
+    wishlistItems: wishlistProducts.length,
+  };
+
   const addresses: Address[] = [
     {
       id: '1',
@@ -290,10 +331,10 @@ const DashboardInteractive = () => {
   ];
 
   const profileData: ProfileData = {
-    name: 'Rajesh Kumar',
-    email: 'rajesh.kumar@example.com',
-    phone: '9876543210',
-    dateOfBirth: '15/08/1985',
+    name: user?.fullName || 'User',
+    email: user?.email || '',
+    phone: user?.mobile || '',
+    dateOfBirth: '15/08/1985', // Keep as example if not in User model
   };
 
   const handleRemoveFromWishlist = (productId: string) => {
@@ -329,7 +370,7 @@ const DashboardInteractive = () => {
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="mx-auto max-w-[1200px] space-y-6">
       <WelcomeHeader
         userName={userData.name}
         accountStatus={userData.accountStatus}
@@ -372,10 +413,9 @@ const DashboardInteractive = () => {
                   <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
-                    className={`flex flex-1 items-center justify-center space-x-2 whitespace-nowrap border-b-2 px-4 py-3 text-sm font-medium transition-smooth ${
-                      activeTab === tab.id
-                        ? 'border-primary text-primary' :'border-transparent text-muted-foreground hover:text-foreground'
-                    }`}
+                    className={`flex flex-1 items-center justify-center space-x-2 whitespace-nowrap border-b-2 px-4 py-3 text-sm font-medium transition-smooth ${activeTab === tab.id
+                      ? 'border-primary text-primary' : 'border-transparent text-muted-foreground hover:text-foreground'
+                      }`}
                   >
                     <Icon name={tab.icon as any} size={18} />
                     <span className="hidden sm:inline">{tab.label}</span>

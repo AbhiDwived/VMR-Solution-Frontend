@@ -8,12 +8,43 @@ interface AuthState {
   loading: boolean
 }
 
-const initialState: AuthState = {
-  user: null,
-  token: null,
-  isAuthenticated: false,
-  loading: false,
-}
+// Helper to get initial state from localStorage
+const getInitialState = (): AuthState => {
+  if (typeof window === 'undefined') {
+    return {
+      user: null,
+      token: null,
+      isAuthenticated: false,
+      loading: false,
+    };
+  }
+
+  const token = localStorage.getItem('auth_token');
+  const userData = localStorage.getItem('user_data');
+
+  if (token && userData) {
+    try {
+      const user = JSON.parse(userData);
+      return {
+        user,
+        token,
+        isAuthenticated: true,
+        loading: false,
+      };
+    } catch (e) {
+      console.error('Error parsing user data from localStorage');
+    }
+  }
+
+  return {
+    user: null,
+    token: null,
+    isAuthenticated: false,
+    loading: false,
+  };
+};
+
+const initialState: AuthState = getInitialState();
 
 const authSlice = createSlice({
   name: 'auth',

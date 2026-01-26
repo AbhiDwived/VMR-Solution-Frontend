@@ -1,13 +1,15 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import FormInput from '../../../features/auth/components/FormInput';
 import { useForgotPasswordMutation } from '../../../store/api/authApi';
 
 export default function ForgotPasswordPage() {
+  const router = useRouter();
   const [forgotPasswordMutation, { isLoading }] = useForgotPasswordMutation();
-  
+
   const [emailOrMobile, setEmailOrMobile] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
@@ -17,31 +19,30 @@ export default function ForgotPasswordPage() {
       setError('Email or mobile number is required');
       return false;
     }
-    
+
     const isEmail = /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/.test(emailOrMobile);
     const isMobile = /^[6-9]\d{9}$/.test(emailOrMobile);
-    
+
     if (!isEmail && !isMobile) {
       setError('Enter a valid email or 10-digit mobile number');
       return false;
     }
-    
+
     return true;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateInput()) return;
 
     try {
       await forgotPasswordMutation({ emailOrMobile }).unwrap();
-      setSuccess(true);
-      setError('');
+      router.push(`/reset-password?contact=${encodeURIComponent(emailOrMobile)}`);
     } catch (_error) {
-      // Show success message even if user doesn't exist (security best practice)
-      setSuccess(true);
-      setError('');
+      // Even on error, we might want to redirect for security, 
+      // but usually for dev/better UX we show error if it's "not found"
+      setError('Account not found with this email/mobile');
     }
   };
 
@@ -83,8 +84,8 @@ export default function ForgotPasswordPage() {
               </div>
 
               <div className="pt-4 border-t border-soft-stone">
-                <Link 
-                  href="/auth/login" 
+                <Link
+                  href="/auth/login"
                   className="text-mocha-grey hover:text-espresso transition-colors"
                 >
                   ← Back to Login
@@ -137,8 +138,8 @@ export default function ForgotPasswordPage() {
             </button>
 
             <div className="text-center">
-              <Link 
-                href="/login" 
+              <Link
+                href="/login"
                 className="text-mocha-grey hover:text-espresso transition-colors"
               >
                 ← Back to Login
@@ -149,8 +150,8 @@ export default function ForgotPasswordPage() {
 
         <div className="text-center text-sm text-mocha-grey">
           <p>Remember your password? </p>
-          <Link 
-            href="/login" 
+          <Link
+            href="/login"
             className="text-olive-green hover:text-cocoa-brown transition-colors"
           >
             Sign in instead

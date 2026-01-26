@@ -17,7 +17,7 @@ const EnhancedHeader = () => {
   const pathname = usePathname();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
-  
+
   const { user, isAuthenticated, logout } = useAuth();
   const { itemCount, toggleCart } = useCart();
 
@@ -26,8 +26,12 @@ const EnhancedHeader = () => {
     { label: 'Products', path: '/product-catalog', icon: 'ShoppingBagIcon' },
     { label: 'Cart', path: '/shopping-cart', icon: 'ShoppingCartIcon' },
     { label: 'Checkout', path: '/checkout-process', icon: 'CreditCardIcon' },
-    { label: 'My Account', path: '/user-dashboard', icon: 'UserCircleIcon' },
   ];
+
+  // Add My Account only if authenticated
+  if (user) {
+    navigationItems.push({ label: 'My Account', path: '/dashboard', icon: 'UserCircleIcon' });
+  }
 
   const isActivePath = (path: string) => pathname === path;
 
@@ -48,8 +52,8 @@ const EnhancedHeader = () => {
       <div className="mx-auto w-full px-4 sm:px-6">
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
-          <Link 
-            href="/" 
+          <Link
+            href="/"
             className="flex items-center space-x-2 transition-smooth hover:opacity-80"
             onClick={closeMobileMenu}
           >
@@ -73,10 +77,10 @@ const EnhancedHeader = () => {
                 placeholder="Search products..."
                 className="w-full rounded-md border border-border bg-background px-4 py-2 pl-10 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
               />
-              <Icon 
-                name="MagnifyingGlassIcon" 
-                size={20} 
-                className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" 
+              <Icon
+                name="MagnifyingGlassIcon"
+                size={20}
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
               />
             </div>
           </div>
@@ -89,11 +93,10 @@ const EnhancedHeader = () => {
                 <Link
                   key={`desktop-${item.path}`}
                   href={item.path}
-                  className={`flex items-center space-x-2 rounded-md px-4 py-2 text-sm font-medium transition-smooth hover:bg-muted ${
-                    isActivePath(item.path)
-                      ? 'bg-primary text-primary-foreground'
-                      : 'text-foreground'
-                  }`}
+                  className={`flex items-center space-x-2 rounded-md px-4 py-2 text-sm font-medium transition-smooth hover:bg-muted ${isActivePath(item.path)
+                    ? 'bg-primary text-primary-foreground'
+                    : 'text-foreground'
+                    }`}
                 >
                   <Icon name={item.icon as any} size={20} />
                   <span>{item.label}</span>
@@ -109,6 +112,16 @@ const EnhancedHeader = () => {
               <Icon name="MagnifyingGlassIcon" size={20} />
             </button>
 
+            {/* Login Link for Guests */}
+            {!user && (
+              <Link
+                href="/login"
+                className="text-sm font-medium text-foreground hover:text-primary transition-smooth px-2"
+              >
+                Login
+              </Link>
+            )}
+
             {/* Cart Button with Count */}
             <button
               onClick={toggleCart}
@@ -123,70 +136,66 @@ const EnhancedHeader = () => {
               )}
             </button>
 
-            {/* User Menu */}
-            <div className="relative">
-              <button
-                onClick={toggleUserMenu}
-                className="flex h-10 w-10 items-center justify-center rounded-md text-foreground transition-smooth hover:bg-muted"
-                aria-label="User menu"
-              >
-                <Icon name="UserCircleIcon" size={24} />
-              </button>
+            {/* User Menu - Only if logged in */}
+            {user && (
+              <div className="relative">
+                <button
+                  onClick={toggleUserMenu}
+                  className="flex h-10 w-10 items-center justify-center rounded-md text-foreground transition-smooth hover:bg-muted"
+                  aria-label="User menu"
+                >
+                  <Icon name="UserCircleIcon" size={24} />
+                </button>
 
-              {isUserMenuOpen && (
-                <>
-                  <div
-                    className="fixed inset-0 z-[150]"
-                    onClick={() => setIsUserMenuOpen(false)}
-                  />
-                  <div className="absolute right-0 top-full z-[200] mt-2 w-56 rounded-md bg-popover shadow-elevation-3 transition-smooth">
-                    <div className="p-4">
-                      <p className="text-sm font-medium text-popover-foreground">
-                        {isAuthenticated() ? `Welcome, ${user?.fullName}` : 'Welcome, Guest'}
-                      </p>
-                      <p className="caption text-muted-foreground">
-                        {isAuthenticated() ? 'Manage your account' : 'Sign in to access your account'}
-                      </p>
-                    </div>
-                    <div className="border-t border-border">
-                      <Link
-                        href="/user-dashboard"
-                        className="flex items-center space-x-3 px-4 py-3 text-sm text-popover-foreground transition-smooth hover:bg-muted"
-                        onClick={() => setIsUserMenuOpen(false)}
-                      >
-                        <Icon name="UserIcon" size={18} />
-                        <span>My Dashboard</span>
-                      </Link>
-                      <Link
-                        href="/order-tracking"
-                        className="flex items-center space-x-3 px-4 py-3 text-sm text-popover-foreground transition-smooth hover:bg-muted"
-                        onClick={() => setIsUserMenuOpen(false)}
-                      >
-                        <Icon name="TruckIcon" size={18} />
-                        <span>Track Orders</span>
-                      </Link>
-                    </div>
-                    <div className="border-t border-border p-3">
-                      {isAuthenticated() ? (
-                        <button 
+                {isUserMenuOpen && (
+                  <>
+                    <div
+                      className="fixed inset-0 z-[150]"
+                      onClick={() => setIsUserMenuOpen(false)}
+                    />
+                    <div className="absolute right-0 top-full z-[200] mt-2 w-56 rounded-md bg-popover shadow-elevation-3 transition-smooth">
+                      <div className="p-4">
+                        <p className="text-sm font-medium text-popover-foreground">
+                          {`Welcome, ${user?.fullName}`}
+                        </p>
+                        <p className="caption text-muted-foreground">
+                          Manage your account
+                        </p>
+                      </div>
+                      <div className="border-t border-border">
+                        <Link
+                          href="/dashboard"
+                          className="flex items-center space-x-3 px-4 py-3 text-sm text-popover-foreground transition-smooth hover:bg-muted"
+                          onClick={() => setIsUserMenuOpen(false)}
+                        >
+                          <Icon name="UserIcon" size={18} />
+                          <span>My Dashboard</span>
+                        </Link>
+                        <Link
+                          href="/order-tracking"
+                          className="flex items-center space-x-3 px-4 py-3 text-sm text-popover-foreground transition-smooth hover:bg-muted"
+                          onClick={() => setIsUserMenuOpen(false)}
+                        >
+                          <Icon name="TruckIcon" size={18} />
+                          <span>Track Orders</span>
+                        </Link>
+                      </div>
+                      <div className="border-t border-border p-3">
+                        <button
                           onClick={() => {
                             logout();
                             setIsUserMenuOpen(false);
                           }}
-                          className="w-full rounded-md bg-destructive px-4 py-2 text-sm font-medium text-destructive-foreground transition-smooth hover:scale-[0.97]"
+                          className="w-full rounded-md bg-destructive text-white px-4 py-2 text-sm font-medium transition-smooth hover:scale-[0.97]"
                         >
                           Sign Out
                         </button>
-                      ) : (
-                        <button className="w-full rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-smooth hover:scale-[0.97]">
-                          Sign In
-                        </button>
-                      )}
+                      </div>
                     </div>
-                  </div>
-                </>
-              )}
-            </div>
+                  </>
+                )}
+              </div>
+            )}
 
             {/* Mobile Menu Toggle */}
             <button
@@ -214,11 +223,10 @@ const EnhancedHeader = () => {
                   key={`mobile-${item.path}`}
                   href={item.path}
                   onClick={closeMobileMenu}
-                  className={`flex items-center space-x-3 rounded-md px-4 py-3 text-sm font-medium transition-smooth ${
-                    isActivePath(item.path)
-                      ? 'bg-primary text-primary-foreground'
-                      : 'text-foreground hover:bg-muted'
-                  }`}
+                  className={`flex items-center space-x-3 rounded-md px-4 py-3 text-sm font-medium transition-smooth ${isActivePath(item.path)
+                    ? 'bg-primary text-primary-foreground'
+                    : 'text-foreground hover:bg-muted'
+                    }`}
                 >
                   <Icon name={item.icon as any} size={20} />
                   <span>{item.label}</span>

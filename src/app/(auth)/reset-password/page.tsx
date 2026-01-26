@@ -9,11 +9,12 @@ import { useResetPasswordMutation } from '../../../store/api/authApi';
 
 function ResetPasswordContent() {
   const searchParams = useSearchParams();
-  const token = searchParams.get('token') || '';
-  
+  const contact = searchParams.get('contact') || '';
+
   const [resetPasswordMutation, { isLoading }] = useResetPasswordMutation();
-  
+
   const [formData, setFormData] = useState({
+    otp: '',
     newPassword: '',
     confirmPassword: '',
   });
@@ -22,7 +23,11 @@ function ResetPasswordContent() {
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
-    
+
+    if (!formData.otp) {
+      newErrors.otp = 'OTP is required';
+    }
+
     if (!formData.newPassword) {
       newErrors.newPassword = 'New password is required';
     } else if (formData.newPassword.length < 8) {
@@ -30,38 +35,38 @@ function ResetPasswordContent() {
     } else if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(formData.newPassword)) {
       newErrors.newPassword = 'Password must contain uppercase, lowercase, and number';
     }
-    
+
     if (!formData.confirmPassword) {
       newErrors.confirmPassword = 'Please confirm your password';
     } else if (formData.newPassword !== formData.confirmPassword) {
       newErrors.confirmPassword = 'Passwords do not match';
     }
-    
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) return;
 
-    if (!token) {
-      setErrors({ general: 'Invalid reset token. Please request a new password reset.' });
+    if (!contact) {
+      setErrors({ general: 'Email/Mobile is missing. Please restart the process.' });
       return;
     }
 
     try {
       await resetPasswordMutation({
-        token,
+        emailOrMobile: contact,
+        otp: formData.otp,
         newPassword: formData.newPassword,
-        confirmPassword: formData.confirmPassword,
-      }).unwrap();
-      
+      } as any).unwrap();
+
       setSuccess(true);
     } catch (error: any) {
-      setErrors({ 
-        general: error?.data?.message || 'Failed to reset password. Please try again.' 
+      setErrors({
+        general: error?.data?.message || 'Failed to reset password. Please try again.'
       });
     }
   };
@@ -69,7 +74,7 @@ function ResetPasswordContent() {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
-    
+
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: '' }));
     }
@@ -98,7 +103,7 @@ function ResetPasswordContent() {
               <p className="text-mocha-grey">
                 You can now sign in with your new password.
               </p>
-              
+
               <Link
                 href="/login"
                 className="inline-block w-full bg-olive-green text-white py-3 px-4 rounded-lg hover:bg-cocoa-brown focus:ring-2 focus:ring-olive-green focus:ring-offset-2 transition-colors text-center"
@@ -120,7 +125,7 @@ function ResetPasswordContent() {
             Reset Your Password
           </h2>
           <p className="mt-2 text-mocha-grey">
-            Enter your new password below
+            Enter the OTP sent to {contact} and your new password
           </p>
         </div>
 
@@ -131,6 +136,17 @@ function ResetPasswordContent() {
                 {errors.general}
               </div>
             )}
+
+            <FormInput
+              label="OTP Code"
+              type="text"
+              name="otp"
+              value={formData.otp}
+              onChange={handleChange}
+              error={errors.otp}
+              placeholder="Enter the 6-digit code"
+              required
+            />
 
             <div>
               <FormInput
@@ -166,8 +182,8 @@ function ResetPasswordContent() {
             </button>
 
             <div className="text-center">
-              <Link 
-                href="/login" 
+              <Link
+                href="/login"
                 className="text-mocha-grey hover:text-espresso transition-colors"
               >
                 ← Back to Login

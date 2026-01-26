@@ -17,7 +17,7 @@ const Breadcrumb = () => {
     'product-details': 'Product Details',
     'shopping-cart': 'Shopping Cart',
     'checkout-process': 'Checkout',
-    'user-dashboard': 'My Account',
+    'dashboard': 'Dashboard',
     'order-tracking': 'Order Tracking',
   };
 
