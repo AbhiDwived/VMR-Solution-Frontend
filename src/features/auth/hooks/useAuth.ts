@@ -1,42 +1,48 @@
-import { useAppSelector, useAppDispatch } from '@/lib/hooks/redux'
-import { setCredentials, logout, setLoading } from '@/store/slices/auth'
-import type { User } from '../types'
+import { useAppSelector, useAppDispatch } from '@/lib/hooks/redux';
+import { setCredentials, logout, setLoading } from '@/store/slices/auth';
+import type { User } from '../types';
 
 export const useAuth = () => {
-  const auth = useAppSelector(state => state.auth)
-  const dispatch = useAppDispatch()
+  const auth = useAppSelector(state => state.auth);
+  const dispatch = useAppDispatch();
 
   const login = (user: User, token: string) => {
-    dispatch(setCredentials({ user, token }))
+    dispatch(setCredentials({ user, token }));
     // Store in localStorage for persistence
-    localStorage.setItem('auth_token', token)
-    localStorage.setItem('user_data', JSON.stringify(user))
-  }
+    localStorage.setItem('auth_token', token);
+    localStorage.setItem('user_data', JSON.stringify(user));
+  };
 
   const handleLogout = () => {
-    dispatch(logout())
+    dispatch(logout());
     // Clear localStorage
-    localStorage.removeItem('auth_token')
-    localStorage.removeItem('user_data')
+    localStorage.removeItem('auth_token');
+    localStorage.removeItem('user_data');
     // Clear any other auth-related data
-    localStorage.removeItem('remember_me')
-  }
+    localStorage.removeItem('remember_me');
+  };
 
   const setAuthLoading = (loading: boolean) => {
-    dispatch(setLoading(loading))
-  }
+    dispatch(setLoading(loading));
+  };
 
   const isAuthenticated = () => {
-    return !!auth.token && !!auth.user
-  }
+    return !!auth.token && !!auth.user;
+  };
 
   const hasRole = (role: 'retail' | 'bulk' | 'user' | 'admin') => {
-    return auth.user?.role === role
-  }
+    // Handle both user and admin roles
+    if (role === 'user') {
+      return (
+        auth.user?.role === 'user' || auth.user?.role === 'retail' || auth.user?.role === 'bulk'
+      );
+    }
+    return auth.user?.role === role;
+  };
 
   const isVerified = () => {
-    return auth.user?.isVerified === true
-  }
+    return auth.user?.isVerified === true;
+  };
 
   return {
     ...auth,
@@ -46,8 +52,5 @@ export const useAuth = () => {
     isAuthenticated,
     hasRole,
     isVerified,
-  }
-}
-
-
-
+  };
+};

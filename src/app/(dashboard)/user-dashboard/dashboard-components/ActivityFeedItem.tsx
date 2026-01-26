@@ -30,6 +30,3 @@ const ActivityFeedItem = ({
 };
 
 export default ActivityFeedItem;
-
-
-

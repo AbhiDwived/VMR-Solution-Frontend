@@ -9,7 +9,14 @@ interface QuickActionCardProps {
   onClick: () => void;
 }
 
-const QuickActionCard = ({ title, value, icon, bgColor, textColor, onClick }: QuickActionCardProps) => {
+const QuickActionCard = ({
+  title,
+  value,
+  icon,
+  bgColor,
+  textColor,
+  onClick,
+}: QuickActionCardProps) => {
   return (
     <button
       onClick={onClick}
@@ -29,6 +36,3 @@ const QuickActionCard = ({ title, value, icon, bgColor, textColor, onClick }: Qu
 };
 
 export default QuickActionCard;
-
-
-

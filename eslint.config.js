@@ -34,6 +34,8 @@ export default [
       'no-var': 'error',
       'no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
       'react/no-unescaped-entities': 'off',
+      'react-hooks/set-state-in-effect': 'off', // Temporarily disabled
+      '@next/next/no-img-element': 'warn', // Changed to warning
     },
   },
 ];

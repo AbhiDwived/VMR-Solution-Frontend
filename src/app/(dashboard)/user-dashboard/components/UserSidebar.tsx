@@ -5,48 +5,43 @@ import { usePathname } from 'next/navigation';
 import Icon from '@/components/ui/AppIcon';
 import { useAuth } from '@/features/auth/hooks/useAuth';
 
-const AdminSidebar = () => {
+const UserSidebar = () => {
   const pathname = usePathname();
   const { logout } = useAuth();
 
   const menuGroups = [
     {
-      groupName: 'OVERVIEW',
+      groupName: 'MY ORDERS',
       items: [
-        { title: 'Dashboard', icon: 'ChartBarIcon', href: '/admin-dashboard' },
+        { title: 'All Orders', icon: 'ShoppingBagIcon', href: '/user-dashboard/orders' },
         {
-          title: 'Analytics',
-          icon: 'PresentationChartLineIcon',
-          href: '/admin-dashboard/analytics',
+          title: 'Bulk Inquiries',
+          icon: 'ChatBubbleLeftRightIcon',
+          href: '/user-dashboard/bulk-inquiries',
         },
       ],
     },
     {
-      groupName: 'CUSTOMERS',
+      groupName: 'ACCOUNT SETTINGS',
       items: [
-        { title: 'Users', icon: 'UsersIcon', href: '/admin-dashboard/users' },
-        { title: 'Inquiries', icon: 'ChatBubbleLeftRightIcon', href: '/admin-dashboard/inquiries' },
-        { title: 'Notifications', icon: 'BellIcon', href: '/admin-dashboard/notifications' },
+        { title: 'Profile Information', icon: 'UserIcon', href: '/user-dashboard/profile' },
+        { title: 'GST Information', icon: 'DocumentTextIcon', href: '/user-dashboard/gst-info' },
+        { title: 'Manage Addresses', icon: 'MapPinIcon', href: '/user-dashboard/addresses' },
       ],
     },
     {
-      groupName: 'PRODUCTS',
+      groupName: 'PAYMENTS',
       items: [
-        { title: 'Add Product', icon: 'PlusCircleIcon', href: '/admin-dashboard/addProduct' },
-        { title: 'Products', icon: 'ArchiveBoxIcon', href: '/admin-dashboard/products' },
-        { title: 'Inventory', icon: 'RectangleStackIcon', href: '/admin-dashboard/inventory' },
-        { title: 'Categories', icon: 'TableCellsIcon', href: '/admin-dashboard/categories' },
-        { title: 'Brands', icon: 'TagIcon', href: '/admin-dashboard/brands' },
+        { title: 'Saved Cards', icon: 'CreditCardIcon', href: '/user-dashboard/saved-cards' },
       ],
     },
     {
-      groupName: 'ORDERS & SALES',
+      groupName: 'MY STUFF',
       items: [
-        { title: 'Orders', icon: 'ShoppingBagIcon', href: '/admin-dashboard/orders' },
-        { title: 'Revenue', icon: 'CurrencyDollarIcon', href: '/admin-dashboard/revenue' },
-        { title: 'Return', icon: 'ArrowUturnLeftIcon', href: '/admin-dashboard/return' },
-        { title: 'Coupons', icon: 'TicketIcon', href: '/admin-dashboard/coupons' },
-        { title: 'Subscribe', icon: 'CreditCardIcon', href: '/admin-dashboard/subscription' },
+        { title: 'My Coupons', icon: 'TicketIcon', href: '/user-dashboard/coupons' },
+        { title: 'My Reviews & Ratings', icon: 'StarIcon', href: '/user-dashboard/reviews' },
+        { title: 'All Notifications', icon: 'BellIcon', href: '/user-dashboard/notifications' },
+        { title: 'My Wishlist', icon: 'HeartIcon', href: '/user-dashboard/wishlist' },
       ],
     },
   ];
@@ -57,10 +52,10 @@ const AdminSidebar = () => {
       <div className="p-4 border-b border-border bg-gradient-to-r from-primary/5 to-secondary/5">
         <div className="flex items-center space-x-2">
           <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-            <Icon name="BuildingStorefrontIcon" size={16} className="text-primary-foreground" />
+            <Icon name="UserCircleIcon" size={16} className="text-primary-foreground" />
           </div>
           <div>
-            <h2 className="text-sm font-bold text-espresso font-heading">Admin Panel</h2>
+            <h2 className="text-sm font-bold text-espresso font-heading">My Account</h2>
             <p className="text-xs text-mocha-grey font-medium">VMR Solution</p>
           </div>
         </div>
@@ -123,4 +118,4 @@ const AdminSidebar = () => {
   );
 };
 
-export default AdminSidebar;
+export default UserSidebar;

@@ -35,9 +35,7 @@ const AddressCard = ({
       <div className="mb-3 flex items-start justify-between">
         <div className="flex-1">
           <div className="mb-1 flex items-center space-x-2">
-            <h3 className="font-heading text-base font-semibold text-card-foreground">
-              {name}
-            </h3>
+            <h3 className="font-heading text-base font-semibold text-card-foreground">{name}</h3>
             {isDefault && (
               <span className="caption rounded-full bg-success/10 px-2 py-1 text-success">
                 Default
@@ -45,9 +43,7 @@ const AddressCard = ({
             )}
           </div>
           <p className="text-sm text-card-foreground">{addressLine1}</p>
-          {addressLine2 && (
-            <p className="text-sm text-card-foreground">{addressLine2}</p>
-          )}
+          {addressLine2 && <p className="text-sm text-card-foreground">{addressLine2}</p>}
           <p className="text-sm text-card-foreground">
             {city}, {state} - {pincode}
           </p>
@@ -88,6 +84,3 @@ const AddressCard = ({
 };
 
 export default AddressCard;
-
-
-

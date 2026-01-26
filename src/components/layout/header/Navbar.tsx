@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Icon from '@/components/ui/AppIcon';
 import { useAuth } from '@/features/auth/hooks/useAuth';
@@ -9,8 +9,15 @@ const Navbar = () => {
   const { user, logout } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const [isHydrated, setIsHydrated] = useState(false);
 
-
+  useEffect(() => {
+    // Set hydration state after component mounts
+    const timer = setTimeout(() => {
+      setIsHydrated(true);
+    }, 0);
+    return () => clearTimeout(timer);
+  }, []);
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
@@ -41,9 +48,7 @@ const Navbar = () => {
               height="40"
               className="transition-smooth"
             />
-            <span className="font-heading text-xl font-semibold text-foreground">
-              VMR Solution
-            </span>
+            <span className="font-heading text-xl font-semibold text-foreground">VMR Solution</span>
           </Link>
 
           {/* Center Search Bar */}
@@ -64,10 +69,10 @@ const Navbar = () => {
 
           {/* Right Section - User Actions */}
           <div className="flex items-center space-x-3">
-            {/* Login Link for Guests */}
-            {!user && (
+            {/* Login Link for Guests - Only show after hydration */}
+            {isHydrated && !user && (
               <Link
-                href="/login"
+                href="/auth/login"
                 className="text-sm font-medium text-foreground hover:text-primary transition-smooth px-2"
               >
                 Login
@@ -76,7 +81,7 @@ const Navbar = () => {
 
             {/* Wishlist */}
             <Link
-              href="/wishlist"
+              href={isHydrated && user ? '/wishlist' : '/auth/login'}
               className="flex h-10 w-10 items-center justify-center rounded-md text-foreground transition-smooth hover:bg-muted"
               aria-label="Wishlist"
             >
@@ -85,7 +90,7 @@ const Navbar = () => {
 
             {/* Cart */}
             <Link
-              href="/cart"
+              href={isHydrated && user ? '/shopping-cart' : '/auth/login'}
               className="flex h-10 w-10 items-center justify-center rounded-md text-foreground transition-smooth hover:bg-muted"
               aria-label="Shopping cart"
             >
@@ -101,7 +106,7 @@ const Navbar = () => {
             </button>
 
             {/* User Menu - Only for Logged In Users */}
-            {user && (
+            {isHydrated && user && (
               <div className="relative">
                 <button
                   onClick={toggleUserMenu}
@@ -122,13 +127,11 @@ const Navbar = () => {
                         <p className="text-sm font-medium text-popover-foreground">
                           {`Hi, ${user.fullName.split(' ')[0]}`}
                         </p>
-                        <p className="caption text-muted-foreground">
-                          {user.email}
-                        </p>
+                        <p className="caption text-muted-foreground">{user.email}</p>
                       </div>
                       <div className="border-t border-border">
                         <Link
-                          href="/dashboard"
+                          href={user.role === 'admin' ? '/admin-dashboard' : '/user-dashboard'}
                           className="flex items-center space-x-3 px-4 py-3 text-sm text-popover-foreground transition-smooth hover:bg-muted"
                           onClick={() => setIsUserMenuOpen(false)}
                         >
@@ -192,6 +195,3 @@ const Navbar = () => {
 };
 
 export default Navbar;
-
-
-

@@ -39,9 +39,7 @@ const OrderHistoryItem = ({
             <h3 className="font-heading text-lg font-semibold text-card-foreground">
               Order #{orderId}
             </h3>
-            <span className={`caption rounded-full px-3 py-1 ${statusColor}`}>
-              {status}
-            </span>
+            <span className={`caption rounded-full px-3 py-1 ${statusColor}`}>{status}</span>
           </div>
           <p className="caption text-muted-foreground">Placed on {orderDate}</p>
         </div>
@@ -60,7 +58,7 @@ const OrderHistoryItem = ({
       </div>
 
       <div className="mb-4 space-y-3">
-        {products.map((product) => (
+        {products.map(product => (
           <div key={product.id} className="flex items-center space-x-3">
             <div className="h-16 w-16 flex-shrink-0 overflow-hidden rounded-md bg-muted">
               <AppImage
@@ -70,9 +68,7 @@ const OrderHistoryItem = ({
               />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-card-foreground truncate">
-                {product.name}
-              </p>
+              <p className="text-sm font-medium text-card-foreground truncate">{product.name}</p>
               <p className="caption text-muted-foreground">Qty: {product.quantity}</p>
             </div>
           </div>
@@ -81,7 +77,8 @@ const OrderHistoryItem = ({
 
       <div className="flex flex-col space-y-2 border-t border-border pt-4 md:flex-row md:items-center md:justify-between md:space-y-0">
         <p className="caption text-muted-foreground">
-          Tracking: <span className="data-text font-medium text-card-foreground">{trackingNumber}</span>
+          Tracking:{' '}
+          <span className="data-text font-medium text-card-foreground">{trackingNumber}</span>
         </p>
         <div className="flex space-x-2">
           <Link
@@ -102,6 +99,3 @@ const OrderHistoryItem = ({
 };
 
 export default OrderHistoryItem;
-
-
-

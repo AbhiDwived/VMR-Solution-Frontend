@@ -90,8 +90,10 @@ const DashboardInteractive = () => {
     refetchOnMountOrArgChange: true,
   });
 
-  const [activeTab, setActiveTab] = useState<'orders' | 'wishlist' | 'addresses' | 'profile'>('orders');
-  const [mounted, setMounted] = useState(true);
+  const [activeTab, setActiveTab] = useState<'orders' | 'wishlist' | 'addresses' | 'profile'>(
+    'orders'
+  );
+  const [mounted] = useState(true);
 
   const user = profileDataResponse?.user || localUser;
   const isAdmin = user?.role === 'admin';
@@ -102,11 +104,12 @@ const DashboardInteractive = () => {
     }
   }, [mounted, user, isAdmin]);
 
-  if (!mounted || profileLoading) return (
-    <div className="flex items-center justify-center p-20">
-      <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary"></div>
-    </div>
-  );
+  if (!mounted || profileLoading)
+    return (
+      <div className="flex items-center justify-center p-20">
+        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary"></div>
+      </div>
+    );
 
   if (isAdmin) {
     return (
@@ -230,7 +233,7 @@ const DashboardInteractive = () => {
 
   const quickStats = {
     totalOrders: orders.length,
-    activeOrders: orders.filter((o) => o.status === 'In Transit').length,
+    activeOrders: orders.filter(o => o.status === 'In Transit').length,
     wishlistItems: wishlistProducts.length,
   };
 
@@ -333,28 +336,28 @@ const DashboardInteractive = () => {
     dateOfBirth: '15/08/1985', // Keep as example if not in User model
   };
 
-  const handleRemoveFromWishlist = (productId: string) => {
+  const handleRemoveFromWishlist = (_productId: string) => {
     // Remove from wishlist logic
   };
 
-  const handleAddToCart = (productId: string) => {
+  const handleAddToCart = (_productId: string) => {
     // Add to cart logic
     router.push('/shopping-cart');
   };
 
-  const handleEditAddress = (addressId: string) => {
+  const handleEditAddress = (_addressId: string) => {
     // Edit address logic
   };
 
-  const handleDeleteAddress = (addressId: string) => {
+  const handleDeleteAddress = (_addressId: string) => {
     // Delete address logic
   };
 
-  const handleSetDefaultAddress = (addressId: string) => {
+  const handleSetDefaultAddress = (_addressId: string) => {
     // Set default address logic
   };
 
-  const handleSaveProfile = (data: ProfileData) => {
+  const handleSaveProfile = (_data: ProfileData) => {
     // Save profile logic
   };
 
@@ -405,13 +408,15 @@ const DashboardInteractive = () => {
           <div className="rounded-lg border border-border bg-card shadow-elevation-1">
             <div className="border-b border-border">
               <div className="flex overflow-x-auto">
-                {tabs.map((tab) => (
+                {tabs.map(tab => (
                   <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
-                    className={`flex flex-1 items-center justify-center space-x-2 whitespace-nowrap border-b-2 px-4 py-3 text-sm font-medium transition-smooth ${activeTab === tab.id
-                      ? 'border-primary text-primary' : 'border-transparent text-muted-foreground hover:text-foreground'
-                      }`}
+                    className={`flex flex-1 items-center justify-center space-x-2 whitespace-nowrap border-b-2 px-4 py-3 text-sm font-medium transition-smooth ${
+                      activeTab === tab.id
+                        ? 'border-primary text-primary'
+                        : 'border-transparent text-muted-foreground hover:text-foreground'
+                    }`}
                   >
                     <Icon name={tab.icon as any} size={18} />
                     <span className="hidden sm:inline">{tab.label}</span>
@@ -432,7 +437,7 @@ const DashboardInteractive = () => {
                       <span>Filter</span>
                     </button>
                   </div>
-                  {orders.map((order) => (
+                  {orders.map(order => (
                     <OrderHistoryItem key={order.orderId} {...order} />
                   ))}
                 </div>
@@ -444,12 +449,10 @@ const DashboardInteractive = () => {
                     <h2 className="font-heading text-xl font-semibold text-card-foreground">
                       My Wishlist
                     </h2>
-                    <p className="caption text-muted-foreground">
-                      {wishlistProducts.length} items
-                    </p>
+                    <p className="caption text-muted-foreground">{wishlistProducts.length} items</p>
                   </div>
                   <div className="grid gap-4 sm:grid-cols-2">
-                    {wishlistProducts.map((product) => (
+                    {wishlistProducts.map(product => (
                       <WishlistItem
                         key={product.id}
                         {...product}
@@ -473,7 +476,7 @@ const DashboardInteractive = () => {
                     </button>
                   </div>
                   <div className="grid gap-4 md:grid-cols-2">
-                    {addresses.map((address) => (
+                    {addresses.map(address => (
                       <AddressCard
                         key={address.id}
                         {...address}
@@ -487,10 +490,7 @@ const DashboardInteractive = () => {
               )}
 
               {activeTab === 'profile' && (
-                <ProfileSection
-                  profileData={profileData}
-                  onSave={handleSaveProfile}
-                />
+                <ProfileSection profileData={profileData} onSave={handleSaveProfile} />
               )}
             </div>
           </div>
@@ -502,7 +502,7 @@ const DashboardInteractive = () => {
               Recent Activity
             </h3>
             <div className="space-y-3">
-              {recentActivities.map((activity) => (
+              {recentActivities.map(activity => (
                 <ActivityFeedItem key={activity.id} {...activity} />
               ))}
             </div>
@@ -521,7 +521,7 @@ const DashboardInteractive = () => {
               </button>
             </div>
             <div className="space-y-3">
-              {recommendedProducts.map((product) => (
+              {recommendedProducts.map(product => (
                 <RecommendedProduct key={product.id} {...product} />
               ))}
             </div>
@@ -533,6 +533,3 @@ const DashboardInteractive = () => {
 };
 
 export default DashboardInteractive;
-
-
-

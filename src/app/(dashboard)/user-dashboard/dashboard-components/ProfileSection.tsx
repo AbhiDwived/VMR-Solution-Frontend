@@ -12,7 +12,7 @@ interface ProfileData {
 
 interface ProfileSectionProps {
   profileData: ProfileData;
-  onSave: (data: ProfileData) => void;
+  onSave: (_data: ProfileData) => void;
 }
 
 const ProfileSection = ({ profileData, onSave }: ProfileSectionProps) => {
@@ -21,7 +21,7 @@ const ProfileSection = ({ profileData, onSave }: ProfileSectionProps) => {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -101,7 +101,10 @@ const ProfileSection = ({ profileData, onSave }: ProfileSectionProps) => {
           </div>
 
           <div>
-            <label htmlFor="dateOfBirth" className="mb-1 block text-sm font-medium text-card-foreground">
+            <label
+              htmlFor="dateOfBirth"
+              className="mb-1 block text-sm font-medium text-card-foreground"
+            >
               Date of Birth
             </label>
             <input
@@ -171,6 +174,3 @@ const ProfileSection = ({ profileData, onSave }: ProfileSectionProps) => {
 };
 
 export default ProfileSection;
-
-
-

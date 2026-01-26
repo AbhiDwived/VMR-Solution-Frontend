@@ -14,7 +14,6 @@ const WelcomeHeader = ({ userName, accountStatus, loyaltyPoints }: WelcomeHeader
   const [currentTime, setCurrentTime] = useState('');
 
   useEffect(() => {
-    setIsHydrated(true);
     const updateTime = () => {
       const now = new Date();
       const hours = now.getHours();
@@ -24,6 +23,10 @@ const WelcomeHeader = ({ userName, accountStatus, loyaltyPoints }: WelcomeHeader
       setCurrentTime(greeting);
     };
     updateTime();
+
+    // Use setTimeout to avoid synchronous setState in effect
+    const timer = setTimeout(() => setIsHydrated(true), 0);
+    return () => clearTimeout(timer);
   }, []);
 
   if (!isHydrated) {
@@ -34,9 +37,7 @@ const WelcomeHeader = ({ userName, accountStatus, loyaltyPoints }: WelcomeHeader
             <h1 className="font-heading text-2xl font-semibold text-white md:text-3xl">
               Welcome Back, {userName}!
             </h1>
-            <p className="mt-1 text-sm text-white/90">
-              Manage your orders and account settings
-            </p>
+            <p className="mt-1 text-sm text-white/90">Manage your orders and account settings</p>
           </div>
           <div className="flex flex-col space-y-2 md:items-end">
             <div className="flex items-center space-x-2 rounded-md bg-white/20 px-4 py-2 backdrop-blur-sm">
@@ -59,9 +60,7 @@ const WelcomeHeader = ({ userName, accountStatus, loyaltyPoints }: WelcomeHeader
           <h1 className="font-heading text-2xl font-semibold text-white md:text-3xl">
             {currentTime}, {userName}!
           </h1>
-          <p className="mt-1 text-sm text-white/90">
-            Manage your orders and account settings
-          </p>
+          <p className="mt-1 text-sm text-white/90">Manage your orders and account settings</p>
         </div>
         <div className="flex flex-col space-y-2 md:items-end">
           <div className="flex items-center space-x-2 rounded-md bg-white/20 px-4 py-2 backdrop-blur-sm">
@@ -78,6 +77,3 @@ const WelcomeHeader = ({ userName, accountStatus, loyaltyPoints }: WelcomeHeader
 };
 
 export default WelcomeHeader;
-
-
-
