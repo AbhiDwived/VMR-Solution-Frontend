@@ -4,11 +4,26 @@ import { useState, useEffect } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useAuth } from '@/features/auth/hooks/useAuth';
-import { useAddAdminProductMutation } from '@/store/api/productsApi';
+import { useAddAdminProductMutation, useUpdateAdminProductMutation, useGetAdminProductsQuery } from '@/store/api/productsApi';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { HexColorPicker } from "react-colorful";
 import React from "react";
 import AdminSidebar from '../components/AdminSidebar';
 import Breadcrumb from '@/components/common/Breadcrumb';
+import {
+  Archive,
+  FileText,
+  Box,
+  Sliders,
+  Tag,
+  Info,
+  Weight,
+  Shield,
+  DollarSign,
+  Trash2,
+  Plus,
+  type LucideIcon,
+} from "lucide-react";
 
 // SKU generator
 const generateSKU = (slug: string, color: string, size: string) =>
@@ -29,7 +44,6 @@ interface ProductData {
   longDescription: string;
   materials: string;
   careInstructions: string;
-  specifications: string;
   additionalInfo: string;
   weight: number;
   warranty: string;
@@ -39,9 +53,12 @@ interface ProductData {
   stockQuantity: number;
   category: string;
   brand: string;
-  videoUrl: string;
   type: "own" | "affiliate";
-  affiliateLink?: string;
+}
+
+interface Specification {
+  key: string;
+  value: string;
 }
 
 interface Variant {
@@ -53,11 +70,7 @@ interface Variant {
   images: string[];
 }
 
-export type DeliveryCharge = {
-  division: string;
-  district: string;
-  charge: number;
-};
+
 
 // Cloudinary Upload Function
 const uploadImageToCloudinary = async (file: File) => {
@@ -83,9 +96,14 @@ const uploadImageToCloudinary = async (file: File) => {
 
 const AddProduct = () => {
   const [loading, setLoading] = useState(false);
-  const [slugEdited, setSlugEdited] = useState(false);
   const [slugCounter, setSlugCounter] = useState(1);
   const [addAdminProduct] = useAddAdminProductMutation();
+  const [updateAdminProduct] = useUpdateAdminProductMutation();
+  const { data: adminProductsData } = useGetAdminProductsQuery();
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const editId = searchParams.get('edit');
+
   const [productData, setProductData] = useState<ProductData>({
     name: "",
     slug: "",
@@ -93,7 +111,6 @@ const AddProduct = () => {
     longDescription: "",
     materials: "",
     careInstructions: "",
-    specifications: "",
     additionalInfo: "",
     weight: 0,
     warranty: "",
@@ -103,33 +120,77 @@ const AddProduct = () => {
     stockQuantity: 0,
     category: "",
     brand: "",
-    videoUrl: "",
     type: "own",
   });
 
+  const [specifications, setSpecifications] = useState<Specification[]>([{ key: "", value: "" }]);
   const [productImages, setProductImages] = useState<string[]>([]);
-  const [tags, setTags] = useState<string[]>([""]);
-  const [colors, setColors] = useState<string[]>([""]);
-  const [sizes, setSizes] = useState<string[]>([""]);
-  const [features, setFeatures] = useState<string[]>([""]);
+  const [colors, setColors] = useState<string[]>([]);
+  const [sizes, setSizes] = useState<string[]>([]);
+  const [features, setFeatures] = useState<string[]>([]);
   const [variants, setVariants] = useState<Variant[]>([]);
   const [isFeatured, setIsFeatured] = useState(false);
   const [isNewArrival, setIsNewArrival] = useState(false);
-  const [brandSlug, setBrandSlug] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
   const [customCategory, setCustomCategory] = useState("");
   const [currentColor, setCurrentColor] = useState("#ff0000");
   const { user } = useAuth();
-  const [deliveryCharges, setDeliveryCharges] = React.useState<DeliveryCharge[]>([]);
-  const [defaultDeliveryCharge, setDefaultDeliveryCharge] = React.useState(0);
 
-  const handleDeliveryChange = (
-    charges: DeliveryCharge[],
-    defaultCharge: number
-  ) => {
-    setDeliveryCharges(charges);
-    setDefaultDeliveryCharge(defaultCharge);
-  };
+  // Load product data if in edit mode
+  useEffect(() => {
+    if (editId && adminProductsData?.data) {
+      const product = adminProductsData.data.find((p: any) => p.id === editId || p.id.toString() === editId);
+      if (product) {
+        setProductData({
+          name: product.name || "",
+          slug: product.slug || "",
+          description: product.description || "",
+          longDescription: product.long_description || "",
+          materials: product.materials || "",
+          careInstructions: product.care_instructions || "",
+          additionalInfo: product.additional_info || "",
+          weight: Number(product.weight) || 0,
+          warranty: product.warranty || "",
+          adminEmail: product.admin_email || "",
+          price: Number(product.price) || 0,
+          discountPrice: Number(product.discount_price) || 0,
+          stockQuantity: Number(product.stock_quantity) || 0,
+          category: product.category || "",
+          brand: product.brand || "",
+          type: product.type || "own",
+        });
+
+        try {
+          const parsedSpecs = JSON.parse(product.specifications || '[]');
+          setSpecifications(Array.isArray(parsedSpecs) ? parsedSpecs : []);
+
+          setProductImages(JSON.parse(product.product_images || '[]'));
+          setColors(JSON.parse(product.colors || '[]'));
+          setSizes(JSON.parse(product.sizes || '[]'));
+          setFeatures(JSON.parse(product.features || '[]'));
+          setVariants(JSON.parse(product.variants || '[]'));
+        } catch (e) {
+          console.error("Error parsing product JSON fields", e);
+        }
+
+        setIsFeatured(!!product.is_featured);
+        setIsNewArrival(!!product.is_new_arrival);
+        setIsNewArrival(!!product.is_new_arrival);
+
+        // Handle categories
+        const categories = ["Electronics", "Clothing", "Books", "Home & Kitchen", "Beauty & Personal Care", "Sports & Outdoors", "Toys & Games", "Automotive", "Health & Wellness", "Office Supplies", "Jewelry & Accessories", "Garden & Outdoor", "Baby Products", "Groceries & Gourmet Food", "Pet Supplies", "Music & Instruments", "Movies & TV Shows", "Tools & Hardware", "Computers & Accessories", "Mobile Phones & Accessories", "Footwear", "Handbags & Wallets", "Art & Craft Supplies", "Luggage & Travel Gear", "Collectibles & Memorabilia", "Kitchen Appliances", "Furniture", "Software & Apps", "Industrial & Scientific"];
+
+        if (categories.includes(product.category)) {
+          setSelectedCategory(product.category);
+        } else {
+          setSelectedCategory("Others");
+          setCustomCategory(product.category);
+        }
+      }
+    }
+  }, [editId, adminProductsData]);
+
+
 
   const addColor = () => {
     if (currentColor && !colors.includes(currentColor)) {
@@ -142,7 +203,7 @@ const AddProduct = () => {
   };
 
   useEffect(() => {
-    setBrandSlug("admin-vmr");
+    // Brand logic could go here if needed
   }, []);
 
 
@@ -151,7 +212,7 @@ const AddProduct = () => {
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value, type } = e.target;
-    
+
     if (name === 'name') {
       const baseSlug = generateSlug(value);
       setProductData((prev) => ({
@@ -167,17 +228,7 @@ const AddProduct = () => {
     }
   };
 
-  const handleArrayChange = (setter: any, index: number, value: string) => {
-    setter((prev: string[]) =>
-      prev.map((item, idx) => (idx === index ? value : item))
-    );
-  };
 
-  const addArrayItem = (setter: any) =>
-    setter((prev: string[]) => [...prev, ""]);
-
-  const removeArrayItem = (setter: any, index: number) =>
-    setter((prev: string[]) => prev.filter((_, idx) => idx !== index));
 
   const handleVariantChange = (color: string, size: string) => {
     const sku = generateSKU(productData.slug, color, size);
@@ -212,7 +263,6 @@ const AddProduct = () => {
       longDescription: "",
       materials: "",
       careInstructions: "",
-      specifications: "",
       additionalInfo: "",
       weight: 0,
       warranty: "",
@@ -222,18 +272,16 @@ const AddProduct = () => {
       stockQuantity: 0,
       category: "",
       brand: "",
-      videoUrl: "",
       type: "own",
     });
+    setSpecifications([{ key: "", value: "" }]);
     setProductImages([]);
-    setTags([""]);
-    setColors([""]);
+    setColors([]);
     setSizes([""]);
     setFeatures([""]);
     setVariants([]);
     setIsFeatured(false);
     setIsNewArrival(false);
-    setSlugEdited(false);
     setSlugCounter(1);
   };
 
@@ -249,15 +297,15 @@ const AddProduct = () => {
     }
 
     const adminEmail = user?.email || "";
-    const adminName = user?.name || "";
-    const adminNumber = user?.phone || 0;
+    const adminName = user?.fullName || "Admin User";
+    const adminNumber = user?.mobile || "1234567890";
 
     const finalData = {
       ...productData,
       category: finalCategory,
-      type: productData.affiliateLink ? "affiliate" : "own",
+      type: "own",
       productImages,
-      tags,
+      specifications,
       colors,
       sizes,
       features,
@@ -267,21 +315,30 @@ const AddProduct = () => {
       adminEmail,
       adminName,
       adminNumber,
-      deliveryCharges,
-      defaultDeliveryCharge,
+      tags: [],
+      deliveryCharges: [],
+      defaultDeliveryCharge: 0,
+      videoUrl: "",
+      affiliateLink: ""
     };
 
     setLoading(true);
 
     try {
       console.log("data", finalData);
-      const response = await addAdminProduct(finalData).unwrap();
-      toast.success("✅ Product added successfully!");
-      resetForm();
+      if (editId) {
+        await updateAdminProduct({ id: editId, data: finalData }).unwrap();
+        toast.success("✅ Product updated successfully!");
+        setTimeout(() => router.push('/admin-dashboard/products'), 2000);
+      } else {
+        await addAdminProduct(finalData).unwrap();
+        toast.success("✅ Product added successfully!");
+        resetForm();
+      }
       setSelectedCategory("");
       setCustomCategory("");
     } catch (err: any) {
-      console.error("Error adding product:", err);
+      console.error("Error saving product:", err);
       if (err.status === 400 && err.data?.message?.includes('slug')) {
         setSlugCounter(prev => prev + 1);
         toast.error("Slug exists, trying with different number...");
@@ -292,7 +349,7 @@ const AddProduct = () => {
           `❌ ${err.data?.message || "Validation error."}`
         );
       } else {
-        toast.error("❌ Failed to add product.");
+        toast.error(`❌ Failed to ${editId ? 'update' : 'add'} product.`);
       }
     } finally {
       setLoading(false);
@@ -318,6 +375,8 @@ const AddProduct = () => {
     label: string,
     name: keyof ProductData,
     type = "text",
+    Icon?: LucideIcon,
+    iconColor = "#6B3F26",
     required = false
   ) => {
     const isMultiline = name === "description" || name === "longDescription";
@@ -330,6 +389,12 @@ const AddProduct = () => {
         </label>
 
         <div className="relative">
+          {Icon && (
+            <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+              <Icon className="w-5 h-5" color={iconColor} />
+            </div>
+          )}
+
           {isMultiline ? (
             <textarea
               name={name}
@@ -337,7 +402,8 @@ const AddProduct = () => {
               value={productData[name] as string}
               onChange={handleInputChange}
               rows={5}
-              className="w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-orange-400 transition-all duration-200"
+              className={`w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 ${Icon ? "pl-11" : ""
+                }`}
             />
           ) : (
             <input
@@ -346,7 +412,8 @@ const AddProduct = () => {
               required={required}
               value={productData[name] === 0 ? "" : productData[name]}
               onChange={handleInputChange}
-              className="w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-orange-400 transition-all duration-200"
+              className={`w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 ${Icon ? "pl-11" : ""
+                }`}
             />
           )}
         </div>
@@ -360,60 +427,148 @@ const AddProduct = () => {
     setter: any,
     required = false
   ) => (
-    <div className="flex flex-col gap-2">
-      <label className="font-medium text-gray-700">
+    <div className="flex flex-col gap-4">
+      <label className="font-bold text-gray-800 flex items-center gap-2">
         {label}
-        {required && <span className="text-red-500 ml-1">*</span>}
+        {required && <span className="text-red-500">*</span>}
       </label>
 
       {label === "Product Images" ? (
-        <>
-          <input
-            type="file"
-            multiple
-            onChange={handleImageUpload}
-            className="w-full p-3 border border-gray-300 rounded-md"
-            required={required}
-          />
-          <div className="flex flex-wrap gap-4 mt-4">
-            {state.map((img, idx) => (
-              <img
-                key={idx}
-                src={img}
-                alt="Uploaded Preview"
-                className="w-24 h-24 object-cover rounded-md border"
+        <div className="space-y-4">
+          <div className="flex items-center justify-center w-full">
+            <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-xl cursor-pointer bg-gray-50 hover:bg-gray-100 transition-colors">
+              <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                <Plus className="w-8 h-8 text-gray-400 mb-2" />
+                <p className="text-sm text-gray-500 font-medium">Click or drag to upload {label.toLowerCase()}</p>
+              </div>
+              <input
+                type="file"
+                multiple
+                onChange={handleImageUpload}
+                className="hidden"
+                required={required && state.length === 0}
               />
+            </label>
+          </div>
+          <div className="flex flex-wrap gap-4">
+            {state.map((img, idx) => (
+              <div key={idx} className="relative group">
+                <img
+                  src={img}
+                  alt="Uploaded"
+                  className="w-24 h-24 object-cover rounded-xl border shadow-sm transition-transform group-hover:scale-105"
+                />
+                <button
+                  type="button"
+                  onClick={() => setter(state.filter((_, i) => i !== idx))}
+                  className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 shadow-lg opacity-0 group-hover:opacity-100 transition-all hover:bg-red-600 scale-75 group-hover:scale-100"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
+              </div>
             ))}
           </div>
-        </>
+        </div>
       ) : (
-        <>
-          {state.map((val, idx) => (
-            <div key={idx} className="flex gap-2 items-center">
-              <input
-                value={val}
-                onChange={(e) => handleArrayChange(setter, idx, e.target.value)}
-                className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required={required}
-              />
-              <button
-                type="button"
-                onClick={() => removeArrayItem(setter, idx)}
-                className="bg-red-500 text-white px-3 py-1 rounded-md"
-              >
-                X
-              </button>
-            </div>
-          ))}
-          <button
-            type="button"
-            onClick={() => addArrayItem(setter)}
-            className="bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded-md text-gray-700"
-          >
-            Add {label}
-          </button>
-        </>
+        <div className="p-5 bg-gray-50/50 rounded-2xl border border-gray-200 shadow-inner-sm">
+          <div className="flex flex-col gap-3">
+            {state.map((val, idx) => (
+              <div key={idx} className="flex gap-3 items-center group">
+                <div className="flex-1 relative">
+                  <input
+                    value={val}
+                    placeholder={`Enter ${label.slice(0, -1)}...`}
+                    onChange={(e) => {
+                      const newState = [...state];
+                      newState[idx] = e.target.value;
+                      setter(newState);
+                    }}
+                    className="w-full pl-4 pr-4 py-3 bg-white border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-primary focus:border-transparent focus:outline-none transition-all shadow-sm"
+                    required={required}
+                  />
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setter(state.filter((_, i) => i !== idx))}
+                  className="p-3 bg-white text-gray-400 hover:text-red-500 border border-gray-200 rounded-xl hover:border-red-100 hover:bg-red-50 transition-all shadow-sm"
+                  title="Remove"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
+              </div>
+            ))}
+            <button
+              type="button"
+              onClick={() => setter([...state, ""])}
+              className="mt-2 flex items-center justify-center gap-2 w-full py-3 border-2 border-dashed border-gray-200 rounded-xl text-mocha-grey hover:text-primary hover:border-primary hover:bg-primary/5 transition-all text-sm font-bold"
+            >
+              <Plus className="w-4 h-4" />
+              Add {label.slice(0, -1)}
+            </button>
+          </div>
+        </div>
       )}
+    </div>
+  );
+
+  const renderKeyValueField = (
+    label: string,
+    state: Specification[],
+    setter: any,
+    required = false
+  ) => (
+    <div className="flex flex-col gap-4">
+      <label className="font-bold text-gray-800 flex items-center gap-2">
+        {label}
+        {required && <span className="text-red-500">*</span>}
+      </label>
+      <div className="grid grid-cols-1 gap-4">
+        {state.map((item, idx) => (
+          <div key={idx} className="flex gap-4 items-end bg-gray-50/50 p-4 rounded-xl border border-gray-200">
+            <div className="flex-1">
+              <label className="text-xs font-bold text-mocha-grey mb-1 block uppercase">Feature / Key</label>
+              <input
+                placeholder="e.g. Dimensions"
+                value={item.key}
+                onChange={(e) => {
+                  const newState = [...state];
+                  newState[idx] = { ...item, key: e.target.value };
+                  setter(newState);
+                }}
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-primary focus:outline-none"
+              />
+            </div>
+            <div className="flex-1">
+              <label className="text-xs font-bold text-mocha-grey mb-1 block uppercase">Description / Value</label>
+              <input
+                placeholder="e.g. 10x10x5 cm"
+                value={item.value}
+                onChange={(e) => {
+                  const newState = [...state];
+                  newState[idx] = { ...item, value: e.target.value };
+                  setter(newState);
+                }}
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-primary focus:outline-none"
+              />
+            </div>
+            <button
+              type="button"
+              onClick={() => setter(state.filter((_, i) => i !== idx))}
+              className="p-3 bg-red-50 text-red-600 rounded-xl hover:bg-red-100 transition-colors"
+              title="Remove"
+            >
+              <Trash2 className="w-4 h-4" />
+            </button>
+          </div>
+        ))}
+      </div>
+      <button
+        type="button"
+        onClick={() => setter([...state, { key: "", value: "" }])}
+        className="self-start px-6 py-2 bg-primary/10 text-primary rounded-xl text-sm font-bold hover:bg-primary/20 transition-all"
+      >
+        + Add Specification
+      </button>
     </div>
   );
 
@@ -436,7 +591,7 @@ const AddProduct = () => {
             <button
               type="button"
               onClick={() => handleVariantChange(color, size)}
-              className="bg-blue-600 text-white px-5 py-2 rounded-md hover:bg-blue-700"
+              className="bg-primary text-white px-5 py-2 rounded-md hover:bg-primary/90"
             >
               Add Variant
             </button>
@@ -488,308 +643,228 @@ const AddProduct = () => {
       ))
     );
 
-  const DeliveryChargesForm = ({ initialDeliveryCharges, initialDefaultCharge, onChange }: any) => {
-    const [charges, setCharges] = useState(initialDeliveryCharges || []);
-    const [defaultCharge, setDefaultCharge] = useState(initialDefaultCharge || 0);
 
-    const addCharge = () => {
-      const newCharge = { division: "", district: "", charge: 0 };
-      const updatedCharges = [...charges, newCharge];
-      setCharges(updatedCharges);
-      onChange(updatedCharges, defaultCharge);
-    };
-
-    const removeCharge = (index: number) => {
-      const updatedCharges = charges.filter((_: any, i: number) => i !== index);
-      setCharges(updatedCharges);
-      onChange(updatedCharges, defaultCharge);
-    };
-
-    const updateCharge = (index: number, field: string, value: any) => {
-      const updatedCharges = charges.map((charge: any, i: number) =>
-        i === index ? { ...charge, [field]: value } : charge
-      );
-      setCharges(updatedCharges);
-      onChange(updatedCharges, defaultCharge);
-    };
-
-    const updateDefaultCharge = (value: number) => {
-      setDefaultCharge(value);
-      onChange(charges, value);
-    };
-
-    return (
-      <div className="space-y-4">
-        <h3 className="text-lg font-semibold text-gray-800">Delivery Charges</h3>
-        
-        <div className="space-y-2">
-          <label className="font-medium text-gray-700">Default Delivery Charge</label>
-          <input
-            type="number"
-            value={defaultCharge}
-            onChange={(e) => updateDefaultCharge(Number(e.target.value))}
-            className="w-full p-3 border border-gray-300 rounded-md"
-            placeholder="Default charge for all areas"
-          />
-        </div>
-
-        <div className="space-y-3">
-          <label className="font-medium text-gray-700">Specific Area Charges</label>
-          {charges.map((charge: any, index: number) => (
-            <div key={index} className="grid grid-cols-4 gap-3 items-center">
-              <input
-                type="text"
-                placeholder="Division"
-                value={charge.division}
-                onChange={(e) => updateCharge(index, "division", e.target.value)}
-                className="p-3 border border-gray-300 rounded-md"
-              />
-              <input
-                type="text"
-                placeholder="District"
-                value={charge.district}
-                onChange={(e) => updateCharge(index, "district", e.target.value)}
-                className="p-3 border border-gray-300 rounded-md"
-              />
-              <input
-                type="number"
-                placeholder="Charge"
-                value={charge.charge}
-                onChange={(e) => updateCharge(index, "charge", Number(e.target.value))}
-                className="p-3 border border-gray-300 rounded-md"
-              />
-              <button
-                type="button"
-                onClick={() => removeCharge(index)}
-                className="bg-red-500 text-white px-3 py-2 rounded-md"
-              >
-                Remove
-              </button>
-            </div>
-          ))}
-          <button
-            type="button"
-            onClick={addCharge}
-            className="bg-blue-500 text-white px-4 py-2 rounded-md"
-          >
-            Add Delivery Charge
-          </button>
-        </div>
-      </div>
-    );
-  };
 
   return (
-    <div className="min-h-screen bg-background">
-      <main className="flex">
+    <div className="h-[calc(100vh-64px)] bg-background overflow-hidden font-header">
+      <ToastContainer position="top-right" autoClose={3000} />
+      <main className="flex h-full">
         <AdminSidebar />
-        <div className="flex-1 min-h-screen">
-          <div className="p-6 lg:p-8">
-            <Breadcrumb />
-            <div className="mt-6">
-              <div className="p-8 bg-white rounded-lg shadow-md max-w-4xl mx-auto">
-                <ToastContainer />
-                {loading && (
-                  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                    <div className="bg-white p-6 rounded-lg">
-                      <div className="flex items-center gap-3">
-                        <div className="w-6 h-6 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-                        <span>Processing...</span>
-                      </div>
+        <div className="flex-1 overflow-y-auto p-6 lg:p-10 scroll-smooth">
+          <Breadcrumb />
+          <div className="mt-8">
+            <div className="p-8 bg-white rounded-2xl shadow-sm border border-border max-w-6xl mx-auto">
+              {loading && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                  <div className="bg-white p-6 rounded-lg">
+                    <div className="flex items-center gap-3">
+                      <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+                      <span>Processing...</span>
                     </div>
                   </div>
-                )}
-                <form onSubmit={handleSubmit} className="space-y-6">
-                  <div className="text-center text-2xl font-semibold text-gray-800">
-                    Add Product
+                </div>
+              )}
+              <form onSubmit={handleSubmit} className="space-y-10">
+                <div className="text-center">
+                  <h1 className="text-3xl font-bold text-espresso">{editId ? 'Edit Product' : 'Add Product'}</h1>
+                  <p className="text-mocha-grey mt-1">Manage your product details, inventory, and media assets.</p>
+                </div>
+
+                {/* Section 1: Basic Information */}
+                <div className="space-y-6">
+                  <h2 className="text-xl font-bold text-espresso py-2">Basic Information</h2>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {renderInputField("Product Name", "name", "text", Tag, "#6B3F26", true)}
+                    {renderInputField("Slug", "slug", "text", Sliders, "#6B3F26", true)}
                   </div>
-                  {renderInputField("Product Name", "name", "text", true)}
-                  {renderInputField("Slug", "slug", "text", true)}
-                  {renderInputField("Description", "description", "text", true)}
-                  {renderInputField("Long Description", "longDescription", "text")}
-                  {renderInputField("Materials", "materials", "text")}
-                  {renderInputField("Care Instructions", "careInstructions", "text")}
-                  {renderInputField("Specifications", "specifications", "text")}
-                  {renderInputField("Additional Info", "additionalInfo", "text")}
-                  {renderInputField("Weight", "weight", "number")}
-                  {renderInputField("Warranty", "warranty", "text")}
-                  {renderInputField("Price", "price", "number", true)}
-                  {renderInputField("After Discount Price", "discountPrice", "number", true)}
-                  {renderInputField("Stock Quantity", "stockQuantity", "number", true)}
-                  <label
-                    className="block text-base font-medium mb-1"
-                    style={{ color: "#F6550C" }}
-                  >
-                    Category<span className="text-red-500 ml-1">*</span>
-                  </label>
-                  <select
-                    className="w-full border border-gray-300 rounded px-3 py-2 mb-2"
-                    value={selectedCategory}
-                    onChange={(e) => setSelectedCategory(e.target.value)}
-                  >
-                    <option value="">Select a category</option>
-                    <option value="Electronics">Electronics</option>
-                    <option value="Clothing">Clothing</option>
-                    <option value="Books">Books</option>
-                    <option value="Home & Kitchen">Home & Kitchen</option>
-                    <option value="Beauty & Personal Care">Beauty & Personal Care</option>
-                    <option value="Sports & Outdoors">Sports & Outdoors</option>
-                    <option value="Toys & Games">Toys & Games</option>
-                    <option value="Automotive">Automotive</option>
-                    <option value="Health & Wellness">Health & Wellness</option>
-                    <option value="Office Supplies">Office Supplies</option>
-                    <option value="Jewelry & Accessories">Jewelry & Accessories</option>
-                    <option value="Garden & Outdoor">Garden & Outdoor</option>
-                    <option value="Baby Products">Baby Products</option>
-                    <option value="Groceries & Gourmet Food">
-                      Groceries & Gourmet Food
-                    </option>
-                    <option value="Pet Supplies">Pet Supplies</option>
-                    <option value="Music & Instruments">Music & Instruments</option>
-                    <option value="Movies & TV Shows">Movies & TV Shows</option>
-                    <option value="Tools & Hardware">Tools & Hardware</option>
-                    <option value="Computers & Accessories">
-                      Computers & Accessories
-                    </option>
-                    <option value="Mobile Phones & Accessories">
-                      Mobile Phones & Accessories
-                    </option>
-                    <option value="Footwear">Footwear</option>
-                    <option value="Handbags & Wallets">Handbags & Wallets</option>
-                    <option value="Art & Craft Supplies">Art & Craft Supplies</option>
-                    <option value="Luggage & Travel Gear">Luggage & Travel Gear</option>
-                    <option value="Collectibles & Memorabilia">
-                      Collectibles & Memorabilia
-                    </option>
-                    <option value="Kitchen Appliances">Kitchen Appliances</option>
-                    <option value="Furniture">Furniture</option>
-                    <option value="Software & Apps">Software & Apps</option>
-                    <option value="Industrial & Scientific">
-                      Industrial & Scientific
-                    </option>
-                    <option value="Others">Others</option>
-                  </select>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {renderInputField("Description", "description", "text", FileText, "#6B3F26", true)}
+                    {renderInputField("Long Description", "longDescription", "text", FileText, "#6B3F26")}
+                  </div>
+                </div>
 
-                  {selectedCategory === "Others" && (
-                    <input
-                      type="text"
-                      className="w-full border border-gray-300 rounded px-3 py-2"
-                      placeholder="Enter custom category"
-                      value={customCategory}
-                      onChange={(e) => setCustomCategory(e.target.value)}
-                    />
-                  )}
-
-                  {renderInputField("Brand", "brand", "text")}
-                  {renderInputField("Video URL", "videoUrl", "text")}
-                  {renderArrayField(
-                    "Product Images",
-                    productImages,
-                    setProductImages,
-                    true
-                  )}
-                  {renderArrayField("Tags", tags, setTags)}
-                  
-                  <div className="mb-6">
-                    <label className="block text-base font-semibold text-gray-800 mb-2">
-                      Pick Product Colors
-                    </label>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
-                      <div>
-                        <HexColorPicker
-                          color={currentColor}
-                          onChange={setCurrentColor}
-                          className="w-full rounded-lg shadow"
+                {/* Section 2: Physical Attributes & Category */}
+                <div className="space-y-6">
+                  <h2 className="text-xl font-bold text-espresso py-2">Physical Details & Categorization</h2>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div className="flex flex-col gap-1">
+                      <label className="font-semibold text-gray-800 mb-1 flex items-center gap-1">
+                        Category<span className="text-red-500">*</span>
+                      </label>
+                      <select
+                        className="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200"
+                        value={selectedCategory}
+                        onChange={(e) => setSelectedCategory(e.target.value)}
+                      >
+                        <option value="">Select a category</option>
+                        <option value="Electronics">Electronics</option>
+                        <option value="Clothing">Clothing</option>
+                        <option value="Books">Books</option>
+                        <option value="Home & Kitchen">Home & Kitchen</option>
+                        <option value="Beauty & Personal Care">Beauty & Personal Care</option>
+                        <option value="Sports & Outdoors">Sports & Outdoors</option>
+                        <option value="Toys & Games">Toys & Games</option>
+                        <option value="Automotive">Automotive</option>
+                        <option value="Health & Wellness">Health & Wellness</option>
+                        <option value="Office Supplies">Office Supplies</option>
+                        <option value="Jewelry & Accessories">Jewelry & Accessories</option>
+                        <option value="Garden & Outdoor">Garden & Outdoor</option>
+                        <option value="Baby Products">Baby Products</option>
+                        <option value="Groceries & Gourmet Food">Groceries & Gourmet Food</option>
+                        <option value="Pet Supplies">Pet Supplies</option>
+                        <option value="Music & Instruments">Music & Instruments</option>
+                        <option value="Movies & TV Shows">Movies & TV Shows</option>
+                        <option value="Tools & Hardware">Tools & Hardware</option>
+                        <option value="Computers & Accessories">Computers & Accessories</option>
+                        <option value="Mobile Phones & Accessories">Mobile Phones & Accessories</option>
+                        <option value="Footwear">Footwear</option>
+                        <option value="Handbags & Wallets">Handbags & Wallets</option>
+                        <option value="Art & Craft Supplies">Art & Craft Supplies</option>
+                        <option value="Luggage & Travel Gear">Luggage & Travel Gear</option>
+                        <option value="Collectibles & Memorabilia">Collectibles & Memorabilia</option>
+                        <option value="Kitchen Appliances">Kitchen Appliances</option>
+                        <option value="Furniture">Furniture</option>
+                        <option value="Software & Apps">Software & Apps</option>
+                        <option value="Industrial & Scientific">Industrial & Scientific</option>
+                        <option value="Others">Others</option>
+                      </select>
+                      {selectedCategory === "Others" && (
+                        <input
+                          type="text"
+                          className="mt-2 w-full border border-gray-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200"
+                          placeholder="Enter custom category"
+                          value={customCategory}
+                          onChange={(e) => setCustomCategory(e.target.value)}
                         />
-                      </div>
+                      )}
+                    </div>
+                    {renderInputField("Brand", "brand", "text", Tag, "#6B3F26")}
+                    {renderInputField("Weight (kg)", "weight", "number", Weight, "#6B3F26")}
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    {renderInputField("Materials", "materials", "text", Box, "#6B3F26")}
+                    {renderInputField("Warranty", "warranty", "text", Shield, "#6B3F26")}
+                    {renderInputField("Care Instructions", "careInstructions", "text", Info, "#6B3F26")}
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {renderInputField("Additional Info", "additionalInfo", "text", Info, "#6B3F26")}
+                  </div>
+                  {renderKeyValueField("Specifications", specifications, setSpecifications)}
+                </div>
 
-                      <div className="flex flex-col gap-3">
-                        <div className="flex items-center gap-3">
-                          <input
-                            type="text"
-                            value={currentColor}
-                            onChange={(e) => setCurrentColor(e.target.value)}
-                            className="border border-gray-300 rounded px-3 py-2 text-sm w-32"
-                            placeholder="#ffffff"
+                {/* Section 3: Pricing & Inventory */}
+                <div className="space-y-6">
+                  <h2 className="text-xl font-bold text-espresso py-2">Pricing & Inventory</h2>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    {renderInputField("Regular Price", "price", "number", DollarSign, "#6B3F26", true)}
+                    {renderInputField("Discount Price", "discountPrice", "number", DollarSign, "#6B3F26", true)}
+                    {renderInputField("Stock Quantity", "stockQuantity", "number", Archive, "#6B3F26", true)}
+                  </div>
+                </div>
+
+                {/* Section 4: Media & Attributes */}
+                <div className="space-y-8">
+                  <h2 className="text-xl font-bold text-espresso py-2">Media & Attributes</h2>
+
+                  <div className="bg-gray-50/50 p-6 rounded-2xl border border-dashed border-gray-300">
+                    {renderArrayField("Product Images", productImages, setProductImages, true)}
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                    <div className="space-y-6">
+                      {renderArrayField("Sizes", sizes, setSizes)}
+                      {renderArrayField("Features", features, setFeatures)}
+                    </div>
+
+                    <div className="space-y-6">
+                      <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
+                        <label className="block text-base font-bold text-gray-800 mb-4">
+                          Product Colors
+                        </label>
+                        <div className="flex flex-col gap-6">
+                          <HexColorPicker
+                            color={currentColor}
+                            onChange={setCurrentColor}
+                            className="w-full !h-48 rounded-lg shadow-sm"
                           />
-                          <div
-                            className="w-8 h-8 rounded-full border shadow"
-                            style={{ backgroundColor: currentColor }}
-                          ></div>
-                          <button
-                            type="button"
-                            onClick={addColor}
-                            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded text-sm"
-                          >
-                            + Add
-                          </button>
-                        </div>
-
-                        {colors.length > 0 && (
-                          <div>
-                            <p className="text-sm text-gray-600 mb-1">Selected Colors:</p>
-                            <div className="flex flex-wrap gap-2">
+                          <div className="flex items-center gap-3">
+                            <div
+                              className="w-10 h-10 rounded-full border shadow-sm"
+                              style={{ backgroundColor: currentColor }}
+                            />
+                            <input
+                              type="text"
+                              value={currentColor}
+                              onChange={(e) => setCurrentColor(e.target.value)}
+                              className="border border-gray-300 rounded-xl px-4 py-2 text-sm w-32 focus:outline-none focus:ring-2 focus:ring-primary"
+                            />
+                            <button
+                              type="button"
+                              onClick={addColor}
+                              className="bg-primary hover:bg-primary/90 text-white px-6 py-2 rounded-xl text-sm font-bold transition-all"
+                            >
+                              Add Color
+                            </button>
+                          </div>
+                          {colors.length > 0 && (
+                            <div className="flex flex-wrap gap-3 p-3 bg-gray-50 rounded-xl">
                               {colors.map((color) => (
                                 <div
                                   key={color}
                                   onClick={() => removeColor(color)}
-                                  className="w-7 h-7 rounded-full border shadow cursor-pointer"
+                                  className="w-8 h-8 rounded-full border-2 border-white shadow-md cursor-pointer hover:scale-110 transition-transform"
                                   style={{ backgroundColor: color }}
-                                  title={`Click to remove ${color}`}
-                                ></div>
+                                  title={`Remove ${color}`}
+                                />
                               ))}
                             </div>
-                          </div>
-                        )}
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="flex gap-6 p-4 bg-gray-50 rounded-2xl border border-gray-200">
+                        <label className="flex items-center gap-3 text-gray-700 font-bold cursor-pointer">
+                          <input
+                            type="checkbox"
+                            className="w-5 h-5 rounded border-gray-300 text-primary focus:ring-primary"
+                            checked={isFeatured}
+                            onChange={(e) => setIsFeatured(e.target.checked)}
+                          />
+                          Featured Product
+                        </label>
+                        <label className="flex items-center gap-3 text-gray-700 font-bold cursor-pointer">
+                          <input
+                            type="checkbox"
+                            className="w-5 h-5 rounded border-gray-300 text-primary focus:ring-primary"
+                            checked={isNewArrival}
+                            onChange={(e) => setIsNewArrival(e.target.checked)}
+                          />
+                          New Arrival
+                        </label>
                       </div>
                     </div>
                   </div>
+                </div>
 
-                  {renderArrayField("Sizes", sizes, setSizes)}
-                  {renderArrayField("Features", features, setFeatures)}
-                  {renderInputField(
-                    "Affiliate Link (Only fill if product is affiliate type)",
-                    "affiliateLink",
-                    "text",
-                    false
-                  )}
-
-                  <div className="flex gap-6">
-                    <label className="flex items-center gap-2 text-gray-700">
-                      <input
-                        type="checkbox"
-                        checked={isFeatured}
-                        onChange={(e) => setIsFeatured(e.target.checked)}
-                      />
-                      Featured
-                    </label>
-                    <label className="flex items-center gap-2 text-gray-700">
-                      <input
-                        type="checkbox"
-                        checked={isNewArrival}
-                        onChange={(e) => setIsNewArrival(e.target.checked)}
-                      />
-                      New Arrival
-                    </label>
+                <div className="space-y-8 pt-6">
+                  <div className="flex items-center gap-4">
+                    <h2 className="text-2xl font-bold text-espresso">Product Variants</h2>
+                    <span className="px-3 py-1 bg-primary/10 text-primary text-xs font-bold rounded-full">Automated Generation</span>
                   </div>
-                  <h3 className="text-lg font-semibold mt-6 text-gray-800">
-                    Variants (Color + Size)
-                  </h3>
-                  {renderVariants()}
-                  <DeliveryChargesForm
-                    initialDeliveryCharges={deliveryCharges}
-                    initialDefaultCharge={defaultDeliveryCharge}
-                    onChange={handleDeliveryChange}
-                  />
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    {renderVariants()}
+                  </div>
+                </div>
+
+                <div className="pt-6">
                   <button
                     type="submit"
-                    className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 w-full"
+                    className="bg-primary text-white px-10 py-5 rounded-2xl hover:bg-primary/90 w-full text-xl font-black shadow-lg shadow-primary/20 transition-all hover:-translate-y-1 active:scale-[0.98]"
                   >
-                    Add Product
+                    {editId ? 'UPDATE PRODUCT' : 'CREATE PRODUCT'}
                   </button>
-                </form>
-              </div>
+                </div>
+              </form>
             </div>
           </div>
         </div>

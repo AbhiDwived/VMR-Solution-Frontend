@@ -52,7 +52,7 @@ const AdminSidebar = () => {
   ];
 
   return (
-    <aside className="w-64 bg-white border-r border-border h-screen sticky top-0 shadow-elevation-1 hidden lg:block flex-shrink-0">
+    <aside className="w-64 bg-white border-r border-border h-[calc(100vh-64px)] sticky top-16 shadow-elevation-1 hidden lg:block flex-shrink-0">
       {/* Header */}
       <div className="p-4 border-b border-border bg-gradient-to-r from-primary/5 to-secondary/5">
         <div className="flex items-center space-x-2">
@@ -81,19 +81,17 @@ const AdminSidebar = () => {
                     <Link
                       key={item.href}
                       href={item.href}
-                      className={`group flex items-center space-x-2 px-3 py-2 rounded-lg transition-all duration-200 relative ${
-                        isActive
-                          ? 'bg-primary text-primary-foreground shadow-elevation-1'
-                          : 'text-mocha-grey hover:bg-soft-linen hover:text-espresso hover:shadow-elevation-1'
-                      }`}
+                      className={`group flex items-center space-x-2 px-3 py-2 rounded-lg transition-all duration-200 relative ${isActive
+                        ? 'bg-primary text-primary-foreground shadow-elevation-1'
+                        : 'text-mocha-grey hover:bg-soft-linen hover:text-espresso hover:shadow-elevation-1'
+                        }`}
                     >
                       {isActive && (
                         <div className="absolute -left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-primary-foreground rounded-r-full" />
                       )}
                       <div
-                        className={`p-1 rounded-md transition-colors ${
-                          isActive ? 'bg-primary-foreground/20' : 'group-hover:bg-primary/10'
-                        }`}
+                        className={`p-1 rounded-md transition-colors ${isActive ? 'bg-primary-foreground/20' : 'group-hover:bg-primary/10'
+                          }`}
                       >
                         <Icon name={item.icon as any} size={14} />
                       </div>

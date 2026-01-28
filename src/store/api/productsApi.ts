@@ -33,7 +33,7 @@ export const productsApi = baseApi.injectEndpoints({
     }),
     getProduct: builder.query<Product, string>({
       query: (id) => `/products/${id}`,
-      providesTags: (result, error, id) => [{ type: 'Product', id }],
+      providesTags: (_result, _error, id) => [{ type: 'Product', id }],
     }),
     getCategories: builder.query<string[], void>({
       query: () => '/products/categories',
@@ -47,6 +47,25 @@ export const productsApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ['Product'],
     }),
+    getAdminProducts: builder.query<any, void>({
+      query: () => '/admin/products',
+      providesTags: ['Product'],
+    }),
+    updateAdminProduct: builder.mutation<any, { id: string; data: any }>({
+      query: ({ id, data }) => ({
+        url: `/admin/product/${id}`,
+        method: 'PUT',
+        body: data,
+      }),
+      invalidatesTags: ['Product'],
+    }),
+    deleteAdminProduct: builder.mutation<any, string>({
+      query: (id) => ({
+        url: `/admin/product/${id}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['Product'],
+    }),
   }),
 })
 
@@ -55,6 +74,9 @@ export const {
   useGetProductQuery,
   useGetCategoriesQuery,
   useAddAdminProductMutation,
+  useGetAdminProductsQuery,
+  useUpdateAdminProductMutation,
+  useDeleteAdminProductMutation,
 } = productsApi
 
 
