@@ -138,7 +138,19 @@ export const products: Product[] = [
   { id: 114, name: "Soap Case Rangoli (Plain)", price: 14, category: "Bathroom", image: "/assets/products/bucket (3).jpg", description: "Plain Rangoli soap case", inStock: true },
   { id: 115, name: "Soap Case rangoli (Printed)", price: 18, category: "Bathroom", image: "/assets/products/bucket (4).jpg", description: "Printed Rangoli soap case", inStock: true },
   { id: 252, name: "Bucket 200 No Polo", price: 115, category: "Buckets", image: "/assets/products/bucket (5).jpg", description: "Polo 200 bucket", inStock: true },
-  { id: 253, name: "Bucket 250 No Polo", price: 145, category: "Buckets", image: "/assets/products/bucket (6).jpg", description: "Polo 250 bucket", inStock: true }
+  { id: 253, name: "Bucket 250 No Polo", price: 145, category: "Buckets", image: "/assets/products/bucket (6).jpg", description: "Polo 250 bucket", inStock: true },
+
+  // New Products with Multiple Variants
+  { id: 301, name: "Premium Storage Container Set", price: 249, category: "Storage", image: "/assets/products/vmr (31).jpg", description: "Multi-purpose storage containers with airtight lids", inStock: true },
+  { id: 302, name: "Eco-Friendly Water Bottle Collection", price: 159, category: "Bottles", image: "/assets/products/vmr (34).jpg", description: "Sustainable water bottles made from recycled materials", inStock: true },
+  { id: 303, name: "Multi-Color Serving Tray Set", price: 329, category: "Kitchen", image: "/assets/products/vmr (37).jpg", description: "Elegant serving trays for all occasions", inStock: true },
+  { id: 304, name: "Colorful Laundry Basket Series", price: 149, category: "Laundry", image: "/assets/products/vmr (40).jpg", description: "Durable laundry baskets with ventilation holes", inStock: true },
+  { id: 305, name: "Designer Flower Pot Collection", price: 99, category: "Planters", image: "/assets/products/vmr (43).jpg", description: "Stylish flower pots for indoor and outdoor plants", inStock: true },
+  { id: 306, name: "Premium Food Storage Containers", price: 199, category: "Kitchen", image: "/assets/products/vmr (46).jpg", description: "Airtight food storage containers for freshness", inStock: true },
+  { id: 307, name: "Multipurpose Utility Buckets", price: 69, category: "Buckets", image: "/assets/products/vmr (49).jpg", description: "Heavy-duty buckets for various household tasks", inStock: true },
+  { id: 308, name: "Elegant Bathroom Accessories Set", price: 279, category: "Bathroom", image: "/assets/products/vmr (52).jpg", description: "Complete bathroom accessory set with modern design", inStock: true },
+  { id: 309, name: "Stackable Storage Bins", price: 129, category: "Storage", image: "/assets/products/vmr (55).jpg", description: "Space-saving stackable bins for organization", inStock: true },
+  { id: 310, name: "Colorful Kids Furniture Set", price: 499, category: "Furniture", image: "/assets/products/101.jpg", description: "Safe and colorful furniture designed for children", inStock: true }
 ];
 
 export const categories = [
@@ -153,7 +165,10 @@ export const categories = [
   "Planters",
   "Kitchen",
   "Bathroom",
-  "Cleaning"
+  "Cleaning",
+  "Storage",
+  "Bottles",
+  "Laundry"
 ];
 
 

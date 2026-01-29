@@ -13,29 +13,41 @@ interface ProductImage {
 
 interface ProductImageGalleryProps {
   images: ProductImage[];
+  allVariantImages?: ProductImage[];
   productName: string;
 }
 
-const ProductImageGallery = ({ images, productName }: ProductImageGalleryProps) => {
+const ProductImageGallery = ({ images, allVariantImages, productName }: ProductImageGalleryProps) => {
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [isZoomed, setIsZoomed] = useState(false);
+  const [currentImages, setCurrentImages] = useState<ProductImage[]>(images);
 
   // Reset selected image index when images change
   useEffect(() => {
     setSelectedImageIndex(0);
     setIsZoomed(false);
+    setCurrentImages(images);
   }, [images]);
 
   const handlePrevious = () => {
-    setSelectedImageIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
+    const imagesToUse = allVariantImages || images;
+    const newIndex = selectedImageIndex === 0 ? imagesToUse.length - 1 : selectedImageIndex - 1;
+    setSelectedImageIndex(newIndex);
+    setCurrentImages([imagesToUse[newIndex]]);
   };
 
   const handleNext = () => {
-    setSelectedImageIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
+    const imagesToUse = allVariantImages || images;
+    const newIndex = selectedImageIndex === imagesToUse.length - 1 ? 0 : selectedImageIndex + 1;
+    setSelectedImageIndex(newIndex);
+    setCurrentImages([imagesToUse[newIndex]]);
   };
 
   const handleThumbnailClick = (index: number) => {
+    const imagesToUse = allVariantImages || images;
     setSelectedImageIndex(index);
+    // Update current images to show the clicked image
+    setCurrentImages([imagesToUse[index]]);
   };
 
   const toggleZoom = () => {
@@ -47,9 +59,9 @@ const ProductImageGallery = ({ images, productName }: ProductImageGalleryProps) 
       {/* Main Image Display */}
       <div className="relative aspect-square overflow-hidden rounded-lg bg-muted">
         <AppImage
-          key={`${images[selectedImageIndex]?.id}-${selectedImageIndex}`}
-          src={images[selectedImageIndex]?.url || ''}
-          alt={images[selectedImageIndex]?.alt || ''}
+          key={`${currentImages[0]?.id}-${selectedImageIndex}`}
+          src={currentImages[0]?.url || ''}
+          alt={currentImages[0]?.alt || ''}
           className={`h-full w-full object-cover transition-transform duration-300 ${
             isZoomed ? 'scale-150 cursor-zoom-out' : 'cursor-zoom-in'
           }`}
@@ -57,7 +69,7 @@ const ProductImageGallery = ({ images, productName }: ProductImageGalleryProps) 
         />
 
         {/* Navigation Arrows */}
-        {images.length > 1 && (
+        {(allVariantImages || images).length > 1 && (
           <>
             <button
               onClick={handlePrevious}
@@ -84,31 +96,28 @@ const ProductImageGallery = ({ images, productName }: ProductImageGalleryProps) 
 
         {/* Image Counter */}
         <div className="absolute bottom-4 left-4 rounded-md bg-card/80 px-3 py-2 text-xs font-medium text-foreground data-text">
-          {selectedImageIndex + 1} / {images.length}
+          {selectedImageIndex + 1} / {(allVariantImages || images).length}
         </div>
       </div>
 
-      {/* Thumbnail Navigation */}
-      {images.length > 1 && (
-        <div className="flex space-x-2 overflow-x-auto pb-2">
-          {images.map((image, index) => (
-            <button
-              key={image.id}
-              onClick={() => handleThumbnailClick(index)}
-              className={`flex-shrink-0 overflow-hidden rounded-md transition-smooth ${
-                index === selectedImageIndex
-                  ? 'ring-2 ring-primary ring-offset-2' :'opacity-60 hover:opacity-100'
-              }`}
-            >
-              <AppImage
-                src={image.url}
-                alt={`${productName} thumbnail ${index + 1}`}
-                className="h-20 w-20 object-cover"
-              />
-            </button>
-          ))}
-        </div>
-      )}
+      {/* Small Image Icons - All Variants */}
+      <div className="flex space-x-1 overflow-x-auto pb-2">
+        {(allVariantImages || images).map((image, index) => (
+          <button
+            key={image.id}
+            onClick={() => handleThumbnailClick(index)}
+            className={`flex-shrink-0 overflow-hidden rounded border transition-smooth ${
+              index === selectedImageIndex ? 'border-primary' : 'border-gray-300 hover:border-primary'
+            }`}
+          >
+            <AppImage
+              src={image.url}
+              alt={`${productName} icon ${index + 1}`}
+              className="h-10 w-10 object-cover"
+            />
+          </button>
+        ))}
+      </div>
     </div>
   );
 };

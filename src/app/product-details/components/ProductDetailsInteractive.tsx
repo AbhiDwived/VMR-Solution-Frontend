@@ -68,6 +68,7 @@ const ProductDetailsInteractive = () => {
   const [isHydrated, setIsHydrated] = useState(false);
   const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(null);
   const [currentImages, setCurrentImages] = useState<ProductImage[]>([]);
+  const [allVariantImages, setAllVariantImages] = useState<ProductImage[]>([]);
   const [productVariants, setProductVariants] = useState<ProductVariant[]>([]);
 
   const [product, setProduct] = useState<any>(null);
@@ -250,14 +251,37 @@ const ProductDetailsInteractive = () => {
   useEffect(() => {
     if (isHydrated && productVariants.length > 0) {
       setSelectedVariant(productVariants[0]);
-      // Set initial images
-      const images = JSON.parse(product?.product_images || '[]');
-      const productImages = images.map((url: string, index: number) => ({
-        id: (index + 1).toString(),
-        url,
-        alt: product?.description || product?.name,
-      }));
-      setCurrentImages(productImages);
+      
+      // Get all variant images
+      const dbVariants = JSON.parse(product?.variants || '[]');
+      const allImages: ProductImage[] = [];
+      
+      dbVariants.forEach((v: any, variantIndex: number) => {
+        if (v.images && v.images.length > 0) {
+          v.images.forEach((url: string, imageIndex: number) => {
+            allImages.push({
+              id: `variant-${variantIndex}-${imageIndex}`,
+              url,
+              alt: `${product?.name} - ${v.color?.name || 'Color'} ${v.size}`,
+              colorVariant: v.color?.name || 'Default',
+            });
+          });
+        }
+      });
+      
+      if (allImages.length === 0) {
+        const images = JSON.parse(product?.product_images || '[]');
+        const defaultImages = images.map((url: string, index: number) => ({
+          id: (index + 1).toString(),
+          url,
+          alt: product?.description || product?.name,
+        }));
+        setCurrentImages(defaultImages);
+        setAllVariantImages(defaultImages);
+      } else {
+        setCurrentImages([allImages[0]]);
+        setAllVariantImages(allImages);
+      }
     }
   }, [isHydrated, productVariants, product]);
 
@@ -338,6 +362,7 @@ const ProductDetailsInteractive = () => {
       <div className="grid gap-8 lg:grid-cols-2">
         <ProductImageGallery
           images={currentImages}
+          allVariantImages={allVariantImages}
           productName="Premium Plastic Flower Pot"
         />
         <ProductInfo
