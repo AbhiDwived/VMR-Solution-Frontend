@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { Suspense } from 'react';
 import Breadcrumb from '@/components/common/Breadcrumb';
 import ProductDetailsInteractive from './components/ProductDetailsInteractive';
 
@@ -12,7 +13,9 @@ export default function ProductDetailsPage() {
     <div className="min-h-screen bg-background">
       <main className="mx-auto max-w-full px-4 py-8 sm:px-6">
         <Breadcrumb />
-        <ProductDetailsInteractive />
+        <Suspense fallback={<div className="text-center py-8">Loading product details...</div>}>
+          <ProductDetailsInteractive />
+        </Suspense>
       </main>
 
       {/* Footer */}
