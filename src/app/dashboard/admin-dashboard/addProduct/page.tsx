@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import { useAuth } from '@/features/auth/hooks/useAuth';
 import { useAddAdminProductMutation, useUpdateAdminProductMutation, useGetAdminProductsQuery } from '@/store/api/productsApi';
 import { useSearchParams, useRouter } from 'next/navigation';
@@ -329,7 +328,7 @@ const AddProduct = () => {
       if (editId) {
         await updateAdminProduct({ id: editId, data: finalData }).unwrap();
         toast.success("✅ Product updated successfully!");
-        setTimeout(() => router.push('/admin-dashboard/products'), 2000);
+        setTimeout(() => router.push('/dashboard/admin-dashboard/products'), 2000);
       } else {
         await addAdminProduct(finalData).unwrap();
         toast.success("✅ Product added successfully!");

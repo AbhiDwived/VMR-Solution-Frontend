@@ -131,7 +131,7 @@ const Navbar = () => {
                       </div>
                       <div className="border-t border-border">
                         <Link
-                          href={user.role === 'admin' ? '/admin-dashboard' : '/user-dashboard'}
+                          href={user.role === 'admin' ? '/dashboard/admin-dashboard' : '/dashboard/user-dashboard'}
                           className="flex items-center space-x-3 px-4 py-3 text-sm text-popover-foreground transition-smooth hover:bg-muted"
                           onClick={() => setIsUserMenuOpen(false)}
                         >

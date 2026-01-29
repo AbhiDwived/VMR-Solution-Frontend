@@ -15,40 +15,40 @@ const MobileSidebar = () => {
     {
       groupName: 'OVERVIEW',
       items: [
-        { title: 'Dashboard', icon: 'ChartBarIcon', href: '/admin-dashboard' },
+        { title: 'Dashboard', icon: 'ChartBarIcon', href: '/dashboard/admin-dashboard' },
         {
           title: 'Analytics',
           icon: 'PresentationChartLineIcon',
-          href: '/admin-dashboard/analytics',
+          href: '/dashboard/admin-dashboard/analytics',
         },
       ],
     },
     {
       groupName: 'CUSTOMERS',
       items: [
-        { title: 'Users', icon: 'UsersIcon', href: '/admin-dashboard/users' },
-        { title: 'Inquiries', icon: 'ChatBubbleLeftRightIcon', href: '/admin-dashboard/inquiries' },
-        { title: 'Notifications', icon: 'BellIcon', href: '/admin-dashboard/notifications' },
+        { title: 'Users', icon: 'UsersIcon', href: '/dashboard/admin-dashboard/users' },
+        { title: 'Inquiries', icon: 'ChatBubbleLeftRightIcon', href: '/dashboard/admin-dashboard/inquiries' },
+        { title: 'Notifications', icon: 'BellIcon', href: '/dashboard/admin-dashboard/notifications' },
       ],
     },
     {
       groupName: 'PRODUCTS',
       items: [
-        { title: 'Add Product', icon: 'PlusCircleIcon', href: '/admin-dashboard/addProduct' },
-        { title: 'Products', icon: 'ArchiveBoxIcon', href: '/admin-dashboard/products' },
-        { title: 'Inventory', icon: 'RectangleStackIcon', href: '/admin-dashboard/inventory' },
-        { title: 'Categories', icon: 'TableCellsIcon', href: '/admin-dashboard/categories' },
-        { title: 'Brands', icon: 'TagIcon', href: '/admin-dashboard/brands' },
+        { title: 'Add Product', icon: 'PlusCircleIcon', href: '/dashboard/admin-dashboard/addProduct' },
+        { title: 'Products', icon: 'ArchiveBoxIcon', href: '/dashboard/admin-dashboard/products' },
+        { title: 'Inventory', icon: 'RectangleStackIcon', href: '/dashboard/admin-dashboard/inventory' },
+        { title: 'Categories', icon: 'TableCellsIcon', href: '/dashboard/admin-dashboard/categories' },
+        { title: 'Brands', icon: 'TagIcon', href: '/dashboard/admin-dashboard/brands' },
       ],
     },
     {
       groupName: 'ORDERS & SALES',
       items: [
-        { title: 'Orders', icon: 'ShoppingBagIcon', href: '/admin-dashboard/orders' },
-        { title: 'Revenue', icon: 'CurrencyDollarIcon', href: '/admin-dashboard/revenue' },
-        { title: 'Return', icon: 'ArrowUturnLeftIcon', href: '/admin-dashboard/return' },
-        { title: 'Coupons', icon: 'TicketIcon', href: '/admin-dashboard/coupons' },
-        { title: 'Subscribe', icon: 'CreditCardIcon', href: '/admin-dashboard/subscription' },
+        { title: 'Orders', icon: 'ShoppingBagIcon', href: '/dashboard/admin-dashboard/orders' },
+        { title: 'Revenue', icon: 'CurrencyDollarIcon', href: '/dashboard/admin-dashboard/revenue' },
+        { title: 'Return', icon: 'ArrowUturnLeftIcon', href: '/dashboard/admin-dashboard/return' },
+        { title: 'Coupons', icon: 'TicketIcon', href: '/dashboard/admin-dashboard/coupons' },
+        { title: 'Subscribe', icon: 'CreditCardIcon', href: '/dashboard/admin-dashboard/subscription' },
       ],
     },
   ];

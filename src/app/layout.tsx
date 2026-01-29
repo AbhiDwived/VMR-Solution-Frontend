@@ -2,6 +2,7 @@ import React from 'react';
 import type { Metadata, Viewport } from 'next';
 import { StoreProvider } from '@/lib/providers/StoreProvider';
 import '../styles/index.css';
+import '../styles/toastify.css';
 
 const Header = React.lazy(() => import('@/components/common/Header'));
 const Footer = React.lazy(() => import('@/components/common/Footer'));

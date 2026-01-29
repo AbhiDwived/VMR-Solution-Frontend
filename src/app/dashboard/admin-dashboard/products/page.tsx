@@ -167,7 +167,7 @@ export default function ProductsPage() {
                               <button
                                 className="p-1.5 rounded-lg bg-green-50 text-green-600 hover:bg-green-100 transition-all active:scale-95"
                                 title="Edit"
-                                onClick={() => window.location.href = `/admin-dashboard/addProduct?edit=${product.id}`}
+                                onClick={() => window.location.href = `/dashboard/admin-dashboard/addProduct?edit=${product.id}`}
                               >
                                 <Icon name="PencilSquareIcon" size={16} />
                               </button>

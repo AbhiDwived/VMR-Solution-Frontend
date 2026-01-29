@@ -6,8 +6,8 @@ export default function DashboardPage() {
   const { user } = useAuth();
   
   if (user?.role === 'admin') {
-    redirect('/admin-dashboard');
+    redirect('/dashboard/admin-dashboard');
   } else {
-    redirect('/user-dashboard');
+    redirect('/dashboard/user-dashboard');
   }
 }
