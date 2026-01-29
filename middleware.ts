@@ -7,11 +7,9 @@ export function middleware(request: NextRequest) {
 
   // Protected routes that require authentication
   const protectedRoutes = ['/user-dashboard', '/admin-dashboard'];
-  const adminRoutes = ['/admin-dashboard'];
 
   // Check if the current path is protected
   const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route));
-  const isAdminRoute = adminRoutes.some(route => pathname.startsWith(route));
 
   // Redirect to login if accessing protected route without token
   if (isProtectedRoute && !token) {
