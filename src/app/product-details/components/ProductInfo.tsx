@@ -21,9 +21,9 @@ interface ProductInfoProps {
   rating: number;
   reviewCount: number;
   variants: ProductVariant[];
-  onVariantChange: (variant: ProductVariant) => void;
-  onAddToCart: (quantity: number) => void;
-  onBuyNow: (quantity: number) => void;
+  onVariantChange: (_variant: ProductVariant) => void;
+  onAddToCart: (_quantity: number) => void;
+  onBuyNow: (_quantity: number) => void;
 }
 
 const ProductInfo = ({
@@ -36,8 +36,8 @@ const ProductInfo = ({
   onAddToCart,
   onBuyNow,
 }: ProductInfoProps) => {
-  const [selectedVariant, setSelectedVariant] = useState(variants[0]);
-  const [quantity, setQuantity] = useState(selectedVariant.minOrderQty);
+  const [selectedVariant, setSelectedVariant] = useState<ProductVariant | undefined>(variants[0]);
+  const [quantity, setQuantity] = useState(variants[0]?.minOrderQty || 1);
   const [isWishlisted, setIsWishlisted] = useState(false);
 
   const uniqueSizes = Array.from(new Set(variants.map((v) => v.size)));
@@ -45,8 +45,8 @@ const ProductInfo = ({
     new Set(variants.map((v) => JSON.stringify({ color: v.color, hex: v.colorHex })))
   ).map((str) => JSON.parse(str));
 
-  const [selectedSize, setSelectedSize] = useState(selectedVariant.size);
-  const [selectedColor, setSelectedColor] = useState(selectedVariant.color);
+  const [selectedSize, setSelectedSize] = useState(selectedVariant?.size || '');
+  const [selectedColor, setSelectedColor] = useState(selectedVariant?.color || '');
 
   const handleSizeChange = (size: string) => {
     setSelectedSize(size);
@@ -69,7 +69,7 @@ const ProductInfo = ({
   };
 
   const handleQuantityChange = (newQuantity: number) => {
-    if (newQuantity >= selectedVariant.minOrderQty && newQuantity <= selectedVariant.stock) {
+    if (selectedVariant && newQuantity >= selectedVariant.minOrderQty && newQuantity <= selectedVariant.stock) {
       setQuantity(newQuantity);
     }
   };
@@ -86,7 +86,7 @@ const ProductInfo = ({
     setIsWishlisted(!isWishlisted);
   };
 
-  const discountPercentage = selectedVariant.originalPrice
+  const discountPercentage = selectedVariant?.originalPrice
     ? Math.round(((selectedVariant.originalPrice - selectedVariant.price) / selectedVariant.originalPrice) * 100)
     : 0;
 
@@ -124,9 +124,9 @@ const ProductInfo = ({
       {/* Pricing */}
       <div className="flex items-baseline space-x-3">
         <span className="data-text text-3xl font-bold text-primary">
-          ₹{selectedVariant.price.toLocaleString('en-IN')}
+          ₹{selectedVariant?.price.toLocaleString('en-IN') || '0'}
         </span>
-        {selectedVariant.originalPrice && (
+        {selectedVariant?.originalPrice && (
           <>
             <span className="data-text text-xl text-muted-foreground line-through">
               ₹{selectedVariant.originalPrice.toLocaleString('en-IN')}
@@ -141,15 +141,15 @@ const ProductInfo = ({
       {/* Stock Status */}
       <div className="flex items-center space-x-2">
         <Icon
-          name={selectedVariant.stock > 10 ? 'CheckCircleIcon' : 'ExclamationTriangleIcon'}
+          name={(selectedVariant?.stock || 0) > 10 ? 'CheckCircleIcon' : 'ExclamationTriangleIcon'}
           size={20}
           variant="solid"
-          className={selectedVariant.stock > 10 ? 'text-success' : 'text-warning'}
+          className={(selectedVariant?.stock || 0) > 10 ? 'text-success' : 'text-warning'}
         />
         <span className="text-sm font-medium text-foreground">
-          {selectedVariant.stock > 10
+          {(selectedVariant?.stock || 0) > 10
             ? 'In Stock'
-            : `Only ${selectedVariant.stock} left in stock`}
+            : `Only ${selectedVariant?.stock || 0} left in stock`}
         </span>
       </div>
 
@@ -178,23 +178,19 @@ const ProductInfo = ({
       {/* Color Selection */}
       <div>
         <label className="mb-3 block text-sm font-medium text-foreground">
-          Color: <span className="text-primary">{selectedColor}</span>
+          Color:
         </label>
         <div className="flex flex-wrap gap-3">
           {uniqueColors.map((colorObj) => (
             <button
               key={colorObj.color}
               onClick={() => handleColorChange(colorObj.color)}
-              className={`flex items-center space-x-2 rounded-md border-2 px-3 py-2 transition-smooth ${
-                selectedColor === colorObj.color
-                  ? 'border-primary bg-muted' :'border-border bg-background hover:border-primary'
-              }`}
+              className="transition-smooth"
             >
               <div
-                className="h-6 w-6 rounded-full border border-border"
+                className="h-8 w-8 rounded-full"
                 style={{ backgroundColor: colorObj.hex }}
               />
-              <span className="text-sm font-medium text-foreground">{colorObj.color}</span>
             </button>
           ))}
         </div>
@@ -205,12 +201,12 @@ const ProductInfo = ({
         <div className="grid grid-cols-2 gap-4">
           <div>
             <p className="caption text-muted-foreground">Capacity</p>
-            <p className="data-text font-medium text-foreground">{selectedVariant.capacity}</p>
+            <p className="data-text font-medium text-foreground">{selectedVariant?.capacity || 'N/A'}</p>
           </div>
           <div>
             <p className="caption text-muted-foreground">Min. Order Qty</p>
             <p className="data-text font-medium text-foreground">
-              {selectedVariant.minOrderQty} units
+              {selectedVariant?.minOrderQty || 1} units
             </p>
           </div>
         </div>
@@ -218,34 +214,35 @@ const ProductInfo = ({
 
       {/* Quantity Selector */}
       <div>
-        <label className="mb-3 block text-sm font-medium text-foreground">Quantity</label>
+        <label htmlFor="quantity-input" className="mb-3 block text-sm font-medium text-foreground">Quantity</label>
         <div className="flex items-center space-x-4">
           <div className="flex items-center rounded-md border border-border bg-background">
             <button
               onClick={() => handleQuantityChange(quantity - 1)}
-              disabled={quantity <= selectedVariant.minOrderQty}
+              disabled={quantity <= (selectedVariant?.minOrderQty || 1)}
               className="flex h-10 w-10 items-center justify-center text-foreground transition-smooth hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50"
             >
               <Icon name="MinusIcon" size={20} />
             </button>
             <input
+              id="quantity-input"
               type="number"
               value={quantity}
-              onChange={(e) => handleQuantityChange(parseInt(e.target.value) || selectedVariant.minOrderQty)}
+              onChange={(e) => handleQuantityChange(parseInt(e.target.value) || (selectedVariant?.minOrderQty || 1))}
               className="data-text h-10 w-20 border-x border-border bg-transparent text-center text-foreground focus:outline-none"
-              min={selectedVariant.minOrderQty}
-              max={selectedVariant.stock}
+              min={selectedVariant?.minOrderQty || 1}
+              max={selectedVariant?.stock || 999}
             />
             <button
               onClick={() => handleQuantityChange(quantity + 1)}
-              disabled={quantity >= selectedVariant.stock}
+              disabled={quantity >= (selectedVariant?.stock || 999)}
               className="flex h-10 w-10 items-center justify-center text-foreground transition-smooth hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50"
             >
               <Icon name="PlusIcon" size={20} />
             </button>
           </div>
           <span className="caption text-muted-foreground">
-            (Min: {selectedVariant.minOrderQty}, Max: {selectedVariant.stock})
+            (Min: {selectedVariant?.minOrderQty || 1}, Max: {selectedVariant?.stock || 999})
           </span>
         </div>
       </div>

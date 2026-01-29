@@ -10,14 +10,14 @@ export const metadata: Metadata = {
 export default function ProductDetailsPage() {
   return (
     <div className="min-h-screen bg-background">
-      <main className="mx-auto max-w-[1200px] px-4 py-8 sm:px-6">
+      <main className="mx-auto max-w-full px-4 py-8 sm:px-6">
         <Breadcrumb />
         <ProductDetailsInteractive />
       </main>
 
       {/* Footer */}
       <footer className="mt-16 border-t border-border bg-card">
-        <div className="mx-auto max-w-[1200px] px-4 py-8 sm:px-6">
+        <div className="mx-auto max-w-full px-4 py-8 sm:px-6">
           <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
             <div>
               <h3 className="mb-4 font-heading text-lg font-semibold text-card-foreground">

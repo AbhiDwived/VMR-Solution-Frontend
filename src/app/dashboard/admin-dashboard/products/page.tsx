@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from 'react';
 import { useGetAdminProductsQuery, useDeleteAdminProductMutation } from '@/store/api/productsApi';
 import AdminSidebar from '../components/AdminSidebar';
 import Breadcrumb from '@/components/common/Breadcrumb';
@@ -8,11 +9,16 @@ import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 export default function ProductsPage() {
+  const [mounted, setMounted] = useState(false);
   const { data: productsData, isLoading, error } = useGetAdminProductsQuery();
   const [deleteProduct] = useDeleteAdminProductMutation();
 
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const handleDelete = async (id: string) => {
-    if (window.confirm('Are you sure you want to delete this product?')) {
+    if (mounted && window.confirm('Are you sure you want to delete this product?')) {
       try {
         await deleteProduct(id).unwrap();
         toast.success('Product deleted successfully');
@@ -24,6 +30,7 @@ export default function ProductsPage() {
 
   const products = productsData?.data || [];
 
+  if (!mounted) return <div className="p-6">Loading...</div>;
   if (isLoading) return <div className="p-6">Loading products...</div>;
   if (error) return <div className="p-6 text-red-500">Error loading products</div>;
 
@@ -153,7 +160,7 @@ export default function ProductsPage() {
                             <div className="text-gray-500">{product.admin_email}</div>
                           </td>
                           <td className="px-4 py-3 text-xs">
-                            {new Date(product.created_at).toLocaleDateString()}
+                            {mounted ? new Date(product.created_at).toLocaleDateString() : ''}
                           </td>
                           <td className="px-4 py-3">
                             <div className="flex items-center space-x-2">

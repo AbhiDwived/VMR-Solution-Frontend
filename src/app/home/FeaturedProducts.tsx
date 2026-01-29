@@ -4,14 +4,14 @@ import { useState } from 'react';
 import Link from 'next/link';
 import Icon from '@/components/ui/AppIcon';
 import ProductCard from '@/components/ui/ProductCard';
-import { products } from '@/data/products';
+import { useGetAdminProductsQuery } from '@/store/api/productsApi';
 
 interface FeaturedProduct {
   id: string;
   name: string;
   category: string;
   price: number;
-  originalPrice?: number;
+  originalPrice: number;
   image: string;
   alt: string;
   rating: number;
@@ -19,18 +19,27 @@ interface FeaturedProduct {
 
 const FeaturedProducts = () => {
   const [scrollPosition, setScrollPosition] = useState(0);
+  const { data: productsData, isLoading } = useGetAdminProductsQuery();
 
-  // Get featured products from real data
-  const featuredProducts: FeaturedProduct[] = products.slice(0, 36).map(product => ({
+  // Get featured products from API data
+  const featuredProducts: FeaturedProduct[] = productsData?.data?.slice(0, 36).map((product: any) => ({
     id: product.id.toString(),
     name: product.name,
     category: product.category,
-    price: product.price,
-    originalPrice: product.price > 100 ? Math.floor(product.price * 1.3) : undefined,
-    image: product.image,
+    price: Number(product.discount_price) || Number(product.price),
+    originalPrice: Number(product.price),
+    image: JSON.parse(product.product_images || '[]')[0] || '/placeholder.jpg',
     alt: product.description,
     rating: 4.5,
-  }));
+  })) || [];
+
+  if (isLoading) {
+    return (
+      <section className="w-full px-2 py-8 sm:px-4 sm:py-12">
+        <div className="text-center">Loading products...</div>
+      </section>
+    );
+  }
 
   const scroll = (direction: 'left' | 'right') => {
     const container = document.getElementById('featured-carousel');
@@ -77,7 +86,7 @@ const FeaturedProducts = () => {
           id="featured-carousel"
           className="grid grid-cols-2 gap-1 sm:gap-2 lg:grid-cols-6"
         >
-          {featuredProducts.map((product, index) => {
+          {featuredProducts.map((product) => {
             const discount = product.originalPrice
               ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
               : 0;

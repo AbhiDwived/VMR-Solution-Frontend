@@ -6,7 +6,6 @@ import { useAuth } from '@/features/auth/hooks/useAuth';
 import { useAddAdminProductMutation, useUpdateAdminProductMutation, useGetAdminProductsQuery } from '@/store/api/productsApi';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { HexColorPicker } from "react-colorful";
-import React from "react";
 import AdminSidebar from '../components/AdminSidebar';
 import Breadcrumb from '@/components/common/Breadcrumb';
 import {
@@ -32,8 +31,8 @@ const generateSKU = (slug: string, color: string, size: string) =>
 const generateSlug = (name: string) =>
   name
     .toLowerCase()
-    .replace(/ /g, "-")
-    .replace(/[^\w-]+/g, "");
+    .replaceAll(" ", "-")
+    .replaceAll(/[^\w-]+/g, "");
 
 // Interfaces
 interface ProductData {
@@ -61,15 +60,17 @@ interface Specification {
 }
 
 interface Variant {
+  variantId: string;
   sku: string;
-  color: string;
+  color: {
+    name: string;
+    code: string;
+  };
   size: string;
   stock: number;
   price: number;
   images: string[];
 }
-
-
 
 // Cloudinary Upload Function
 const uploadImageToCloudinary = async (file: File) => {
@@ -128,6 +129,12 @@ const AddProduct = () => {
   const [sizes, setSizes] = useState<string[]>([]);
   const [features, setFeatures] = useState<string[]>([]);
   const [variants, setVariants] = useState<Variant[]>([]);
+  const [variantImageSets, setVariantImageSets] = useState<Array<{
+    id: string;
+    color: string;
+    size: string;
+    images: string[];
+  }>>([]);
   const [isFeatured, setIsFeatured] = useState(false);
   const [isNewArrival, setIsNewArrival] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("");
@@ -160,20 +167,25 @@ const AddProduct = () => {
         });
 
         try {
-          const parsedSpecs = JSON.parse(product.specifications || '[]');
+          const parsedSpecs = product.specifications ? JSON.parse(product.specifications) : [];
           setSpecifications(Array.isArray(parsedSpecs) ? parsedSpecs : []);
 
-          setProductImages(JSON.parse(product.product_images || '[]'));
-          setColors(JSON.parse(product.colors || '[]'));
-          setSizes(JSON.parse(product.sizes || '[]'));
-          setFeatures(JSON.parse(product.features || '[]'));
-          setVariants(JSON.parse(product.variants || '[]'));
+          setProductImages(product.product_images ? JSON.parse(product.product_images) : []);
+          setColors(product.colors ? JSON.parse(product.colors) : []);
+          setSizes(product.sizes ? JSON.parse(product.sizes) : []);
+          setFeatures(product.features ? JSON.parse(product.features) : []);
+          setVariantImageSets(product.variants ? JSON.parse(product.variants) : []);
         } catch (e) {
           console.error("Error parsing product JSON fields", e);
+          setSpecifications([]);
+          setProductImages([]);
+          setColors([]);
+          setSizes([]);
+          setFeatures([]);
+          setVariantImageSets([]);
         }
 
         setIsFeatured(!!product.is_featured);
-        setIsNewArrival(!!product.is_new_arrival);
         setIsNewArrival(!!product.is_new_arrival);
 
         // Handle categories
@@ -189,8 +201,6 @@ const AddProduct = () => {
     }
   }, [editId, adminProductsData]);
 
-
-
   const addColor = () => {
     if (currentColor && !colors.includes(currentColor)) {
       setColors([...colors, currentColor]);
@@ -200,12 +210,6 @@ const AddProduct = () => {
   const removeColor = (color: string) => {
     setColors(colors.filter((c) => c !== color));
   };
-
-  useEffect(() => {
-    // Brand logic could go here if needed
-  }, []);
-
-
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -227,31 +231,52 @@ const AddProduct = () => {
     }
   };
 
+  const addVariantImageSet = () => {
+    setVariantImageSets(prev => [...prev, {
+      id: Date.now().toString(),
+      color: '',
+      size: '',
+      images: []
+    }]);
+  };
 
+  const updateVariantImageSet = (id: string, field: string, value: any) => {
+    setVariantImageSets(prev => prev.map(set =>
+      set.id === id ? { ...set, [field]: value } : set
+    ));
+  };
 
-  const handleVariantChange = (color: string, size: string) => {
-    const sku = generateSKU(productData.slug, color, size);
-    if (!variants.some((v) => v.color === color && v.size === size)) {
-      setVariants((prev) => [
-        ...prev,
-        { sku, color, size, stock: 0, price: productData.price, images: [] },
-      ]);
+  const removeVariantImageSet = (id: string) => {
+    setVariantImageSets(prev => prev.filter(set => set.id !== id));
+  };
+
+  const handleVariantImageSetUpload = async (e: React.ChangeEvent<HTMLInputElement>, setId: string) => {
+    const files = Array.from(e.target.files || []);
+    if (files.length === 0) return;
+
+    setLoading(true);
+    try {
+      const uploadPromises = files.map((file) => uploadImageToCloudinary(file));
+      const uploadedUrls = await Promise.all(uploadPromises);
+
+      updateVariantImageSet(setId, 'images',
+        [...(variantImageSets.find(set => set.id === setId)?.images || []), ...uploadedUrls]
+      );
+
+      toast.success('✅ Variant images uploaded!');
+    } catch (_error) {
+      toast.error('❌ Variant image upload failed!');
+    } finally {
+      setLoading(false);
     }
   };
 
-  const updateVariantField = (
-    color: string,
-    size: string,
-    field: keyof Variant,
-    value: any
-  ) => {
-    setVariants((prev) =>
-      prev.map((variant) =>
-        variant.color === color && variant.size === size
-          ? { ...variant, [field]: value }
-          : variant
-      )
-    );
+  const removeVariantImage = (setId: string, imageIndex: number) => {
+    const set = variantImageSets.find(s => s.id === setId);
+    if (set) {
+      const newImages = set.images.filter((_, idx) => idx !== imageIndex);
+      updateVariantImageSet(setId, 'images', newImages);
+    }
   };
 
   const resetForm = () => {
@@ -276,9 +301,9 @@ const AddProduct = () => {
     setSpecifications([{ key: "", value: "" }]);
     setProductImages([]);
     setColors([]);
-    setSizes([""]);
-    setFeatures([""]);
-    setVariants([]);
+    setSizes([]);
+    setFeatures([]);
+    setVariantImageSets([]);
     setIsFeatured(false);
     setIsNewArrival(false);
     setSlugCounter(1);
@@ -310,7 +335,7 @@ const AddProduct = () => {
       features,
       isFeatured,
       isNewArrival,
-      variants,
+      variants: variantImageSets,
       adminEmail,
       adminName,
       adminNumber,
@@ -363,7 +388,7 @@ const AddProduct = () => {
       const uploadedUrls = await Promise.all(uploadPromises);
       setProductImages((prev) => [...prev, ...uploadedUrls]);
       toast.success("✅ Images uploaded!");
-    } catch (error) {
+    } catch (_error) {
       toast.error("❌ Image upload failed!");
     } finally {
       setLoading(false);
@@ -441,17 +466,18 @@ const AddProduct = () => {
                 <p className="text-sm text-gray-500 font-medium">Click or drag to upload {label.toLowerCase()}</p>
               </div>
               <input
+                name="product-images"
                 type="file"
                 multiple
                 onChange={handleImageUpload}
                 className="hidden"
-                required={required && state.length === 0}
+                required={required && state.length === 0 && !editId}
               />
             </label>
           </div>
           <div className="flex flex-wrap gap-4">
             {state.map((img, idx) => (
-              <div key={idx} className="relative group">
+              <div key={`img-${idx}`} className="relative group">
                 <img
                   src={img}
                   alt="Uploaded"
@@ -472,9 +498,10 @@ const AddProduct = () => {
         <div className="p-5 bg-gray-50/50 rounded-2xl border border-gray-200 shadow-inner-sm">
           <div className="flex flex-col gap-3">
             {state.map((val, idx) => (
-              <div key={idx} className="flex gap-3 items-center group">
+              <div key={`item-${idx}`} className="flex gap-3 items-center group">
                 <div className="flex-1 relative">
                   <input
+                    name={`${label.toLowerCase()}-${idx}`}
                     value={val}
                     placeholder={`Enter ${label.slice(0, -1)}...`}
                     onChange={(e) => {
@@ -483,7 +510,7 @@ const AddProduct = () => {
                       setter(newState);
                     }}
                     className="w-full pl-4 pr-4 py-3 bg-white border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-primary focus:border-transparent focus:outline-none transition-all shadow-sm"
-                    required={required}
+                    required={required && val.trim() !== ""}
                   />
                 </div>
                 <button
@@ -523,10 +550,12 @@ const AddProduct = () => {
       </label>
       <div className="grid grid-cols-1 gap-4">
         {state.map((item, idx) => (
-          <div key={idx} className="flex gap-4 items-end bg-gray-50/50 p-4 rounded-xl border border-gray-200">
+          <div key={`spec-${idx}`} className="flex gap-4 items-end bg-gray-50/50 p-4 rounded-xl border border-gray-200">
             <div className="flex-1">
-              <label className="text-xs font-bold text-mocha-grey mb-1 block uppercase">Feature / Key</label>
+              <label htmlFor={`spec-key-${idx}`} className="text-xs font-bold text-mocha-grey mb-1 block uppercase">Feature / Key</label>
               <input
+                id={`spec-key-${idx}`}
+                name={`spec-key-${idx}`}
                 placeholder="e.g. Dimensions"
                 value={item.key}
                 onChange={(e) => {
@@ -538,8 +567,10 @@ const AddProduct = () => {
               />
             </div>
             <div className="flex-1">
-              <label className="text-xs font-bold text-mocha-grey mb-1 block uppercase">Description / Value</label>
+              <label htmlFor={`spec-value-${idx}`} className="text-xs font-bold text-mocha-grey mb-1 block uppercase">Description / Value</label>
               <input
+                id={`spec-value-${idx}`}
+                name={`spec-value-${idx}`}
                 placeholder="e.g. 10x10x5 cm"
                 value={item.value}
                 onChange={(e) => {
@@ -571,78 +602,134 @@ const AddProduct = () => {
     </div>
   );
 
-  const renderVariants = () =>
-    colors.flatMap((color) =>
-      sizes.map((size) => (
-        <div
-          key={`${color}-${size}`}
-          className="border p-6 my-4 rounded-lg shadow-md hover:shadow-xl transition-shadow"
+  const renderVariantImageUploader = () => (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <h3 className="text-lg font-bold text-gray-800">Variant Images</h3>
+        <button
+          type="button"
+          onClick={addVariantImageSet}
+          className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-xl hover:bg-primary/90 transition-all"
         >
-          <h4 className="font-bold text-xl">
-            {color} - {size}
-          </h4>
-          <div className="flex gap-4 items-center">
-            <input
-              value={generateSKU(productData.slug, color, size)}
-              disabled
-              className="p-3 border border-gray-300 rounded-md w-full"
-            />
+          <Plus className="w-4 h-4" />
+          Add Variant Images
+        </button>
+      </div>
+
+      {variantImageSets.map((set) => (
+        <div key={set.id} className="border border-gray-200 rounded-xl p-6 bg-gray-50/50">
+          <div className="flex items-center justify-between mb-6">
+            <h4 className="font-semibold text-gray-700">Variant Image Set</h4>
             <button
               type="button"
-              onClick={() => handleVariantChange(color, size)}
-              className="bg-primary text-white px-5 py-2 rounded-md hover:bg-primary/90"
+              onClick={() => removeVariantImageSet(set.id)}
+              className="text-red-500 hover:text-red-700 transition-colors"
             >
-              Add Variant
+              <Trash2 className="w-4 h-4" />
             </button>
           </div>
-          {variants.some((v) => v.color === color && v.size === size) && (
-            <div className="mt-4 grid grid-cols-3 gap-4">
-              <input
-                type="number"
-                placeholder="Stock"
-                onChange={(e) =>
-                  updateVariantField(
-                    color,
-                    size,
-                    "stock",
-                    Number(e.target.value)
-                  )
-                }
-                className="p-3 border border-gray-300 rounded-md"
-              />
-              <input
-                type="number"
-                placeholder="Price"
-                onChange={(e) =>
-                  updateVariantField(
-                    color,
-                    size,
-                    "price",
-                    Number(e.target.value)
-                  )
-                }
-                className="p-3 border border-gray-300 rounded-md"
-              />
-              <input
-                type="text"
-                placeholder="Images (comma separated)"
-                onChange={(e) =>
-                  updateVariantField(
-                    color,
-                    size,
-                    "images",
-                    e.target.value.split(",")
-                  )
-                }
-                className="p-3 border border-gray-300 rounded-md"
-              />
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* Color Selection */}
+            <div className="space-y-3">
+              <label className="text-sm font-medium text-gray-700">Color</label>
+              <div className="flex flex-wrap gap-2 p-2 border border-gray-300 rounded-lg bg-white min-h-[50px]">
+                {colors.length === 0 ? (
+                  <p className="text-xs text-gray-400 italic py-2">Add colors in the section above first</p>
+                ) : (
+                  colors.map((color) => (
+                    <button
+                      key={color}
+                      type="button"
+                      onClick={() => updateVariantImageSet(set.id, 'color', color)}
+                      className={`w-6 h-6 rounded-full border-2 transition-all ${set.color === color ? 'border-primary ring-2 ring-primary/20 scale-110' : 'border-gray-200 hover:scale-105'
+                        }`}
+                      style={{ backgroundColor: color }}
+                      title={color}
+                    />
+                  ))
+                )}
+              </div>
+              {set.color && (
+                <div className="flex items-center gap-2 px-1">
+                  <div className="w-3 h-3 rounded-full border border-gray-300" style={{ backgroundColor: set.color }} />
+                  <span className="text-xs font-medium text-gray-500 uppercase">{set.color}</span>
+                </div>
+              )}
+            </div>
+
+            {/* Size Input */}
+            <div className="space-y-3">
+              <label className="text-sm font-medium text-gray-700">Size</label>
+              <select
+                value={set.size}
+                onChange={(e) => updateVariantImageSet(set.id, 'size', e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:outline-none bg-white"
+              >
+                <option value="">Select Size</option>
+                {sizes.filter(s => s.trim() !== "").map((size) => (
+                  <option key={size} value={size}>
+                    {size}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Image Upload */}
+            <div className="space-y-3">
+              <label className="text-sm font-medium text-gray-700">Upload Images</label>
+              <label className="flex items-center justify-center w-full h-12 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-primary hover:bg-primary/5 transition-colors">
+                <div className="flex items-center gap-2">
+                  <Plus className="w-4 h-4 text-gray-400" />
+                  <span className="text-sm text-gray-500">Upload</span>
+                </div>
+                <input
+                  type="file"
+                  multiple
+                  onChange={(e) => handleVariantImageSetUpload(e, set.id)}
+                  className="hidden"
+                />
+              </label>
+            </div>
+          </div>
+
+          {/* Display Uploaded Images */}
+          {set.images.length > 0 && (
+            <div className="space-y-2 mt-6">
+              <label className="text-sm font-medium text-gray-700">Uploaded Images ({set.images.length}):</label>
+              <div className="flex flex-wrap gap-3">
+                {set.images.map((img, imgIdx) => (
+                  <div key={imgIdx} className="relative group">
+                    <img
+                      src={img}
+                      alt={`${set.color} ${set.size}`}
+                      className="w-20 h-20 object-cover rounded-lg border shadow-sm"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removeVariantImage(set.id, imgIdx)}
+                      className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-all hover:bg-red-600"
+                    >
+                      <Trash2 className="w-3 h-3" />
+                    </button>
+                  </div>
+                ))}
+              </div>
             </div>
           )}
         </div>
-      ))
-    );
+      ))}
 
-
+      {variantImageSets.length === 0 && (
+        <div className="text-center py-8 text-gray-500 bg-gray-50 rounded-xl border border-dashed border-gray-300">
+          <div className="space-y-2">
+            <p className="font-medium">No variant images added yet</p>
+            <p className="text-sm">Click "Add Variant Images" to create color-size combinations</p>
+          </div>
+        </div>
+      )}
+    </div>
+  );
 
   return (
     <div className="h-[calc(100vh-64px)] bg-background overflow-hidden font-header">
@@ -770,48 +857,50 @@ const AddProduct = () => {
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                    <div className="space-y-6">
+                    <div className="space-y-8">
                       {renderArrayField("Sizes", sizes, setSizes)}
-                      {renderArrayField("Features", features, setFeatures)}
+                      <div className="pt-4">
+                        {renderVariantImageUploader()}
+                      </div>
                     </div>
 
                     <div className="space-y-6">
-                      <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
-                        <label className="block text-base font-bold text-gray-800 mb-4">
+                      <div className="bg-white p-4 rounded-2xl border border-gray-200 shadow-sm">
+                        <label className="block text-sm font-bold text-gray-800 mb-3">
                           Product Colors
                         </label>
-                        <div className="flex flex-col gap-6">
+                        <div className="flex flex-col gap-4">
                           <HexColorPicker
                             color={currentColor}
                             onChange={setCurrentColor}
-                            className="w-full !h-48 rounded-lg shadow-sm"
+                            className="w-full !h-36 rounded-lg shadow-sm"
                           />
-                          <div className="flex items-center gap-3">
+                          <div className="flex items-center gap-2">
                             <div
-                              className="w-10 h-10 rounded-full border shadow-sm"
+                              className="w-8 h-8 rounded-full border shadow-sm"
                               style={{ backgroundColor: currentColor }}
                             />
                             <input
                               type="text"
                               value={currentColor}
                               onChange={(e) => setCurrentColor(e.target.value)}
-                              className="border border-gray-300 rounded-xl px-4 py-2 text-sm w-32 focus:outline-none focus:ring-2 focus:ring-primary"
+                              className="border border-gray-200 rounded-lg px-3 py-1.5 text-xs w-24 focus:outline-none focus:ring-2 focus:ring-primary"
                             />
                             <button
                               type="button"
                               onClick={addColor}
-                              className="bg-primary hover:bg-primary/90 text-white px-6 py-2 rounded-xl text-sm font-bold transition-all"
+                              className="bg-primary hover:bg-primary/90 text-white px-4 py-1.5 rounded-lg text-xs font-bold transition-all"
                             >
                               Add Color
                             </button>
                           </div>
                           {colors.length > 0 && (
-                            <div className="flex flex-wrap gap-3 p-3 bg-gray-50 rounded-xl">
+                            <div className="flex flex-wrap gap-2 p-2 bg-gray-50 rounded-lg">
                               {colors.map((color) => (
                                 <div
                                   key={color}
                                   onClick={() => removeColor(color)}
-                                  className="w-8 h-8 rounded-full border-2 border-white shadow-md cursor-pointer hover:scale-110 transition-transform"
+                                  className="w-6 h-6 rounded-full border-2 border-white shadow-sm cursor-pointer hover:scale-110 transition-transform"
                                   style={{ backgroundColor: color }}
                                   title={`Remove ${color}`}
                                 />
@@ -843,16 +932,13 @@ const AddProduct = () => {
                       </div>
                     </div>
                   </div>
+
+
                 </div>
 
-                <div className="space-y-8 pt-6">
-                  <div className="flex items-center gap-4">
-                    <h2 className="text-2xl font-bold text-espresso">Product Variants</h2>
-                    <span className="px-3 py-1 bg-primary/10 text-primary text-xs font-bold rounded-full">Automated Generation</span>
-                  </div>
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    {renderVariants()}
-                  </div>
+                <div className="space-y-6">
+                  <h2 className="text-xl font-bold text-espresso py-2">Additional Features</h2>
+                  {renderArrayField("Features", features, setFeatures)}
                 </div>
 
                 <div className="pt-6">

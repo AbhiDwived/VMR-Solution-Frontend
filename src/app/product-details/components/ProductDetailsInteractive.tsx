@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useGetAdminProductsQuery } from '@/store/api/productsApi';
 import ProductImageGallery from './ProductImageGallery';
 import ProductInfo from './ProductInfo';
 import ProductTabs from './ProductTabs';
@@ -61,13 +62,84 @@ interface PricingTier {
 
 const ProductDetailsInteractive = () => {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const productId = searchParams.get('id');
+  const { data: productsData, isLoading } = useGetAdminProductsQuery();
   const [isHydrated, setIsHydrated] = useState(false);
   const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(null);
   const [currentImages, setCurrentImages] = useState<ProductImage[]>([]);
+  const [productVariants, setProductVariants] = useState<ProductVariant[]>([]);
+
+  const [product, setProduct] = useState<any>(null);
 
   useEffect(() => {
     setIsHydrated(true);
-  }, []);
+    if (productId && productsData?.data) {
+      const foundProduct = productsData.data.find((p: any) => p.id.toString() === productId);
+      if (foundProduct) {
+        setProduct(foundProduct);
+        const images = JSON.parse(foundProduct.product_images || '[]');
+        const productImages = images.map((url: string, index: number) => ({
+          id: (index + 1).toString(),
+          url,
+          alt: foundProduct.description || foundProduct.name,
+        }));
+        setCurrentImages(productImages);
+        
+        // Create variants from product data
+        const colors = JSON.parse(foundProduct.colors || '[]');
+        const sizes = JSON.parse(foundProduct.sizes || '[]');
+        
+        const variants = [];
+        if (colors.length > 0 && sizes.length > 0) {
+          for (const color of colors) {
+            for (const size of sizes) {
+              variants.push({
+                id: `${foundProduct.id}-${color}-${size}`,
+                size: size,
+                color: `Color ${color}`,
+                colorHex: color,
+                capacity: foundProduct.weight ? `${foundProduct.weight}kg` : 'N/A',
+                price: Number(foundProduct.discount_price) || Number(foundProduct.price),
+                originalPrice: Number(foundProduct.price),
+                stock: Number(foundProduct.stock_quantity),
+                minOrderQty: 1,
+              });
+            }
+          }
+        } else if (sizes.length > 0) {
+          for (const size of sizes) {
+            variants.push({
+              id: `${foundProduct.id}-${size}`,
+              size: size,
+              color: 'Default',
+              colorHex: '#C4621A',
+              capacity: foundProduct.weight ? `${foundProduct.weight}kg` : 'N/A',
+              price: Number(foundProduct.discount_price) || Number(foundProduct.price),
+              originalPrice: Number(foundProduct.price),
+              stock: Number(foundProduct.stock_quantity),
+              minOrderQty: 1,
+            });
+          }
+        } else {
+          variants.push({
+            id: foundProduct.id.toString(),
+            size: 'Standard',
+            color: 'Default',
+            colorHex: '#C4621A',
+            capacity: foundProduct.weight ? `${foundProduct.weight}kg` : 'N/A',
+            price: Number(foundProduct.discount_price) || Number(foundProduct.price),
+            originalPrice: Number(foundProduct.price),
+            stock: Number(foundProduct.stock_quantity),
+            minOrderQty: 1,
+          });
+        }
+        
+        setProductVariants(variants);
+        setSelectedVariant(variants[0]);
+      }
+    }
+  }, [isHydrated, productId, productsData]);
 
   const productImages: ProductImage[] = [
     {
@@ -96,133 +168,26 @@ const ProductDetailsInteractive = () => {
     },
   ];
 
-  const productVariants: ProductVariant[] = [
-    {
-      id: 'v1',
-      size: 'Small',
-      color: 'Terracotta',
-      colorHex: '#C4621A',
-      capacity: '1.5 Liters',
-      price: 149,
-      originalPrice: 199,
-      stock: 150,
-      minOrderQty: 10,
-    },
-    {
-      id: 'v2',
-      size: 'Medium',
-      color: 'Terracotta',
-      colorHex: '#C4621A',
-      capacity: '3 Liters',
-      price: 249,
-      originalPrice: 299,
-      stock: 120,
-      minOrderQty: 10,
-    },
-    {
-      id: 'v3',
-      size: 'Large',
-      color: 'Terracotta',
-      colorHex: '#C4621A',
-      capacity: '5 Liters',
-      price: 349,
-      originalPrice: 449,
-      stock: 80,
-      minOrderQty: 5,
-    },
-    {
-      id: 'v4',
-      size: 'Small',
-      color: 'Forest Green',
-      colorHex: '#2D5A3D',
-      capacity: '1.5 Liters',
-      price: 149,
-      originalPrice: 199,
-      stock: 100,
-      minOrderQty: 10,
-    },
-    {
-      id: 'v5',
-      size: 'Medium',
-      color: 'Forest Green',
-      colorHex: '#2D5A3D',
-      capacity: '3 Liters',
-      price: 249,
-      originalPrice: 299,
-      stock: 90,
-      minOrderQty: 10,
-    },
-    {
-      id: 'v6',
-      size: 'Large',
-      color: 'Forest Green',
-      colorHex: '#2D5A3D',
-      capacity: '5 Liters',
-      price: 349,
-      originalPrice: 449,
-      stock: 60,
-      minOrderQty: 5,
-    },
-    {
-      id: 'v7',
-      size: 'Small',
-      color: 'Cream White',
-      colorHex: '#FAFAF9',
-      capacity: '1.5 Liters',
-      price: 149,
-      originalPrice: 199,
-      stock: 130,
-      minOrderQty: 10,
-    },
-    {
-      id: 'v8',
-      size: 'Medium',
-      color: 'Cream White',
-      colorHex: '#FAFAF9',
-      capacity: '3 Liters',
-      price: 249,
-      originalPrice: 299,
-      stock: 110,
-      minOrderQty: 10,
-    },
-    {
-      id: 'v9',
-      size: 'Large',
-      color: 'Cream White',
-      colorHex: '#FAFAF9',
-      capacity: '5 Liters',
-      price: 349,
-      originalPrice: 449,
-      stock: 70,
-      minOrderQty: 5,
-    },
-  ];
 
-  const specifications: Specification[] = [
-    { label: 'Material', value: 'High-Grade Virgin Plastic' },
-    { label: 'Finish', value: 'Matte with UV Protection' },
-    { label: 'Weight (Empty)', value: '250g - 800g (varies by size)' },
-    { label: 'Drainage', value: 'Multiple Bottom Holes' },
-    { label: 'UV Resistant', value: 'Yes' },
-    { label: 'Temperature Range', value: '-20°C to 60°C' },
-    { label: 'Suitable For', value: 'Indoor & Outdoor Use' },
-    { label: 'Eco-Friendly', value: '100% Recyclable' },
-    { label: 'Made In', value: 'India' },
-    { label: 'Certification', value: 'ISI Certified' },
-  ];
 
-  const careInstructions: string[] = [
-    'Clean with mild soap and water regularly to maintain appearance',
-    'Avoid using harsh chemicals or abrasive cleaners that may damage the surface',
-    'Ensure proper drainage to prevent water accumulation and root rot',
-    'Store indoors during extreme weather conditions to extend product life',
-    'Do not expose to direct flame or heat sources above 60°C',
-    'Check drainage holes periodically and clear any blockages',
-    'For outdoor use, place on stable surface to prevent tipping',
-    'Rinse thoroughly before first use to remove any manufacturing residue',
-  ];
+  const specifications: Specification[] = product ? [
+    { label: 'Material', value: product.materials || 'N/A' },
+    { label: 'Brand', value: product.brand || 'N/A' },
+    { label: 'Weight', value: product.weight ? `${product.weight}kg` : 'N/A' },
+    { label: 'Warranty', value: product.warranty || 'N/A' },
+    { label: 'Category', value: product.category || 'N/A' },
+    { label: 'Sizes', value: JSON.parse(product.sizes || '[]').join(', ') || 'N/A' },
+    { label: 'Care Instructions', value: product.care_instructions || 'N/A' },
+    { label: 'Additional Info', value: product.additional_info || 'N/A' },
+    { label: 'Stock Quantity', value: product.stock_quantity?.toString() || 'N/A' },
+  ] : [];
 
-  const warrantyInfo = `This product comes with a 12-month manufacturer warranty against manufacturing defects. The warranty covers cracks, color fading, and structural damage under normal usage conditions. Warranty does not cover damage from misuse, accidents, exposure to extreme temperatures beyond specified range, or natural wear and tear. To claim warranty, please retain your purchase invoice and contact our customer support within the warranty period. Free replacement will be provided for valid warranty claims within 7-10 business days.`;
+  const careInstructions: string[] = product ? [
+    product.care_instructions || 'No care instructions available',
+    product.additional_info || 'No additional information available',
+  ].filter(Boolean) : [];
+
+  const warrantyInfo = product?.warranty ? `This product comes with ${product.warranty} warranty. ${product.additional_info || ''}` : 'No warranty information available.';
 
   const reviews: Review[] = [
     {
@@ -334,6 +299,22 @@ const ProductDetailsInteractive = () => {
     router.push('/checkout-process');
   };
 
+  if (isLoading) {
+    return (
+      <div className="mx-auto max-w-[1200px] px-4 py-8 sm:px-6">
+        <div className="text-center">Loading product details...</div>
+      </div>
+    );
+  }
+
+  if (!product) {
+    return (
+      <div className="mx-auto max-w-[1200px] px-4 py-8 sm:px-6">
+        <div className="text-center">Product not found</div>
+      </div>
+    );
+  }
+
   if (!isHydrated || !selectedVariant) {
     return (
       <div className="mx-auto max-w-[1200px] px-4 py-8 sm:px-6">
@@ -358,8 +339,8 @@ const ProductDetailsInteractive = () => {
           productName="Premium Plastic Flower Pot"
         />
         <ProductInfo
-          productName="Premium Plastic Flower Pot - Durable Garden Planter"
-          category="Plastic Gamla / Flower Pots"
+          productName={product.name}
+          category={product.category}
           rating={4.7}
           reviewCount={1247}
           variants={productVariants}
