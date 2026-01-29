@@ -50,7 +50,12 @@ function VerifyOTPContent() {
       }, 1000);
       return () => clearInterval(interval);
     }
-    setCanResend(true);
+  }, [timer]);
+
+  useEffect(() => {
+    if (timer === 0) {
+      setCanResend(true);
+    }
   }, [timer]);
 
   const handleResendOTP = async () => {
