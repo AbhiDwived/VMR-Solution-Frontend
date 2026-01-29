@@ -23,10 +23,6 @@ import {
   type LucideIcon,
 } from "lucide-react";
 
-// SKU generator
-const generateSKU = (slug: string, color: string, size: string) =>
-  `${slug}-${color}-${size}`;
-
 // Slug generator
 const generateSlug = (name: string) =>
   name
@@ -58,20 +54,6 @@ interface Specification {
   key: string;
   value: string;
 }
-
-interface Variant {
-  variantId: string;
-  sku: string;
-  color: {
-    name: string;
-    code: string;
-  };
-  size: string;
-  stock: number;
-  price: number;
-  images: string[];
-}
-
 // Cloudinary Upload Function
 const uploadImageToCloudinary = async (file: File) => {
   const formData = new FormData();
@@ -96,6 +78,7 @@ const uploadImageToCloudinary = async (file: File) => {
 
 const AddProduct = () => {
   const [loading, setLoading] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const [slugCounter, setSlugCounter] = useState(1);
   const [addAdminProduct] = useAddAdminProductMutation();
   const [updateAdminProduct] = useUpdateAdminProductMutation();
@@ -128,7 +111,6 @@ const AddProduct = () => {
   const [colors, setColors] = useState<string[]>([]);
   const [sizes, setSizes] = useState<string[]>([]);
   const [features, setFeatures] = useState<string[]>([]);
-  const [variants, setVariants] = useState<Variant[]>([]);
   const [variantImageSets, setVariantImageSets] = useState<Array<{
     id: string;
     color: string;
@@ -142,10 +124,16 @@ const AddProduct = () => {
   const [currentColor, setCurrentColor] = useState("#ff0000");
   const { user } = useAuth();
 
+  // Set mounted state
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   // Load product data if in edit mode
   useEffect(() => {
     if (editId && adminProductsData?.data) {
       const product = adminProductsData.data.find((p: any) => p.id === editId || p.id.toString() === editId);
+      
       if (product) {
         setProductData({
           name: product.name || "",
@@ -170,13 +158,21 @@ const AddProduct = () => {
           const parsedSpecs = product.specifications ? JSON.parse(product.specifications) : [];
           setSpecifications(Array.isArray(parsedSpecs) ? parsedSpecs : []);
 
-          setProductImages(product.product_images ? JSON.parse(product.product_images) : []);
-          setColors(product.colors ? JSON.parse(product.colors) : []);
-          setSizes(product.sizes ? JSON.parse(product.sizes) : []);
-          setFeatures(product.features ? JSON.parse(product.features) : []);
-          setVariantImageSets(product.variants ? JSON.parse(product.variants) : []);
+          const parsedImages = product.product_images ? JSON.parse(product.product_images) : [];
+          setProductImages(parsedImages);
+          
+          const parsedColors = product.colors ? JSON.parse(product.colors) : [];
+          setColors(parsedColors);
+          
+          const parsedSizes = product.sizes ? JSON.parse(product.sizes) : [];
+          setSizes(parsedSizes);
+          
+          const parsedFeatures = product.features ? JSON.parse(product.features) : [];
+          setFeatures(parsedFeatures);
+          
+          const parsedVariants = product.variants ? JSON.parse(product.variants) : [];
+          setVariantImageSets(parsedVariants);
         } catch (e) {
-          console.error("Error parsing product JSON fields", e);
           setSpecifications([]);
           setProductImages([]);
           setColors([]);
@@ -349,25 +345,26 @@ const AddProduct = () => {
     setLoading(true);
 
     try {
-      console.log("data", finalData);
       if (editId) {
-        await updateAdminProduct({ id: editId, data: finalData }).unwrap();
+        const result = await updateAdminProduct({ id: editId, data: finalData }).unwrap();
         toast.success("✅ Product updated successfully!");
-        setTimeout(() => router.push('/dashboard/admin-dashboard/products'), 2000);
+        setTimeout(() => {
+          router.push('/dashboard/admin-dashboard/products');
+        }, 2000);
       } else {
-        await addAdminProduct(finalData).unwrap();
+        const result = await addAdminProduct(finalData).unwrap();
         toast.success("✅ Product added successfully!");
         resetForm();
       }
       setSelectedCategory("");
       setCustomCategory("");
     } catch (err: any) {
-      console.error("Error saving product:", err);
       if (err.status === 400 && err.data?.message?.includes('slug')) {
         setSlugCounter(prev => prev + 1);
         toast.error("Slug exists, trying with different number...");
         return;
       }
+      
       if (err.status === 400) {
         toast.error(
           `❌ ${err.data?.message || "Validation error."}`
@@ -630,16 +627,16 @@ const AddProduct = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* Color Selection */}
+          {/* // Color Selection */}
             <div className="space-y-3">
               <label className="text-sm font-medium text-gray-700">Color</label>
               <div className="flex flex-wrap gap-2 p-2 border border-gray-300 rounded-lg bg-white min-h-[50px]">
                 {colors.length === 0 ? (
                   <p className="text-xs text-gray-400 italic py-2">Add colors in the section above first</p>
                 ) : (
-                  colors.map((color) => (
+                  colors.map((color, colorIdx) => (
                     <button
-                      key={color}
+                      key={`${set.id}-color-${colorIdx}`}
                       type="button"
                       onClick={() => updateVariantImageSet(set.id, 'color', color)}
                       className={`w-6 h-6 rounded-full border-2 transition-all ${set.color === color ? 'border-primary ring-2 ring-primary/20 scale-110' : 'border-gray-200 hover:scale-105'
@@ -653,7 +650,7 @@ const AddProduct = () => {
               {set.color && (
                 <div className="flex items-center gap-2 px-1">
                   <div className="w-3 h-3 rounded-full border border-gray-300" style={{ backgroundColor: set.color }} />
-                  <span className="text-xs font-medium text-gray-500 uppercase">{set.color}</span>
+                  <span className="text-xs font-medium text-gray-500 uppercase">{String(set.color)}</span>
                 </div>
               )}
             </div>
@@ -667,8 +664,8 @@ const AddProduct = () => {
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:outline-none bg-white"
               >
                 <option value="">Select Size</option>
-                {sizes.filter(s => s.trim() !== "").map((size) => (
-                  <option key={size} value={size}>
+                {sizes.filter(s => s.trim() !== "").map((size, sizeIdx) => (
+                  <option key={`${set.id}-size-${sizeIdx}`} value={size}>
                     {size}
                   </option>
                 ))}
@@ -699,7 +696,7 @@ const AddProduct = () => {
               <label className="text-sm font-medium text-gray-700">Uploaded Images ({set.images.length}):</label>
               <div className="flex flex-wrap gap-3">
                 {set.images.map((img, imgIdx) => (
-                  <div key={imgIdx} className="relative group">
+                  <div key={`${set.id}-img-${imgIdx}`} className="relative group">
                     <img
                       src={img}
                       alt={`${set.color} ${set.size}`}
@@ -734,23 +731,31 @@ const AddProduct = () => {
   return (
     <div className="h-[calc(100vh-64px)] bg-background overflow-hidden font-header">
       <ToastContainer position="top-right" autoClose={3000} />
-      <main className="flex h-full">
-        <AdminSidebar />
-        <div className="flex-1 overflow-y-auto p-6 lg:p-10 scroll-smooth">
-          <Breadcrumb />
-          <div className="mt-8">
-            <div className="p-8 bg-white rounded-2xl shadow-sm border border-border max-w-6xl mx-auto">
-              {loading && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                  <div className="bg-white p-6 rounded-lg">
-                    <div className="flex items-center gap-3">
-                      <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
-                      <span>Processing...</span>
+      {!mounted ? (
+        <div className="flex items-center justify-center h-full">
+          <div className="text-center">
+            <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+            <p>Loading...</p>
+          </div>
+        </div>
+      ) : (
+        <main className="flex h-full">
+          <AdminSidebar />
+          <div className="flex-1 overflow-y-auto p-6 lg:p-10 scroll-smooth">
+            <Breadcrumb />
+            <div className="mt-8">
+              <div className="p-8 bg-white rounded-2xl shadow-sm border border-border max-w-6xl mx-auto">
+                {loading && (
+                  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-white p-6 rounded-lg">
+                      <div className="flex items-center gap-3">
+                        <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+                        <span>Processing...</span>
+                      </div>
                     </div>
                   </div>
-                </div>
-              )}
-              <form onSubmit={handleSubmit} className="space-y-10">
+                )}
+                <form onSubmit={handleSubmit} className="space-y-10">
                 <div className="text-center">
                   <h1 className="text-3xl font-bold text-espresso">{editId ? 'Edit Product' : 'Add Product'}</h1>
                   <p className="text-mocha-grey mt-1">Manage your product details, inventory, and media assets.</p>
@@ -950,10 +955,11 @@ const AddProduct = () => {
                   </button>
                 </div>
               </form>
+              </div>
             </div>
           </div>
-        </div>
-      </main>
+        </main>
+      )}
     </div>
   );
 };

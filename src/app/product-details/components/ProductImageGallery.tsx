@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import AppImage from '@/components/ui/AppImage';
 import Icon from '@/components/ui/AppIcon';
 
@@ -19,6 +19,12 @@ interface ProductImageGalleryProps {
 const ProductImageGallery = ({ images, productName }: ProductImageGalleryProps) => {
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [isZoomed, setIsZoomed] = useState(false);
+
+  // Reset selected image index when images change
+  useEffect(() => {
+    setSelectedImageIndex(0);
+    setIsZoomed(false);
+  }, [images]);
 
   const handlePrevious = () => {
     setSelectedImageIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
@@ -41,8 +47,9 @@ const ProductImageGallery = ({ images, productName }: ProductImageGalleryProps) 
       {/* Main Image Display */}
       <div className="relative aspect-square overflow-hidden rounded-lg bg-muted">
         <AppImage
-          src={images[selectedImageIndex].url}
-          alt={images[selectedImageIndex].alt}
+          key={`${images[selectedImageIndex]?.id}-${selectedImageIndex}`}
+          src={images[selectedImageIndex]?.url || ''}
+          alt={images[selectedImageIndex]?.alt || ''}
           className={`h-full w-full object-cover transition-transform duration-300 ${
             isZoomed ? 'scale-150 cursor-zoom-out' : 'cursor-zoom-in'
           }`}

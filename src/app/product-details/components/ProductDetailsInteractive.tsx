@@ -86,57 +86,30 @@ const ProductDetailsInteractive = () => {
         }));
         setCurrentImages(productImages);
         
-        // Create variants from product data
-        const colors = JSON.parse(foundProduct.colors || '[]');
-        const sizes = JSON.parse(foundProduct.sizes || '[]');
+        // Create variants from database variants data
+        const dbVariants = JSON.parse(foundProduct.variants || '[]');
+        console.warn('📦 Database variants loaded:', dbVariants.length, 'variants');
+        console.warn('📊 Database variants:', dbVariants);
         
-        const variants = [];
-        if (colors.length > 0 && sizes.length > 0) {
-          for (const color of colors) {
-            for (const size of sizes) {
-              variants.push({
-                id: `${foundProduct.id}-${color}-${size}`,
-                size: size,
-                color: `Color ${color}`,
-                colorHex: color,
-                capacity: foundProduct.weight ? `${foundProduct.weight}kg` : 'N/A',
-                price: Number(foundProduct.discount_price) || Number(foundProduct.price),
-                originalPrice: Number(foundProduct.price),
-                stock: Number(foundProduct.stock_quantity),
-                minOrderQty: 1,
-              });
-            }
-          }
-        } else if (sizes.length > 0) {
-          for (const size of sizes) {
-            variants.push({
-              id: `${foundProduct.id}-${size}`,
-              size: size,
-              color: 'Default',
-              colorHex: '#C4621A',
-              capacity: foundProduct.weight ? `${foundProduct.weight}kg` : 'N/A',
-              price: Number(foundProduct.discount_price) || Number(foundProduct.price),
-              originalPrice: Number(foundProduct.price),
-              stock: Number(foundProduct.stock_quantity),
-              minOrderQty: 1,
-            });
-          }
-        } else {
-          variants.push({
-            id: foundProduct.id.toString(),
-            size: 'Standard',
-            color: 'Default',
-            colorHex: '#C4621A',
-            capacity: foundProduct.weight ? `${foundProduct.weight}kg` : 'N/A',
-            price: Number(foundProduct.discount_price) || Number(foundProduct.price),
-            originalPrice: Number(foundProduct.price),
-            stock: Number(foundProduct.stock_quantity),
-            minOrderQty: 1,
-          });
-        }
+        const variants = dbVariants.map((dbVariant: any) => ({
+          id: dbVariant.variantId,
+          size: dbVariant.size,
+          color: dbVariant.color.name,
+          colorHex: dbVariant.color.code,
+          capacity: foundProduct.weight ? `${foundProduct.weight}kg` : 'N/A',
+          price: dbVariant.price,
+          originalPrice: Number(foundProduct.price),
+          stock: dbVariant.stock,
+          minOrderQty: 1,
+        }));
+        
+        console.warn('🔄 Frontend variants created:', variants.length, 'variants');
+        console.warn('📊 Frontend variants:', variants);
         
         setProductVariants(variants);
-        setSelectedVariant(variants[0]);
+        if (variants.length > 0) {
+          setSelectedVariant(variants[0]);
+        }
       }
     }
   }, [isHydrated, productId, productsData]);
@@ -277,24 +250,53 @@ const ProductDetailsInteractive = () => {
   useEffect(() => {
     if (isHydrated && productVariants.length > 0) {
       setSelectedVariant(productVariants[0]);
+      // Set initial images
+      const images = JSON.parse(product?.product_images || '[]');
+      const productImages = images.map((url: string, index: number) => ({
+        id: (index + 1).toString(),
+        url,
+        alt: product?.description || product?.name,
+      }));
       setCurrentImages(productImages);
     }
-  }, [isHydrated]);
+  }, [isHydrated, productVariants, product]);
 
   const handleVariantChange = (variant: ProductVariant) => {
     setSelectedVariant(variant);
-    const variantImages = productImages.filter(
-      (img) => !img.colorVariant || img.colorVariant === variant.color
+    
+    // Find variant-specific images from the product's variants data
+    const productVariants = JSON.parse(product.variants || '[]');
+    const matchingVariant = productVariants.find((v: any) => 
+      v.color?.code === variant.colorHex && v.size === variant.size
     );
-    setCurrentImages(variantImages.length > 0 ? variantImages : productImages);
+    
+    if (matchingVariant?.images?.length > 0) {
+      // Use variant-specific images
+      const variantImages = matchingVariant.images.map((url: string, index: number) => ({
+        id: `variant-${index + 1}`,
+        url,
+        alt: `${product.name} - ${variant.color} ${variant.size}`,
+        colorVariant: variant.color,
+      }));
+      setCurrentImages(variantImages);
+    } else {
+      // Fallback to default product images
+      const images = JSON.parse(product.product_images || '[]');
+      const defaultImages = images.map((url: string, index: number) => ({
+        id: (index + 1).toString(),
+        url,
+        alt: product.description || product.name,
+      }));
+      setCurrentImages(defaultImages);
+    }
   };
 
-  const handleAddToCart = (quantity: number) => {
+  const handleAddToCart = (_quantity: number) => {
     if (!isHydrated) return;
-    alert(`Added ${quantity} items to cart!`);
+    alert(`Added ${_quantity} items to cart!`);
   };
 
-  const handleBuyNow = (quantity: number) => {
+  const handleBuyNow = (_quantity: number) => {
     if (!isHydrated) return;
     router.push('/checkout-process');
   };

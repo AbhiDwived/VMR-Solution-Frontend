@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 
 interface AppImageProps {
@@ -39,6 +39,13 @@ function AppImage({
     const [imageSrc, setImageSrc] = useState(src);
     const [isLoading, setIsLoading] = useState(true);
     const [hasError, setHasError] = useState(false);
+
+    // Update imageSrc when src prop changes
+    useEffect(() => {
+        setImageSrc(src);
+        setIsLoading(true);
+        setHasError(false);
+    }, [src]);
 
     // More reliable external URL detection
     const isExternal = imageSrc.startsWith('http://') || imageSrc.startsWith('https://');
@@ -98,20 +105,23 @@ function AppImage({
     }
 
     // For local images and data URLs, use Next.js Image component
-    const imageProps = {
+    const imageProps: any = {
         src: imageSrc,
         alt,
         className: commonClassName,
         priority,
         quality,
         placeholder,
-        blurDataURL,
         unoptimized: true,
         onError: handleError,
         onLoad: handleLoad,
         onClick,
         ...props,
     };
+
+    if (blurDataURL) {
+        imageProps.blurDataURL = blurDataURL;
+    }
 
     if (fill) {
         return (

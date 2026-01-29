@@ -178,18 +178,23 @@ const ProductInfo = ({
       {/* Color Selection */}
       <div>
         <label className="mb-3 block text-sm font-medium text-foreground">
-          Color:
+          Color: <span className="text-primary">{selectedColor}</span>
         </label>
         <div className="flex flex-wrap gap-3">
           {uniqueColors.map((colorObj) => (
             <button
               key={colorObj.color}
               onClick={() => handleColorChange(colorObj.color)}
-              className="transition-smooth"
+              className={`transition-smooth border-2 rounded-full p-1 ${
+                selectedColor === colorObj.color
+                  ? 'border-primary ring-2 ring-primary/20'
+                  : 'border-transparent hover:border-gray-300'
+              }`}
             >
               <div
                 className="h-8 w-8 rounded-full"
                 style={{ backgroundColor: colorObj.hex }}
+                title={colorObj.color}
               />
             </button>
           ))}
