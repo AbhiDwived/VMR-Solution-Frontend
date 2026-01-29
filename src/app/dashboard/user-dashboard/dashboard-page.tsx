@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import Breadcrumb from '@/components/common/Breadcrumb';
-import DashboardInteractive from './components/DashboardInteractive';
+import DashboardInteractive from './dashboard-components/DashboardInteractive';
 
 export const metadata: Metadata = {
   title: 'My Account - VMR Solution',

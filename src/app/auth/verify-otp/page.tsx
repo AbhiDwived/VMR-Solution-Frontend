@@ -50,6 +50,7 @@ function VerifyOTPContent() {
       }, 1000);
       return () => clearInterval(interval);
     }
+    return undefined;
   }, [timer]);
 
   useEffect(() => {
@@ -58,6 +59,7 @@ function VerifyOTPContent() {
       const timeoutId = setTimeout(() => setCanResend(true), 0);
       return () => clearTimeout(timeoutId);
     }
+    return undefined;
   }, [timer]);
 
   const handleResendOTP = async () => {

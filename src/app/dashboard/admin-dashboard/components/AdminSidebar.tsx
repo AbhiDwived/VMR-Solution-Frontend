@@ -69,7 +69,7 @@ const AdminSidebar = () => {
       {/* Navigation */}
       <div className="h-[calc(100vh-220px)] overflow-y-auto scrollbar-hide">
         <nav className="p-3 space-y-6 pb-4">
-          {menuGroups.map((group, groupIndex) => (
+          {menuGroups.map((group) => (
             <div key={group.groupName} className="space-y-2">
               <h3 className="px-2 text-[10px] font-bold text-mocha-grey/70 tracking-widest uppercase">
                 {group.groupName}

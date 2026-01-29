@@ -27,7 +27,7 @@ const TrendingProducts = () => {
       name: product.name,
       category: product.category,
       price: product.price,
-      originalPrice: product.price > 50 ? Math.floor(product.price * 1.4) : undefined,
+      originalPrice: product.price > 50 ? Math.floor(product.price * 1.4) : 0,
       image: product.image,
       alt: product.description,
       rating: 4.5,
@@ -70,7 +70,7 @@ const TrendingProducts = () => {
               name={product.name}
               category={product.category}
               price={product.price}
-              originalPrice={product.originalPrice}
+              originalPrice={product.originalPrice || 0}
               image={product.image}
               alt={product.alt}
               rating={product.rating}

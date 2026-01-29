@@ -50,6 +50,7 @@ function VerifyOTPContent() {
       }, 1000);
       return () => clearInterval(interval);
     }
+    return undefined;
   }, [timer]);
 
   useEffect(() => {

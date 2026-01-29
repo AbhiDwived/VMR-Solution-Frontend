@@ -115,33 +115,6 @@ const ProductDetailsInteractive = () => {
     }
   }, [isHydrated, productId, productsData]);
 
-  const productImages: ProductImage[] = [
-    {
-      id: '1',
-      url: 'https://images.pexels.com/photos/6069093/pexels-photo-6069093.jpeg',
-      alt: 'Large terracotta colored plastic flower pot with drainage holes on white background',
-      colorVariant: 'Terracotta',
-    },
-    {
-      id: '2',
-      url: 'https://images.pexels.com/photos/7656746/pexels-photo-7656746.jpeg',
-      alt: 'Close-up view of plastic flower pot showing textured surface and rim detail',
-      colorVariant: 'Terracotta',
-    },
-    {
-      id: '3',
-      url: 'https://images.pexels.com/photos/6069094/pexels-photo-6069094.jpeg',
-      alt: 'Side angle of plastic flower pot displaying depth and drainage system',
-      colorVariant: 'Terracotta',
-    },
-    {
-      id: '4',
-      url: 'https://images.pexels.com/photos/7656747/pexels-photo-7656747.jpeg',
-      alt: 'Bottom view of plastic flower pot showing drainage holes pattern',
-      colorVariant: 'Terracotta',
-    },
-  ];
-
 
 
   const specifications: Specification[] = product ? [
@@ -250,7 +223,10 @@ const ProductDetailsInteractive = () => {
 
   useEffect(() => {
     if (isHydrated && productVariants.length > 0) {
-      setSelectedVariant(productVariants[0]);
+      const firstVariant = productVariants[0];
+      if (firstVariant) {
+        setSelectedVariant(firstVariant);
+      }
       
       // Get all variant images
       const dbVariants = JSON.parse(product?.variants || '[]');
@@ -279,7 +255,9 @@ const ProductDetailsInteractive = () => {
         setCurrentImages(defaultImages);
         setAllVariantImages(defaultImages);
       } else {
-        setCurrentImages([allImages[0]]);
+        if (allImages.length > 0) {
+          setCurrentImages([allImages[0]!]);
+        }
         setAllVariantImages(allImages);
       }
     }

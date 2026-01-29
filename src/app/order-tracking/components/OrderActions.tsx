@@ -10,7 +10,7 @@ interface OrderActionsProps {
   invoiceUrl: string;
 }
 
-const OrderActions = ({ orderId, canCancel, canReturn, invoiceUrl }: OrderActionsProps) => {
+const OrderActions = ({ canCancel, canReturn, invoiceUrl }: OrderActionsProps) => {
   const [isHydrated, setIsHydrated] = useState(false);
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [showReportModal, setShowReportModal] = useState(false);

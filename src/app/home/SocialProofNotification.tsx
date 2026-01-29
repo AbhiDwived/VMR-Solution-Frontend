@@ -46,8 +46,12 @@ const SocialProofNotification = () => {
   ];
 
   useEffect(() => {
-    const randomActivity = activities[Math.floor(Math.random() * activities.length)];
-    setCurrentActivity(randomActivity);
+    if (activities.length > 0) {
+      const randomActivity = activities[Math.floor(Math.random() * activities.length)];
+      if (randomActivity) {
+        setCurrentActivity(randomActivity);
+      }
+    }
   }, []);
 
   if (!currentActivity) return null;

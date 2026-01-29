@@ -346,13 +346,13 @@ const AddProduct = () => {
 
     try {
       if (editId) {
-        const result = await updateAdminProduct({ id: editId, data: finalData }).unwrap();
+        await updateAdminProduct({ id: editId, data: finalData }).unwrap();
         toast.success("✅ Product updated successfully!");
         setTimeout(() => {
           router.push('/dashboard/admin-dashboard/products');
         }, 2000);
       } else {
-        const result = await addAdminProduct(finalData).unwrap();
+        await addAdminProduct(finalData).unwrap();
         toast.success("✅ Product added successfully!");
         resetForm();
       }

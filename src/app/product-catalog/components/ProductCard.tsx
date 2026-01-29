@@ -48,7 +48,7 @@ const ProductCard = ({ product, onAddToCart }: ProductCardProps) => {
 
   const addToCart = () => {
     setIsAddingToCart(true);
-    onAddToCart(product.id, selectedSize, selectedColor);
+    onAddToCart(product.id, selectedSize || '', selectedColor || '');
     
     setTimeout(() => {
       setIsAddingToCart(false);

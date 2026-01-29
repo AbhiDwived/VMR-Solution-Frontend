@@ -42,16 +42,16 @@ const HeroBanner = ({
           <div className="w-[70%] flex flex-col gap-2">
             <div className="h-[70%] group relative overflow-hidden rounded-lg bg-white p-1 sm:p-2 shadow-md">
               <Image
-                src={categoryImages[0].src}
-                alt={categoryImages[0].alt}
+                src={categoryImages[0]?.src || '/assets/images/Top-banner.png'}
+                alt={categoryImages[0]?.alt || 'VMR Solution Top Banner'}
                 fill
                 className="object-fill"
               />
             </div>
             <div className="h-[30%] group relative overflow-hidden rounded-lg bg-white p-1 sm:p-2 shadow-md">
               <Image
-                src={categoryImages[1].src}
-                alt={categoryImages[1].alt}
+                src={categoryImages[1]?.src || '/assets/images/bottom-banner.png'}
+                alt={categoryImages[1]?.alt || 'Plastic Bucket'}
                 fill
                 className="object-fill"
               />
@@ -62,8 +62,8 @@ const HeroBanner = ({
           <div className="w-[30%]">
             <div className="relative h-full overflow-hidden rounded-xl bg-white shadow-md">
               <Image
-                src={productImages[0].src}
-                alt={productImages[0].alt}
+                src={productImages[0]?.src || '/assets/images/vertical-banner.png'}
+                alt={productImages[0]?.alt || 'Plastic Bucket'}
                 fill
                 className="object-fill"
               />

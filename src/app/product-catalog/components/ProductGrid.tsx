@@ -10,7 +10,7 @@ interface ProductGridProps {
   onAddToCart: (productId: string, size: string, color: string) => void;
 }
 
-const ProductGrid = ({ products, onAddToCart }: ProductGridProps) => {
+const ProductGrid = ({ products }: ProductGridProps) => {
   const [displayedProducts, setDisplayedProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);

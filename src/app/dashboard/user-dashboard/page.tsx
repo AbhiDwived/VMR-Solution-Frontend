@@ -13,7 +13,7 @@ export default function UserDashboardPage() {
     <AuthGuard
       requireAuth={true}
       requireVerification={false}
-      allowedRoles={['retail', 'bulk', 'user']}
+      allowedRoles={['user']}
     >
       <div className="min-h-screen bg-background">
         <main className="mx-auto max-w-full px-4 py-6 sm:px-6 md:px-8 md:py-8">
