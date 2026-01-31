@@ -3,15 +3,22 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import Icon from '@/components/ui/AppIcon';
+import { useSubscribeMutation } from '@/store/api/subscriptionApi';
 
 const Footer = () => {
   const [email, setEmail] = useState('');
   const [openSection, setOpenSection] = useState<string | null>(null);
+  const [subscribe, { isLoading }] = useSubscribeMutation();
 
-  const handleNewsletterSubmit = (e: React.FormEvent) => {
+  const handleNewsletterSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Newsletter subscription:', email);
-    setEmail('');
+    try {
+      await subscribe({ email }).unwrap();
+      alert('Successfully subscribed to newsletter!');
+      setEmail('');
+    } catch (error: any) {
+      alert(error?.data?.message || 'Subscription failed. Please try again.');
+    }
   };
 
   const toggleSection = (section: string) => {
@@ -37,7 +44,7 @@ const Footer = () => {
               <h4 className="font-semibold text-foreground mb-3">Stay Updated</h4>
               <form onSubmit={handleNewsletterSubmit} className="flex gap-2">
                 <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Enter your email" className="flex-1 px-3 py-2 text-sm border border-border rounded-md bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary" required />
-                <button type="submit" className="px-4 py-2 bg-primary text-primary-foreground text-sm font-medium rounded-md hover:scale-[0.97] transition-smooth">Subscribe</button>
+                <button type="submit" disabled={isLoading} className="px-4 py-2 bg-primary text-primary-foreground text-sm font-medium rounded-md hover:scale-[0.97] transition-smooth disabled:opacity-50">{isLoading ? 'Subscribing...' : 'Subscribe'}</button>
               </form>
               <p className="text-xs text-muted-foreground mt-2">No spam, unsubscribe anytime</p>
             </div>
