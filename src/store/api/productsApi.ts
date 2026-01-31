@@ -66,6 +66,30 @@ export const productsApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ['Product'],
     }),
+    // Inventory endpoints
+    getInventory: builder.query<any, void>({
+      query: () => '/admin/inventory',
+      providesTags: ['Inventory'],
+    }),
+    updateStock: builder.mutation<any, { id: string; stock_quantity: number; action: 'set' | 'add' | 'subtract' }>({
+      query: ({ id, stock_quantity, action }) => ({
+        url: `/admin/inventory/${id}/stock`,
+        method: 'PUT',
+        body: { stock_quantity, action },
+      }),
+      invalidatesTags: ['Inventory', 'Product'],
+    }),
+    getLowStockProducts: builder.query<any, { threshold?: number }>({
+      query: (params = {}) => ({
+        url: '/admin/inventory/low-stock',
+        params,
+      }),
+      providesTags: ['Inventory'],
+    }),
+    getInventoryStats: builder.query<any, void>({
+      query: () => '/admin/inventory/stats',
+      providesTags: ['Inventory'],
+    }),
   }),
 })
 
@@ -77,6 +101,10 @@ export const {
   useGetAdminProductsQuery,
   useUpdateAdminProductMutation,
   useDeleteAdminProductMutation,
+  useGetInventoryQuery,
+  useUpdateStockMutation,
+  useGetLowStockProductsQuery,
+  useGetInventoryStatsQuery,
 } = productsApi
 
 
