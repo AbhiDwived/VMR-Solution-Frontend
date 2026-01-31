@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import HeroBanner from './HeroBanner';
+import CategoriesSection from './CategoriesSection';
 import FeaturedProducts from './FeaturedProducts';
 import TrendingProducts from './TrendingProducts';
 import NewArrivals from './NewArrivals';
@@ -29,6 +30,7 @@ const HomepageInteractive = () => {
   return (
     <main className="w-full">
       <HeroBanner />
+      <CategoriesSection />
       <NewArrivals />
       <FeaturedProducts />
 

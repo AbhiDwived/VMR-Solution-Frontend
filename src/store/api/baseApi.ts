@@ -4,7 +4,7 @@ import type { RootState } from '../store'
 export const baseApi = createApi({
   reducerPath: 'api',
   baseQuery: fetchBaseQuery({
-    baseUrl: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4028/api',
+    baseUrl: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api',
     prepareHeaders: (headers, { getState }) => {
       // Try to get token from Redux state first
       let token = (getState() as RootState).auth?.token
