@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import AppImage from '@/components/ui/AppImage';
 import Icon from '@/components/ui/AppIcon';
+import { useBulkOrder } from '@/components/ui/modal/BulkOrderContext';
 
 interface ProductCardProps {
   id: string;
@@ -31,6 +32,7 @@ const ProductCard = ({
   showThumbnails = true,
   animationDelay = 0
 }: ProductCardProps) => {
+  const { openModal } = useBulkOrder();
   return (
     <div
       className="group relative overflow-hidden rounded-xl border border-border bg-white shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg"
@@ -121,12 +123,12 @@ const ProductCard = ({
         {/* Bottom Actions */}
         <div className="flex items-center justify-between gap-2">
           {/* Bulk Orders */}
-          <Link
-            href={`/bulk-enquiry?product=${id}`}
+          <button
+            onClick={() => openModal(name)}
             className="flex-1 rounded-lg border border-slate-900 py-1.5 text-center text-xs font-semibold text-slate-900 transition hover:bg-slate-900 hover:text-white"
           >
             BULK ORDERS
-          </Link>
+          </button>
 
           {/* WhatsApp */}
           <a

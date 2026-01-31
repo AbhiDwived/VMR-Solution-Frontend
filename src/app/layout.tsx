@@ -1,6 +1,8 @@
 import React from 'react';
 import type { Metadata, Viewport } from 'next';
 import { StoreProvider } from '@/lib/providers/StoreProvider';
+import { BulkOrderProvider } from '@/components/ui/modal/BulkOrderContext';
+import BulkOrderModal from '@/components/ui/modal/BulkOrderModal';
 import '../styles/index.css';
 import '../styles/toastify.css';
 
@@ -29,13 +31,16 @@ export default function RootLayout({
     <html lang="en" data-theme="light" style={{ colorScheme: 'light' }}>
       <body>
         <StoreProvider>
-          <React.Suspense fallback={<div className="h-16 bg-card border-b" />}>
-            <Header />
-          </React.Suspense>
-          {children}
-          <React.Suspense fallback={<div className="h-32 bg-muted" />}>
-            <Footer />
-          </React.Suspense>
+          <BulkOrderProvider>
+            <React.Suspense fallback={<div className="h-16 bg-card border-b" />}>
+              <Header />
+            </React.Suspense>
+            {children}
+            <React.Suspense fallback={<div className="h-32 bg-muted" />}>
+              <Footer />
+            </React.Suspense>
+            <BulkOrderModal />
+          </BulkOrderProvider>
         </StoreProvider>
       </body>
     </html>

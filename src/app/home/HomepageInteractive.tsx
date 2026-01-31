@@ -10,22 +10,11 @@ import Testimonials from './Testimonials';
 import BlogSection from './BlogSection';
 import NewsletterSignup from './NewsletterSignup';
 import SocialProofNotification from './SocialProofNotification';
-import ExitIntentPopup from './ExitIntentPopup';
 
 const HomepageInteractive = () => {
-  const [showExitPopup, setShowExitPopup] = useState(false);
   const [showSocialProof, setShowSocialProof] = useState(false);
 
   useEffect(() => {
-    // Exit intent detection
-    const handleMouseLeave = (e: MouseEvent) => {
-      if (e.clientY <= 0) {
-        setShowExitPopup(true);
-      }
-    };
-
-    document.addEventListener('mouseleave', handleMouseLeave);
-
     // Social proof notifications
     const socialProofInterval = setInterval(() => {
       setShowSocialProof(true);
@@ -33,7 +22,6 @@ const HomepageInteractive = () => {
     }, 15000);
 
     return () => {
-      document.removeEventListener('mouseleave', handleMouseLeave);
       clearInterval(socialProofInterval);
     };
   }, []);
@@ -52,7 +40,6 @@ const HomepageInteractive = () => {
       <NewsletterSignup />
 
       {showSocialProof && <SocialProofNotification />}
-      {showExitPopup && <ExitIntentPopup onClose={() => setShowExitPopup(false)} />}
     </main>
   );
 };

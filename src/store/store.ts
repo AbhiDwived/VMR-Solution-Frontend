@@ -2,12 +2,14 @@ import { configureStore } from '@reduxjs/toolkit'
 import { setupListeners } from '@reduxjs/toolkit/query'
 import cartSlice from './slices/cart'
 import authSlice from './slices/auth'
+import bulkOrderSlice from './slices/bulkOrder'
 import { baseApi } from './api/baseApi'
 
 export const store = configureStore({
   reducer: {
     cart: cartSlice,
     auth: authSlice,
+    bulkOrder: bulkOrderSlice,
     [baseApi.reducerPath]: baseApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
