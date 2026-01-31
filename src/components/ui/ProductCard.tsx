@@ -7,6 +7,7 @@ import { useBulkOrder } from '@/components/ui/modal/BulkOrderContext';
 
 interface ProductCardProps {
   id: string;
+  slug: string;
   name: string;
   category: string;
   price: number;
@@ -21,6 +22,7 @@ interface ProductCardProps {
 
 const ProductCard = ({
   id,
+  slug,
   name,
   category,
   price,
@@ -62,7 +64,7 @@ const ProductCard = ({
       </div>
 
       {/* Image - Full width */}
-      <Link href={`/product-details?id=${id}`}>
+      <Link href={`/product/${slug}`}>
         <div className="relative h-40 w-full overflow-hidden rounded-t-xl sm:h-44">
           <AppImage
             src={image}

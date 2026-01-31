@@ -7,6 +7,7 @@ import Icon from '@/components/ui/AppIcon';
 
 export interface Product {
   id: string;
+  slug: string;
   name: string;
   category: string;
   price: number;
@@ -86,7 +87,7 @@ const ProductCard = ({ product, onAddToCart }: ProductCardProps) => {
         )}
 
         {/* Product Image */}
-        <Link href={`/product-details?id=${product.id}`} className="relative aspect-square overflow-hidden bg-muted">
+        <Link href={`/product/${product.slug}`} className="relative aspect-square overflow-hidden bg-muted">
           <AppImage
             src={product.image}
             alt={product.alt}
@@ -96,7 +97,7 @@ const ProductCard = ({ product, onAddToCart }: ProductCardProps) => {
 
         {/* Product Info */}
         <div className="flex flex-1 flex-col p-1.5 sm:p-2">
-          <Link href={`/product-details?id=${product.id}`}>
+          <Link href={`/product/${product.slug}`}>
             <p className="caption mb-1 text-muted-foreground">{product.category}</p>
             <h3 className="mb-1 line-clamp-2 text-sm font-medium text-card-foreground transition-smooth hover:text-primary sm:text-base">
               {product.name}

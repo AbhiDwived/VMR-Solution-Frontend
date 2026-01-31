@@ -7,6 +7,7 @@ import { products } from '@/data/products';
 
 interface TrendingProduct {
   id: string;
+  slug: string;
   name: string;
   category: string;
   price: number;
@@ -24,6 +25,7 @@ const TrendingProducts = () => {
     .slice(0, 6)
     .map((product, index) => ({
       id: product.id.toString(),
+      slug: product.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''),
       name: product.name,
       category: product.category,
       price: product.price,
@@ -67,6 +69,7 @@ const TrendingProducts = () => {
             <ProductCard
               key={product.id}
               id={product.id}
+              slug={product.slug}
               name={product.name}
               category={product.category}
               price={product.price}

@@ -8,6 +8,7 @@ import { useGetAdminProductsQuery } from '@/store/api/productsApi';
 
 interface FeaturedProduct {
   id: string;
+  slug: string;
   name: string;
   category: string;
   price: number;
@@ -24,6 +25,7 @@ const FeaturedProducts = () => {
   // Get featured products from API data
   const featuredProducts: FeaturedProduct[] = productsData?.data?.slice(0, 36).map((product: any) => ({
     id: product.id.toString(),
+    slug: product.slug,
     name: product.name,
     category: product.category,
     price: Number(product.discount_price) || Number(product.price),
@@ -95,6 +97,7 @@ const FeaturedProducts = () => {
               <ProductCard
                 key={product.id}
                 id={product.id}
+                slug={product.slug}
                 name={product.name}
                 category={product.category}
                 price={product.price}

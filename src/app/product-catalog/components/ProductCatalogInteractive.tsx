@@ -27,6 +27,7 @@ const ProductCatalogInteractive = () => {
   // Convert product data to match Product interface
   const mockProducts: Product[] = productData.map(product => ({
     id: product.id.toString(),
+    slug: product.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''),
     name: product.name,
     category: product.category,
     price: product.price,

@@ -56,6 +56,7 @@ const ProductGrid = ({ products }: ProductGridProps) => {
             <ProductCard
               key={product.id}
               id={product.id}
+              slug={product.slug}
               name={product.name}
               category={product.category}
               price={product.price}
