@@ -321,13 +321,17 @@ const ProductDetailsInteractive = () => {
 
   if (!isHydrated || !selectedVariant) {
     return (
-      <div className="mx-auto max-w-[1200px] px-4 py-8 sm:px-6">
-        <div className="grid gap-8 lg:grid-cols-2">
-          <div className="aspect-square animate-pulse rounded-lg bg-muted" />
-          <div className="space-y-4">
-            <div className="h-8 w-3/4 animate-pulse rounded bg-muted" />
-            <div className="h-6 w-1/2 animate-pulse rounded bg-muted" />
-            <div className="h-12 w-1/3 animate-pulse rounded bg-muted" />
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="grid gap-12 lg:grid-cols-2 lg:gap-16">
+          <div className="aspect-square animate-pulse rounded-xl bg-gray-200" />
+          <div className="space-y-6">
+            <div className="h-8 w-3/4 animate-pulse rounded-lg bg-gray-200" />
+            <div className="h-6 w-1/2 animate-pulse rounded-lg bg-gray-200" />
+            <div className="h-16 w-2/3 animate-pulse rounded-lg bg-gray-200" />
+            <div className="space-y-3">
+              <div className="h-12 w-full animate-pulse rounded-lg bg-gray-200" />
+              <div className="h-12 w-full animate-pulse rounded-lg bg-gray-200" />
+            </div>
           </div>
         </div>
       </div>
@@ -335,43 +339,55 @@ const ProductDetailsInteractive = () => {
   }
 
   return (
-    <div className="space-y-12">
-      {/* Main Product Section */}
-      <div className="grid gap-8 lg:grid-cols-2">
-        <ProductImageGallery
-          images={currentImages}
-          allVariantImages={allVariantImages}
-          productName="Premium Plastic Flower Pot"
-        />
-        <ProductInfo
-          productName={product.name}
-          category={product.category}
-          rating={4.7}
-          reviewCount={1247}
-          variants={productVariants}
-          onVariantChange={handleVariantChange}
-          onAddToCart={handleAddToCart}
-          onBuyNow={handleBuyNow}
-        />
+    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div className="space-y-16">
+        {/* Main Product Section */}
+        <div className="grid gap-12 lg:grid-cols-2 lg:gap-16">
+          <div className="order-2 lg:order-1">
+            <ProductImageGallery
+              images={currentImages}
+              allVariantImages={allVariantImages}
+              productName="Premium Plastic Flower Pot"
+            />
+          </div>
+          <div className="order-1 lg:order-2">
+            <ProductInfo
+              productName={product.name}
+              category={product.category}
+              rating={4.7}
+              reviewCount={1247}
+              variants={productVariants}
+              onVariantChange={handleVariantChange}
+              onAddToCart={handleAddToCart}
+              onBuyNow={handleBuyNow}
+            />
+          </div>
+        </div>
+
+        {/* Bulk Pricing Calculator */}
+        <div className="rounded-xl bg-gradient-to-r from-blue-50 to-indigo-50 p-8">
+          <BulkPricingCalculator
+            pricingTiers={pricingTiers}
+            basePrice={selectedVariant.price}
+          />
+        </div>
+
+        {/* Product Details Tabs */}
+        <div className="rounded-xl border bg-white shadow-sm">
+          <ProductTabs
+            specifications={specifications}
+            careInstructions={careInstructions}
+            warrantyInfo={warrantyInfo}
+            reviews={reviews}
+            relatedProducts={relatedProducts}
+          />
+        </div>
+
+        {/* Related Products */}
+        <div>
+          <RelatedProducts products={relatedProducts} />
+        </div>
       </div>
-
-      {/* Bulk Pricing Calculator */}
-      <BulkPricingCalculator
-        pricingTiers={pricingTiers}
-        basePrice={selectedVariant.price}
-      />
-
-      {/* Product Details Tabs */}
-      <ProductTabs
-        specifications={specifications}
-        careInstructions={careInstructions}
-        warrantyInfo={warrantyInfo}
-        reviews={reviews}
-        relatedProducts={relatedProducts}
-      />
-
-      {/* Related Products */}
-      <RelatedProducts products={relatedProducts} />
     </div>
   );
 };

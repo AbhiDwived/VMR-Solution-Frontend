@@ -53,20 +53,21 @@ const ProductTabs = ({
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="bg-white">
       {/* Tab Navigation */}
-      <div className="border-b border-border">
-        <div className="flex space-x-1 overflow-x-auto">
+      <div className="border-b border-gray-200">
+        <div className="flex space-x-8 overflow-x-auto px-6">
           {tabs.map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center space-x-2 whitespace-nowrap border-b-2 px-4 py-3 text-sm font-medium transition-smooth ${
+              className={`flex items-center space-x-2 whitespace-nowrap border-b-2 px-1 py-4 text-sm font-semibold transition-all ${
                 activeTab === tab.id
-                  ? 'border-primary text-primary' :'border-transparent text-muted-foreground hover:text-foreground'
+                  ? 'border-blue-500 text-blue-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
               }`}
             >
-              <Icon name={tab.icon as any} size={18} />
+              <Icon name={tab.icon as any} size={20} />
               <span>{tab.label}</span>
             </button>
           ))}
@@ -74,25 +75,25 @@ const ProductTabs = ({
       </div>
 
       {/* Tab Content */}
-      <div className="min-h-[400px]">
+      <div className="p-6">
         {/* Specifications Tab */}
         {activeTab === 'specifications' && (
-          <div className="space-y-4">
-            <h3 className="font-heading text-xl font-semibold text-foreground">
+          <div className="space-y-6">
+            <h3 className="text-2xl font-bold text-gray-900">
               Product Specifications
             </h3>
-            <div className="grid gap-3 sm:grid-cols-2">
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {specifications.map((spec, index) => (
                 <div
                   key={index}
-                  className="flex items-start justify-between rounded-lg bg-muted p-4"
+                  className="bg-gray-50 rounded-lg p-4 border border-gray-200"
                 >
-                  <span className="text-sm font-medium text-muted-foreground">
+                  <div className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">
                     {spec.label}
-                  </span>
-                  <span className="data-text text-sm font-medium text-foreground">
+                  </div>
+                  <div className="text-sm font-medium text-gray-900">
                     {spec.value}
-                  </span>
+                  </div>
                 </div>
               ))}
             </div>
@@ -101,89 +102,97 @@ const ProductTabs = ({
 
         {/* Care Instructions Tab */}
         {activeTab === 'care' && (
-          <div className="space-y-4">
-            <h3 className="font-heading text-xl font-semibold text-foreground">
+          <div className="space-y-6">
+            <h3 className="text-2xl font-bold text-gray-900">
               Care Instructions
             </h3>
-            <div className="space-y-3">
-              {careInstructions.map((instruction, index) => (
-                <div key={index} className="flex items-start space-x-3">
-                  <Icon
-                    name="CheckCircleIcon"
-                    size={20}
-                    variant="solid"
-                    className="mt-0.5 flex-shrink-0 text-success"
-                  />
-                  <p className="text-sm text-foreground">{instruction}</p>
-                </div>
-              ))}
+            <div className="bg-green-50 rounded-xl p-6 border border-green-200">
+              <div className="space-y-4">
+                {careInstructions.map((instruction, index) => (
+                  <div key={index} className="flex items-start space-x-3">
+                    <div className="flex-shrink-0 w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mt-0.5">
+                      <Icon
+                        name="CheckIcon"
+                        size={16}
+                        className="text-green-600"
+                      />
+                    </div>
+                    <p className="text-gray-700 leading-relaxed">{instruction}</p>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         )}
 
         {/* Warranty Tab */}
         {activeTab === 'warranty' && (
-          <div className="space-y-4">
-            <h3 className="font-heading text-xl font-semibold text-foreground">
+          <div className="space-y-6">
+            <h3 className="text-2xl font-bold text-gray-900">
               Warranty Information
             </h3>
-            <div className="rounded-lg bg-muted p-6">
-              <div className="mb-4 flex items-center space-x-3">
-                <Icon name="ShieldCheckIcon" size={32} variant="solid" className="text-success" />
+            <div className="bg-blue-50 rounded-xl p-8 border border-blue-200">
+              <div className="flex items-start space-x-4 mb-6">
+                <div className="flex-shrink-0 w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center">
+                  <Icon name="ShieldCheckIcon" size={32} className="text-blue-600" />
+                </div>
                 <div>
-                  <p className="font-medium text-foreground">Manufacturer Warranty</p>
-                  <p className="caption text-muted-foreground">Quality Guaranteed</p>
+                  <h4 className="text-xl font-bold text-gray-900 mb-2">Manufacturer Warranty</h4>
+                  <p className="text-blue-700 font-medium">Quality Guaranteed</p>
                 </div>
               </div>
-              <p className="text-sm leading-relaxed text-foreground">{warrantyInfo}</p>
+              <p className="text-gray-700 leading-relaxed text-lg">{warrantyInfo}</p>
             </div>
           </div>
         )}
 
         {/* Reviews Tab */}
         {activeTab === 'reviews' && (
-          <div className="space-y-6">
+          <div className="space-y-8">
             <div className="flex items-center justify-between">
-              <h3 className="font-heading text-xl font-semibold text-foreground">
+              <h3 className="text-2xl font-bold text-gray-900">
                 Customer Reviews
               </h3>
-              <button className="flex items-center space-x-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-smooth hover:scale-[0.98]">
+              <button className="flex items-center space-x-2 rounded-lg bg-blue-600 px-6 py-3 text-sm font-semibold text-white transition-all hover:bg-blue-700 hover:shadow-lg">
                 <Icon name="PencilIcon" size={16} />
                 <span>Write Review</span>
               </button>
             </div>
 
-            <div className="space-y-4">
+            <div className="space-y-6">
               {reviews.map((review) => (
-                <div key={review.id} className="rounded-lg border border-border bg-card p-6">
-                  <div className="mb-3 flex items-start justify-between">
-                    <div>
-                      <div className="mb-1 flex items-center space-x-2">
-                        <p className="font-medium text-card-foreground">{review.userName}</p>
-                        {review.verified && (
-                          <span className="flex items-center space-x-1 rounded-md bg-success/10 px-2 py-0.5 text-xs font-medium text-success">
-                            <Icon name="CheckBadgeIcon" size={14} variant="solid" />
-                            <span>Verified</span>
-                          </span>
-                        )}
+                <div key={review.id} className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm hover:shadow-md transition-shadow">
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="flex items-start space-x-4">
+                      <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-lg">
+                        {review.userName.charAt(0)}
                       </div>
-                      <p className="caption text-muted-foreground">{review.date}</p>
+                      <div>
+                        <div className="flex items-center space-x-2 mb-1">
+                          <h4 className="font-semibold text-gray-900">{review.userName}</h4>
+                          {review.verified && (
+                            <span className="inline-flex items-center space-x-1 rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800">
+                              <Icon name="CheckBadgeIcon" size={12} />
+                              <span>Verified</span>
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-sm text-gray-500">{review.date}</p>
+                      </div>
                     </div>
                     <div className="flex items-center space-x-1">
                       {[...Array(5)].map((_, index) => (
                         <Icon
                           key={index}
                           name="StarIcon"
-                          size={16}
+                          size={18}
                           variant={index < review.rating ? 'solid' : 'outline'}
-                          className={
-                            index < review.rating ? 'text-accent' : 'text-muted-foreground'
-                          }
+                          className={index < review.rating ? 'text-yellow-400' : 'text-gray-300'}
                         />
                       ))}
                     </div>
                   </div>
-                  <p className="text-sm leading-relaxed text-card-foreground">{review.comment}</p>
+                  <p className="text-gray-700 leading-relaxed">{review.comment}</p>
                 </div>
               ))}
             </div>

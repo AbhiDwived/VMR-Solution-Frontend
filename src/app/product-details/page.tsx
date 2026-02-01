@@ -10,12 +10,23 @@ export const metadata: Metadata = {
 
 export default function ProductDetailsPage() {
   return (
-    <div className="min-h-screen bg-background">
-      <main className="mx-auto max-w-full px-4 py-8 sm:px-6">
-        <Breadcrumb />
-        <Suspense fallback={<div className="text-center py-8">Loading product details...</div>}>
-          <ProductDetailsInteractive />
-        </Suspense>
+    <div className="min-h-screen bg-gray-50">
+      <main className="py-8">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="mb-8">
+            <Breadcrumb />
+          </div>
+          <Suspense fallback={
+            <div className="flex items-center justify-center py-16">
+              <div className="text-center">
+                <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent mx-auto mb-4"></div>
+                <p className="text-gray-600">Loading product details...</p>
+              </div>
+            </div>
+          }>
+            <ProductDetailsInteractive />
+          </Suspense>
+        </div>
       </main>
 
       {/* Footer */}

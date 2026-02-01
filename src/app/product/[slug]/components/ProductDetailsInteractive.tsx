@@ -86,12 +86,12 @@ const ProductDetailsInteractive = () => {
           alt: foundProduct.description || foundProduct.name,
         }));
         setCurrentImages(productImages);
-        
+
         // Create variants from database variants data
         const dbVariants = JSON.parse(foundProduct.variants || '[]');
         console.warn('📦 Database variants loaded:', dbVariants.length, 'variants');
         console.warn('📊 Database variants:', dbVariants);
-        
+
         const variants = dbVariants.map((dbVariant: any) => ({
           id: dbVariant.variantId,
           size: dbVariant.size,
@@ -103,10 +103,10 @@ const ProductDetailsInteractive = () => {
           stock: dbVariant.stock,
           minOrderQty: 1,
         }));
-        
+
         console.warn('🔄 Frontend variants created:', variants.length, 'variants');
         console.warn('📊 Frontend variants:', variants);
-        
+
         setProductVariants(variants);
         if (variants.length > 0) {
           setSelectedVariant(variants[0]);
@@ -227,11 +227,11 @@ const ProductDetailsInteractive = () => {
       if (firstVariant) {
         setSelectedVariant(firstVariant);
       }
-      
+
       // Get all variant images
       const dbVariants = JSON.parse(product?.variants || '[]');
       const allImages: ProductImage[] = [];
-      
+
       dbVariants.forEach((v: any, variantIndex: number) => {
         if (v.images && v.images.length > 0) {
           v.images.forEach((url: string, imageIndex: number) => {
@@ -244,7 +244,7 @@ const ProductDetailsInteractive = () => {
           });
         }
       });
-      
+
       if (allImages.length === 0) {
         const images = JSON.parse(product?.product_images || '[]');
         const defaultImages = images.map((url: string, index: number) => ({
@@ -265,13 +265,13 @@ const ProductDetailsInteractive = () => {
 
   const handleVariantChange = (variant: ProductVariant) => {
     setSelectedVariant(variant);
-    
+
     // Find variant-specific images from the product's variants data
     const productVariants = JSON.parse(product.variants || '[]');
-    const matchingVariant = productVariants.find((v: any) => 
+    const matchingVariant = productVariants.find((v: any) =>
       v.color?.code === variant.colorHex && v.size === variant.size
     );
-    
+
     if (matchingVariant?.images?.length > 0) {
       // Use variant-specific images
       const variantImages = matchingVariant.images.map((url: string, index: number) => ({

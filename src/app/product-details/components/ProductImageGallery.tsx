@@ -57,14 +57,13 @@ const ProductImageGallery = ({ images, allVariantImages, productName }: ProductI
   return (
     <div className="space-y-4">
       {/* Main Image Display */}
-      <div className="relative aspect-square overflow-hidden rounded-lg bg-muted">
+      <div className="relative aspect-square overflow-hidden rounded-xl bg-gray-50 shadow-lg">
         <AppImage
           key={`${currentImages[0]?.id}-${selectedImageIndex}`}
           src={currentImages[0]?.url || ''}
           alt={currentImages[0]?.alt || ''}
-          className={`h-full w-full object-cover transition-transform duration-300 ${
-            isZoomed ? 'scale-150 cursor-zoom-out' : 'cursor-zoom-in'
-          }`}
+          className={`h-full w-full object-cover transition-transform duration-300 ${isZoomed ? 'scale-150 cursor-zoom-out' : 'cursor-zoom-in'
+            }`}
           onClick={toggleZoom}
         />
 
@@ -73,14 +72,14 @@ const ProductImageGallery = ({ images, allVariantImages, productName }: ProductI
           <>
             <button
               onClick={handlePrevious}
-              className="absolute left-2 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-card/80 text-foreground shadow-elevation-2 transition-smooth hover:bg-card"
+              className="absolute left-4 top-1/2 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-gray-700 shadow-lg transition-all hover:bg-white hover:shadow-xl"
               aria-label="Previous image"
             >
               <Icon name="ChevronLeftIcon" size={24} />
             </button>
             <button
               onClick={handleNext}
-              className="absolute right-2 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-card/80 text-foreground shadow-elevation-2 transition-smooth hover:bg-card"
+              className="absolute right-4 top-1/2 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-gray-700 shadow-lg transition-all hover:bg-white hover:shadow-xl"
               aria-label="Next image"
             >
               <Icon name="ChevronRightIcon" size={24} />
@@ -89,31 +88,32 @@ const ProductImageGallery = ({ images, allVariantImages, productName }: ProductI
         )}
 
         {/* Zoom Indicator */}
-        <div className="absolute bottom-4 right-4 flex items-center space-x-2 rounded-md bg-card/80 px-3 py-2 text-xs text-foreground">
+        <div className="absolute bottom-4 right-4 flex items-center space-x-2 rounded-lg bg-black/70 px-3 py-2 text-xs text-white backdrop-blur-sm">
           <Icon name="MagnifyingGlassPlusIcon" size={16} />
           <span>Click to {isZoomed ? 'zoom out' : 'zoom in'}</span>
         </div>
 
         {/* Image Counter */}
-        <div className="absolute bottom-4 left-4 rounded-md bg-card/80 px-3 py-2 text-xs font-medium text-foreground data-text">
+        <div className="absolute bottom-4 left-4 rounded-lg bg-black/70 px-3 py-2 text-xs font-medium text-white backdrop-blur-sm">
           {selectedImageIndex + 1} / {(allVariantImages || images).length}
         </div>
       </div>
 
-      {/* Small Image Icons - All Variants */}
-      <div className="flex space-x-1 overflow-x-auto pb-2">
+      {/* Thumbnail Gallery */}
+      <div className="flex space-x-3 overflow-x-auto pb-2">
         {(allVariantImages || images).map((image, index) => (
           <button
             key={image.id}
             onClick={() => handleThumbnailClick(index)}
-            className={`flex-shrink-0 overflow-hidden rounded border transition-smooth ${
-              index === selectedImageIndex ? 'border-primary' : 'border-gray-300 hover:border-primary'
-            }`}
+            className={`flex-shrink-0 overflow-hidden rounded-lg border-2 transition-all ${index === selectedImageIndex
+                ? 'border-primary shadow-md ring-2 ring-primary/20'
+                : 'border-gray-200 hover:border-primary hover:shadow-sm'
+              }`}
           >
             <AppImage
               src={image.url}
-              alt={`${productName} icon ${index + 1}`}
-              className="h-10 w-10 object-cover"
+              alt={`${productName} thumbnail ${index + 1}`}
+              className="h-16 w-16 object-cover"
             />
           </button>
         ))}
