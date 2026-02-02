@@ -2,7 +2,7 @@
 
 import Icon from '@/components/ui/AppIcon';
 import ProductCard from '@/components/ui/ProductCard';
-import { products } from '@/data/products';
+import { useGetProductsQuery } from '@/store/api/productsApi';
 
 interface NewProduct {
   id: string;
@@ -16,19 +16,47 @@ interface NewProduct {
 }
 
 const NewArrivals = () => {
-  const newProducts: NewProduct[] = products
-    .filter(p => ['Kitchen', 'Bathroom', 'Basins', 'Tubs'].includes(p.category))
+  const { data: productsData, isLoading } = useGetProductsQuery({});
+
+  const newProducts: NewProduct[] = productsData?.data
+    ?.filter((p: any) => ['Kitchen', 'Bathroom', 'Basins', 'Tubs'].includes(p.category))
     .slice(0, 6)
-    .map(product => ({
+    .map((product: any) => ({
       id: product.id.toString(),
-      slug: product.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''),
+      slug: product.slug || product.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''),
       name: product.name,
       category: product.category,
-      price: product.price,
-      image: product.image,
+      price: Number(product.discount_price) || Number(product.price),
+      image: (() => {
+        let productImages = [];
+        if (Array.isArray(product.product_images)) {
+          productImages = product.product_images;
+        } else if (typeof product.product_images === 'string') {
+          try {
+            productImages = JSON.parse(product.product_images || '[]');
+          } catch (error) {
+            productImages = [];
+          }
+        }
+        return productImages?.[0] || '/placeholder.jpg';
+      })(),
       alt: product.description,
       launchDate: 'Jan 2025',
-    }));
+    })) || [];
+
+  if (isLoading) {
+    return (
+      <section className="bg-background py-8 sm:py-12">
+        <div className="w-full px-2 sm:px-4">
+          <div className="text-center">Loading new arrivals...</div>
+        </div>
+      </section>
+    );
+  }
+
+  if (!newProducts.length) {
+    return null;
+  }
 
   return (
     <section className="bg-background py-8 sm:py-12">

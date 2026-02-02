@@ -36,7 +36,7 @@ export const productsApi = baseApi.injectEndpoints({
       providesTags: (_result, _error, id) => [{ type: 'Product', id }],
     }),
     getCategories: builder.query<string[], void>({
-      query: () => '/products/categories',
+      query: () => '/categories',
       providesTags: ['Product'],
     }),
     addAdminProduct: builder.mutation<any, any>({

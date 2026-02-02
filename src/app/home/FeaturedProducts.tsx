@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import Icon from '@/components/ui/AppIcon';
 import ProductCard from '@/components/ui/ProductCard';
-import { useGetAdminProductsQuery } from '@/store/api/productsApi';
+import { useGetProductsQuery } from '@/store/api/productsApi';
 
 interface FeaturedProduct {
   id: string;
@@ -20,7 +20,7 @@ interface FeaturedProduct {
 
 const FeaturedProducts = () => {
   const [scrollPosition, setScrollPosition] = useState(0);
-  const { data: productsData, isLoading } = useGetAdminProductsQuery();
+  const { data: productsData, isLoading } = useGetProductsQuery({});
 
   // Get featured products from API data
   const featuredProducts: FeaturedProduct[] = productsData?.data?.slice(0, 36).map((product: any) => {

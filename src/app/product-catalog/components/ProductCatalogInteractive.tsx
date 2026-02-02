@@ -6,7 +6,7 @@ import SortControls, { SortOption } from './SortControls';
 import ProductGrid from './ProductGrid';
 import MobileFilterPanel from './MobileFilterPanel';
 import { Product } from './ProductCard';
-import { products as productData } from '@/data/products';
+import { useGetProductsQuery } from '@/store/api/productsApi';
 
 const ProductCatalogInteractive = () => {
   const [isHydrated, setIsHydrated] = useState(false);
@@ -19,34 +19,36 @@ const ProductCatalogInteractive = () => {
   });
   const [sortBy, setSortBy] = useState<SortOption>('relevance');
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
+  const { data: productsData, isLoading, error } = useGetProductsQuery({});
 
   useEffect(() => {
     setIsHydrated(true);
   }, []);
 
-  // Convert product data to match Product interface
-  const mockProducts: Product[] = productData.map(product => ({
+  // Convert API data to match Product interface
+  const apiProducts: Product[] = productsData?.data ? productsData.data.map((product: any) => ({
     id: product.id.toString(),
-    slug: product.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''),
+    slug: product.slug || product.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''),
     name: product.name,
     category: product.category,
-    price: product.price,
-    image: product.image,
+    price: product.discount_price || product.price,
+    originalPrice: product.price !== product.discount_price ? product.price : undefined,
+    image: product.product_images?.[0] || '/assets/products/placeholder.jpg',
     alt: product.description,
-    sizes: ['Small', 'Medium', 'Large'],
-    colors: ['White', 'Blue', 'Red', 'Green'],
+    sizes: product.sizes || ['Standard'],
+    colors: product.colors || ['Default'],
     capacity: '500ml',
-    inStock: product.inStock,
+    inStock: product.stock_quantity > 0,
     rating: 4.5,
     reviewCount: Math.floor(Math.random() * 200) + 50,
-    isNew: Math.random() > 0.7,
-    isBestseller: Math.random() > 0.8,
-  }));
+    isNew: product.is_new_arrival || false,
+    isBestseller: product.is_featured || false,
+  })) : [];
 
   useEffect(() => {
-    if (!isHydrated) return;
+    if (!isHydrated || !apiProducts.length) return;
 
-    let result = [...mockProducts];
+    let result = [...apiProducts];
 
     if (filters.categories.length > 0) {
       result = result.filter((p) =>
@@ -95,14 +97,14 @@ const ProductCatalogInteractive = () => {
     }
 
     setFilteredProducts(result);
-  }, [filters, sortBy, isHydrated]);
+  }, [filters, sortBy, isHydrated, apiProducts]);
 
   const handleAddToCart = (productId: string, size: string, color: string) => {
     if (!isHydrated) return;
     console.log(`Added to cart: Product ${productId}, Size: ${size}, Color: ${color}`);
   };
 
-  if (!isHydrated) {
+  if (!isHydrated || isLoading) {
     return (
       <div className="w-full px-1 py-8 sm:px-6">
         <div className="mb-6 h-10 w-48 animate-pulse rounded bg-muted" />
@@ -149,7 +151,7 @@ const ProductCatalogInteractive = () => {
             />
             <div className="hidden lg:block">
               <p className="text-sm text-muted-foreground">
-                Showing {filteredProducts.length} of {mockProducts.length} products
+                Showing {filteredProducts.length} of {apiProducts.length} products
               </p>
             </div>
             <SortControls onSortChange={(sortBy: string) => setSortBy(sortBy as SortOption)} />

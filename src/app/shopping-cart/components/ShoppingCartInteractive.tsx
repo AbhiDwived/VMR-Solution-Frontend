@@ -7,7 +7,7 @@ import RelatedProducts from './RelatedProducts';
 import EmptyCart from './EmptyCart';
 import ClearCartModal from './ClearCartModal';
 import Icon from '@/components/ui/AppIcon';
-import { products } from '@/data/products';
+import { useGetProductsQuery } from '@/store/api/productsApi';
 
 interface CartItemData {
   id: string;
@@ -47,82 +47,159 @@ interface RecentProduct {
 export default function ShoppingCartInteractive() {
   const [isHydrated, setIsHydrated] = useState(false);
   const [isClearModalOpen, setIsClearModalOpen] = useState(false);
+  const { data: productsData } = useGetProductsQuery({});
 
   useEffect(() => {
     setIsHydrated(true);
   }, []);
 
-  const [cartItems, setCartItems] = useState<CartItemData[]>([
-    {
-      id: '1',
-      name: products[0].name,
-      image: products[0].image,
-      alt: products[0].description,
-      size: 'Large',
-      color: 'Blue',
-      capacity: '10 Liters',
-      material: 'Virgin Plastic',
-      price: products[0].price,
-      quantity: 2,
-      minOrderQty: 1,
-      isWholesale: false,
-      stock: 45,
-    },
-    {
-      id: '2',
-      name: products[75].name,
-      image: products[75].image,
-      alt: products[75].description,
-      size: 'Medium',
-      color: 'Multicolor',
-      capacity: '200ml',
-      material: 'Food Grade Plastic',
-      price: products[75].price,
-      quantity: 6,
-      minOrderQty: 1,
-      isWholesale: false,
-      stock: 28,
-    },
-    {
-      id: '3',
-      name: products[55].name,
-      image: products[55].image,
-      alt: products[55].description,
-      size: 'Large',
-      color: 'White',
-      capacity: 'Standard',
-      material: 'High-Quality Plastic',
-      price: products[55].price,
-      quantity: 1,
-      minOrderQty: 1,
-      isWholesale: false,
-      stock: 62,
-    },
-  ]);
+  // Use API data for cart items (mock data using first few products)
+  const apiProducts = productsData?.data || [];
+  
+  const [cartItems, setCartItems] = useState<CartItemData[]>(() => {
+    if (apiProducts.length >= 3) {
+      return [
+        {
+          id: '1',
+          name: apiProducts[0]?.name || 'Product 1',
+          image: (() => {
+            const product = apiProducts[0];
+            if (!product) return '/placeholder.jpg';
+            let productImages = [];
+            if (Array.isArray(product.product_images)) {
+              productImages = product.product_images;
+            } else if (typeof product.product_images === 'string') {
+              try {
+                productImages = JSON.parse(product.product_images || '[]');
+              } catch (error) {
+                productImages = [];
+              }
+            }
+            return productImages?.[0] || '/placeholder.jpg';
+          })(),
+          alt: apiProducts[0]?.description || 'Product description',
+          size: 'Large',
+          color: 'Blue',
+          capacity: '10 Liters',
+          material: 'Virgin Plastic',
+          price: Number(apiProducts[0]?.discount_price) || Number(apiProducts[0]?.price) || 55,
+          quantity: 2,
+          minOrderQty: 1,
+          isWholesale: false,
+          stock: 45,
+        },
+        {
+          id: '2',
+          name: apiProducts[1]?.name || 'Product 2',
+          image: (() => {
+            const product = apiProducts[1];
+            if (!product) return '/placeholder.jpg';
+            let productImages = [];
+            if (Array.isArray(product.product_images)) {
+              productImages = product.product_images;
+            } else if (typeof product.product_images === 'string') {
+              try {
+                productImages = JSON.parse(product.product_images || '[]');
+              } catch (error) {
+                productImages = [];
+              }
+            }
+            return productImages?.[0] || '/placeholder.jpg';
+          })(),
+          alt: apiProducts[1]?.description || 'Product description',
+          size: 'Medium',
+          color: 'Multicolor',
+          capacity: '200ml',
+          material: 'Food Grade Plastic',
+          price: Number(apiProducts[1]?.discount_price) || Number(apiProducts[1]?.price) || 270,
+          quantity: 6,
+          minOrderQty: 1,
+          isWholesale: false,
+          stock: 28,
+        },
+        {
+          id: '3',
+          name: apiProducts[2]?.name || 'Product 3',
+          image: (() => {
+            const product = apiProducts[2];
+            if (!product) return '/placeholder.jpg';
+            let productImages = [];
+            if (Array.isArray(product.product_images)) {
+              productImages = product.product_images;
+            } else if (typeof product.product_images === 'string') {
+              try {
+                productImages = JSON.parse(product.product_images || '[]');
+              } catch (error) {
+                productImages = [];
+              }
+            }
+            return productImages?.[0] || '/placeholder.jpg';
+          })(),
+          alt: apiProducts[2]?.description || 'Product description',
+          size: 'Large',
+          color: 'White',
+          capacity: 'Standard',
+          material: 'High-Quality Plastic',
+          price: Number(apiProducts[2]?.discount_price) || Number(apiProducts[2]?.price) || 80,
+          quantity: 1,
+          minOrderQty: 1,
+          isWholesale: false,
+          stock: 62,
+        },
+      ];
+    }
+    return [];
+  });
 
-  // Get related products from real data
-  const relatedProducts: RelatedProduct[] = products
-    .slice(10, 18)
-    .map(product => ({
-      id: product.id.toString(),
-      name: product.name,
-      image: product.image,
-      alt: product.description,
-      price: product.price,
-      originalPrice: Math.floor(product.price * 1.3),
-      rating: 4.5,
-      reviews: Math.floor(Math.random() * 200) + 50,
-    }));
+  // Get related products from API data
+  const relatedProducts: RelatedProduct[] = apiProducts
+    .slice(3, 11)
+    .map((product: any) => {
+      let productImages = [];
+      if (Array.isArray(product.product_images)) {
+        productImages = product.product_images;
+      } else if (typeof product.product_images === 'string') {
+        try {
+          productImages = JSON.parse(product.product_images || '[]');
+        } catch (error) {
+          productImages = [];
+        }
+      }
+      
+      return {
+        id: product.id.toString(),
+        name: product.name,
+        image: productImages?.[0] || '/placeholder.jpg',
+        alt: product.description,
+        price: Number(product.discount_price) || Number(product.price),
+        originalPrice: Math.floor((Number(product.discount_price) || Number(product.price)) * 1.3),
+        rating: 4.5,
+        reviews: Math.floor(Math.random() * 200) + 50,
+      };
+    });
 
-  const recentProducts: RecentProduct[] = products
-    .slice(20, 22)
-    .map(product => ({
-      id: product.id.toString(),
-      name: product.name,
-      image: product.image,
-      alt: product.description,
-      price: product.price,
-    }));
+  const recentProducts: RecentProduct[] = apiProducts
+    .slice(11, 13)
+    .map((product: any) => {
+      let productImages = [];
+      if (Array.isArray(product.product_images)) {
+        productImages = product.product_images;
+      } else if (typeof product.product_images === 'string') {
+        try {
+          productImages = JSON.parse(product.product_images || '[]');
+        } catch (error) {
+          productImages = [];
+        }
+      }
+      
+      return {
+        id: product.id.toString(),
+        name: product.name,
+        image: productImages?.[0] || '/placeholder.jpg',
+        alt: product.description,
+        price: Number(product.discount_price) || Number(product.price),
+      };
+    });
 
   const handleQuantityChange = (id: string, newQuantity: number) => {
     setCartItems((prev) =>
