@@ -23,17 +23,44 @@ const FeaturedProducts = () => {
   const { data: productsData, isLoading } = useGetAdminProductsQuery();
 
   // Get featured products from API data
-  const featuredProducts: FeaturedProduct[] = productsData?.data?.slice(0, 36).map((product: any) => ({
-    id: product.id.toString(),
-    slug: product.slug,
-    name: product.name,
-    category: product.category,
-    price: Number(product.discount_price) || Number(product.price),
-    originalPrice: Number(product.price),
-    image: JSON.parse(product.product_images || '[]')[0] || '/placeholder.jpg',
-    alt: product.description,
-    rating: 4.5,
-  })) || [];
+  const featuredProducts: FeaturedProduct[] = productsData?.data?.slice(0, 36).map((product: any) => {
+    let productImages = [];
+    if (Array.isArray(product.product_images)) {
+      productImages = product.product_images;
+    } else if (typeof product.product_images === 'string') {
+      try {
+        productImages = JSON.parse(product.product_images || '[]');
+      } catch (error) {
+        console.warn('Failed to parse product images:', error);
+        productImages = [];
+      }
+    }
+    
+    return {
+      id: product.id.toString(),
+      slug: product.slug,
+      name: product.name,
+      category: product.category,
+      price: Number(product.discount_price) || Number(product.price),
+      originalPrice: Number(product.price),
+      image: (() => {
+        const images = productImages;
+        if (images && images.length > 0) {
+          const img = images[0];
+          // Handle both relative and absolute paths
+          if (img.startsWith('http')) {
+            return img;
+          } else if (img.startsWith('/assets/')) {
+            return img; // Next.js will serve from public directory
+          }
+          return img;
+        }
+        return '/placeholder.jpg';
+      })(),
+      alt: product.description,
+      rating: 4.5,
+    };
+  }) || [];
 
   if (isLoading) {
     return (

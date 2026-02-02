@@ -79,7 +79,17 @@ const ProductDetailsInteractive = () => {
       const foundProduct = productsData.data.find((p: any) => p.slug === slug);
       if (foundProduct) {
         setProduct(foundProduct);
-        const images = JSON.parse(foundProduct.product_images || '[]');
+        let images = [];
+        if (Array.isArray(foundProduct.product_images)) {
+          images = foundProduct.product_images;
+        } else if (typeof foundProduct.product_images === 'string') {
+          try {
+            images = JSON.parse(foundProduct.product_images);
+          } catch (e) {
+            console.warn('Failed to parse product images:', e);
+            images = [];
+          }
+        }
         const productImages = images.map((url: string, index: number) => ({
           id: (index + 1).toString(),
           url,
@@ -88,7 +98,17 @@ const ProductDetailsInteractive = () => {
         setCurrentImages(productImages);
 
         // Create variants from database variants data
-        const dbVariants = JSON.parse(foundProduct.variants || '[]');
+        let dbVariants = [];
+        if (Array.isArray(foundProduct.variants)) {
+          dbVariants = foundProduct.variants;
+        } else if (typeof foundProduct.variants === 'string') {
+          try {
+            dbVariants = JSON.parse(foundProduct.variants);
+          } catch (e) {
+            console.warn('Failed to parse variants:', e);
+            dbVariants = [];
+          }
+        }
         console.warn('📦 Database variants loaded:', dbVariants.length, 'variants');
         console.warn('📊 Database variants:', dbVariants);
 
@@ -123,7 +143,13 @@ const ProductDetailsInteractive = () => {
     { label: 'Weight', value: product.weight ? `${product.weight}kg` : 'N/A' },
     { label: 'Warranty', value: product.warranty || 'N/A' },
     { label: 'Category', value: product.category || 'N/A' },
-    { label: 'Sizes', value: JSON.parse(product.sizes || '[]').join(', ') || 'N/A' },
+    { label: 'Sizes', value: (() => {
+      try {
+        return JSON.parse(product.sizes || '[]').join(', ') || 'N/A';
+      } catch (e) {
+        return 'N/A';
+      }
+    })() },
     { label: 'Care Instructions', value: product.care_instructions || 'N/A' },
     { label: 'Additional Info', value: product.additional_info || 'N/A' },
     { label: 'Stock Quantity', value: product.stock_quantity?.toString() || 'N/A' },
@@ -229,7 +255,17 @@ const ProductDetailsInteractive = () => {
       }
 
       // Get all variant images
-      const dbVariants = JSON.parse(product?.variants || '[]');
+      let dbVariants = [];
+      if (Array.isArray(product?.variants)) {
+        dbVariants = product.variants;
+      } else if (typeof product?.variants === 'string') {
+        try {
+          dbVariants = JSON.parse(product.variants);
+        } catch (e) {
+          console.warn('Failed to parse variants for images:', e);
+          dbVariants = [];
+        }
+      }
       const allImages: ProductImage[] = [];
 
       dbVariants.forEach((v: any, variantIndex: number) => {
@@ -246,7 +282,17 @@ const ProductDetailsInteractive = () => {
       });
 
       if (allImages.length === 0) {
-        const images = JSON.parse(product?.product_images || '[]');
+        let images = [];
+        if (Array.isArray(product?.product_images)) {
+          images = product.product_images;
+        } else if (typeof product?.product_images === 'string') {
+          try {
+            images = JSON.parse(product.product_images);
+          } catch (e) {
+            console.warn('Failed to parse product images for fallback:', e);
+            images = [];
+          }
+        }
         const defaultImages = images.map((url: string, index: number) => ({
           id: (index + 1).toString(),
           url,
@@ -267,7 +313,17 @@ const ProductDetailsInteractive = () => {
     setSelectedVariant(variant);
 
     // Find variant-specific images from the product's variants data
-    const productVariants = JSON.parse(product.variants || '[]');
+    let productVariants = [];
+    if (Array.isArray(product.variants)) {
+      productVariants = product.variants;
+    } else if (typeof product.variants === 'string') {
+      try {
+        productVariants = JSON.parse(product.variants);
+      } catch (e) {
+        console.warn('Failed to parse variants for variant change:', e);
+        productVariants = [];
+      }
+    }
     const matchingVariant = productVariants.find((v: any) =>
       v.color?.code === variant.colorHex && v.size === variant.size
     );
@@ -283,7 +339,17 @@ const ProductDetailsInteractive = () => {
       setCurrentImages(variantImages);
     } else {
       // Fallback to default product images
-      const images = JSON.parse(product.product_images || '[]');
+      let images = [];
+      if (Array.isArray(product.product_images)) {
+        images = product.product_images;
+      } else if (typeof product.product_images === 'string') {
+        try {
+          images = JSON.parse(product.product_images);
+        } catch (e) {
+          console.warn('Failed to parse product images for fallback:', e);
+          images = [];
+        }
+      }
       const defaultImages = images.map((url: string, index: number) => ({
         id: (index + 1).toString(),
         url,

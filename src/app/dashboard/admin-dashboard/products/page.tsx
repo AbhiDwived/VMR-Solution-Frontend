@@ -78,11 +78,21 @@ export default function ProductsPage() {
                   </thead>
                   <tbody className="divide-y divide-gray-200">
                     {products.map((product: any) => {
-                      const images = JSON.parse(product.product_images || '[]');
-                      const colors = JSON.parse(product.colors || '[]');
-                      const sizes = JSON.parse(product.sizes || '[]');
-                      const features = JSON.parse(product.features || '[]');
-                      const tags = JSON.parse(product.tags || '[]');
+                      let images = [];
+                      let colors = [];
+                      let sizes = [];
+                      let features = [];
+                      let tags = [];
+                      
+                      try {
+                        images = JSON.parse(product.product_images || '[]');
+                        colors = JSON.parse(product.colors || '[]');
+                        sizes = JSON.parse(product.sizes || '[]');
+                        features = JSON.parse(product.features || '[]');
+                        tags = JSON.parse(product.tags || '[]');
+                      } catch (e) {
+                        console.warn('Failed to parse product JSON fields:', e);
+                      }
 
                       return (
                         <tr key={product.id} className="hover:bg-gray-50">

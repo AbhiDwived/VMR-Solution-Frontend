@@ -185,7 +185,13 @@ export default function InventoryPage() {
                   <tbody className="divide-y divide-gray-200">
                     {(activeTab === 'all' ? inventory : lowStock).map((product: any) => {
                       const stockStatus = getStockStatus(product.stock_quantity);
-                      const images = JSON.parse(product.product_images || '[]');
+                      let images = [];
+                      try {
+                        images = JSON.parse(product.product_images || '[]');
+                      } catch (e) {
+                        console.warn('Failed to parse product images:', e);
+                        images = [];
+                      }
                       
                       return (
                         <tr key={product.id} className="hover:bg-gray-50">

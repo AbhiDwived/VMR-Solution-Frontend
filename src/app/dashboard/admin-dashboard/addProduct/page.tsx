@@ -158,7 +158,13 @@ const AddProduct = () => {
           const parsedSpecs = product.specifications ? JSON.parse(product.specifications) : [];
           setSpecifications(Array.isArray(parsedSpecs) ? parsedSpecs : []);
 
-          const parsedImages = product.product_images ? JSON.parse(product.product_images) : [];
+          let parsedImages = [];
+          try {
+            parsedImages = product.product_images ? JSON.parse(product.product_images) : [];
+          } catch (e) {
+            console.warn('Failed to parse product images:', e);
+            parsedImages = [];
+          }
           setProductImages(parsedImages);
           
           const parsedColors = product.colors ? JSON.parse(product.colors) : [];
