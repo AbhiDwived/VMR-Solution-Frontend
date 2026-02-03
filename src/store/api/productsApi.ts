@@ -12,10 +12,9 @@ export interface Product {
 }
 
 export interface ProductsResponse {
-  products: Product[]
-  total: number
-  page: number
-  limit: number
+  success: boolean;
+  message: string;
+  data: Product[];
 }
 
 export const productsApi = baseApi.injectEndpoints({

@@ -158,27 +158,29 @@ const AddProduct = () => {
           const parsedSpecs = product.specifications ? JSON.parse(product.specifications) : [];
           setSpecifications(Array.isArray(parsedSpecs) ? parsedSpecs : []);
 
-          let parsedImages = [];
-          try {
-            parsedImages = product.product_images ? JSON.parse(product.product_images) : [];
-          } catch (e) {
-            console.warn('Failed to parse product images:', e);
-            parsedImages = [];
-          }
-          setProductImages(parsedImages);
-          
-          const parsedColors = product.colors ? JSON.parse(product.colors) : [];
-          setColors(parsedColors);
-          
-          const parsedSizes = product.sizes ? JSON.parse(product.sizes) : [];
-          setSizes(parsedSizes);
-          
-          const parsedFeatures = product.features ? JSON.parse(product.features) : [];
-          setFeatures(parsedFeatures);
-          
-          const parsedVariants = product.variants ? JSON.parse(product.variants) : [];
-          setVariantImageSets(parsedVariants);
+          // Handle product images with proper parsing
+          const parseJsonField = (field: any, fallback: any[] = []) => {
+            if (!field) return fallback;
+            if (typeof field === 'string') {
+              if (field.startsWith('[') || field.startsWith('{')) {
+                try {
+                  return JSON.parse(field);
+                } catch {
+                  return fallback;
+                }
+              }
+              return [field];
+            }
+            return Array.isArray(field) ? field : fallback;
+          };
+
+          setProductImages(parseJsonField(product.product_images, []));
+          setColors(parseJsonField(product.colors, []));
+          setSizes(parseJsonField(product.sizes, []));
+          setFeatures(parseJsonField(product.features, []));
+          setVariantImageSets(parseJsonField(product.variants, []));
         } catch (e) {
+          console.warn('Error parsing product data:', e);
           setSpecifications([]);
           setProductImages([]);
           setColors([]);

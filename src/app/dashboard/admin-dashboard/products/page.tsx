@@ -5,8 +5,8 @@ import { useGetAdminProductsQuery, useDeleteAdminProductMutation } from '@/store
 import AdminSidebar from '../components/AdminSidebar';
 import Breadcrumb from '@/components/common/Breadcrumb';
 import Icon from '@/components/ui/AppIcon';
+import Image from 'next/image';
 import { toast, ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 
 export default function ProductsPage() {
   const [mounted, setMounted] = useState(false);
@@ -18,7 +18,7 @@ export default function ProductsPage() {
   }, []);
 
   const handleDelete = async (id: string) => {
-    if (mounted && window.confirm('Are you sure you want to delete this product?')) {
+    if (window.confirm('Are you sure you want to delete this product?')) {
       try {
         await deleteProduct(id).unwrap();
         toast.success('Product deleted successfully');
@@ -30,7 +30,7 @@ export default function ProductsPage() {
 
   const products = productsData?.data || [];
 
-  if (!mounted) return <div className="p-6">Loading...</div>;
+  if (!mounted) return null;
   if (isLoading) return <div className="p-6">Loading products...</div>;
   if (error) return <div className="p-6 text-red-500">Error loading products</div>;
 
@@ -85,11 +85,28 @@ export default function ProductsPage() {
                       let tags = [];
                       
                       try {
-                        images = JSON.parse(product.product_images || '[]');
-                        colors = JSON.parse(product.colors || '[]');
-                        sizes = JSON.parse(product.sizes || '[]');
-                        features = JSON.parse(product.features || '[]');
-                        tags = JSON.parse(product.tags || '[]');
+                        // Handle both JSON strings and plain strings
+                        images = typeof product.product_images === 'string' 
+                          ? (product.product_images.startsWith('[') || product.product_images.startsWith('{') 
+                              ? JSON.parse(product.product_images) 
+                              : [product.product_images])
+                          : (product.product_images || []);
+                        
+                        colors = typeof product.colors === 'string'
+                          ? (product.colors.startsWith('[') ? JSON.parse(product.colors) : [product.colors])
+                          : (product.colors || []);
+                        
+                        sizes = typeof product.sizes === 'string'
+                          ? (product.sizes.startsWith('[') ? JSON.parse(product.sizes) : [product.sizes])
+                          : (product.sizes || []);
+                        
+                        features = typeof product.features === 'string'
+                          ? (product.features.startsWith('[') ? JSON.parse(product.features) : [product.features])
+                          : (product.features || []);
+                        
+                        tags = typeof product.tags === 'string'
+                          ? (product.tags.startsWith('[') ? JSON.parse(product.tags) : [product.tags])
+                          : (product.tags || []);
                       } catch (e) {
                         console.warn('Failed to parse product JSON fields:', e);
                       }
@@ -98,10 +115,12 @@ export default function ProductsPage() {
                         <tr key={product.id} className="hover:bg-gray-50">
                           <td className="px-4 py-3 font-mono text-xs">{product.id}</td>
                           <td className="px-4 py-3">
-                            <img
+                            <Image
                               src={images[0] || '/placeholder.jpg'}
                               alt={product.name}
-                              className="w-10 h-10 object-cover rounded"
+                              width={40}
+                              height={40}
+                              className="object-cover rounded"
                             />
                           </td>
                           <td className="px-4 py-3">
@@ -170,7 +189,7 @@ export default function ProductsPage() {
                             <div className="text-gray-500">{product.admin_email}</div>
                           </td>
                           <td className="px-4 py-3 text-xs">
-                            {mounted ? new Date(product.created_at).toLocaleDateString() : ''}
+                            {new Date(product.created_at).toLocaleDateString()}
                           </td>
                           <td className="px-4 py-3">
                             <div className="flex items-center space-x-2">

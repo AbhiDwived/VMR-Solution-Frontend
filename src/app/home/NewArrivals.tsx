@@ -19,7 +19,7 @@ const NewArrivals = () => {
   const { data: productsData, isLoading } = useGetProductsQuery({});
 
   const newProducts: NewProduct[] = productsData?.data
-    ?.filter((p: any) => ['Kitchen', 'Bathroom', 'Basins', 'Tubs'].includes(p.category))
+    ?.filter((p: any) => p.is_new_arrival === 1 || p.is_new_arrival === true)
     .slice(0, 6)
     .map((product: any) => ({
       id: product.id.toString(),
@@ -34,7 +34,7 @@ const NewArrivals = () => {
         } else if (typeof product.product_images === 'string') {
           try {
             productImages = JSON.parse(product.product_images || '[]');
-          } catch (error) {
+          } catch {
             productImages = [];
           }
         }

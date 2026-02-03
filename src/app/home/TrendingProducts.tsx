@@ -21,9 +21,9 @@ interface TrendingProduct {
 const TrendingProducts = () => {
   const { data: productsData, isLoading } = useGetProductsQuery({});
 
-  // Get trending products from API data (patlas and furniture)
+  // Get featured products from API data
   const trendingProducts: TrendingProduct[] = productsData?.data
-    ?.filter((p: any) => ['Patlas', 'Furniture', 'Mugs', 'Planters'].includes(p.category))
+    ?.filter((p: any) => p.is_featured === 1 || p.is_featured === true)
     .slice(0, 6)
     .map((product: any, index: number) => {
       let productImages = [];
@@ -32,7 +32,7 @@ const TrendingProducts = () => {
       } else if (typeof product.product_images === 'string') {
         try {
           productImages = JSON.parse(product.product_images || '[]');
-        } catch (error) {
+        } catch {
           productImages = [];
         }
       }

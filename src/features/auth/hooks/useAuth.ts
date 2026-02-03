@@ -28,31 +28,16 @@ export const useAuth = () => {
 
   const isAuthenticated = () => {
     const result = !!auth.token && !!auth.user;
-    console.log('🔍 isAuthenticated check:', { 
-      hasToken: !!auth.token, 
-      hasUser: !!auth.user, 
-      result,
-      token: auth.token?.substring(0, 20) + '...'
-    });
     return result;
   };
 
   const hasRole = (role: 'user' | 'admin') => {
     const result = auth.user?.role === role;
-    console.log('🔍 hasRole check:', { 
-      userRole: auth.user?.role, 
-      requiredRole: role, 
-      result 
-    });
     return result;
   };
 
   const isVerified = () => {
     const result = auth.user?.isVerified === true;
-    console.log('🔍 isVerified check:', { 
-      userVerified: auth.user?.isVerified, 
-      result 
-    });
     return result;
   };
 
