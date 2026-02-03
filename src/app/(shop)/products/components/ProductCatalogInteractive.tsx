@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import FilterPanel, { FilterState } from './FilterPanel';
 import SortControls, { SortOption } from './SortControls';
 import ProductGrid from './ProductGrid';
@@ -19,31 +19,33 @@ const ProductCatalogInteractive = () => {
   });
   const [sortBy, setSortBy] = useState<SortOption>('relevance');
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
-  const { data: productsData, isLoading, error } = useGetProductsQuery({});
+  const { data: productsData, isLoading } = useGetProductsQuery({});
 
   useEffect(() => {
     setIsHydrated(true);
   }, []);
 
   // Convert API data to match Product interface
-  const apiProducts: Product[] = productsData?.data ? productsData.data.map((product: any) => ({
-    id: product.id.toString(),
-    slug: product.slug || product.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''),
-    name: product.name,
-    category: product.category,
-    price: product.discount_price || product.price,
-    originalPrice: product.price !== product.discount_price ? product.price : undefined,
-    image: product.product_images?.[0] || '/assets/products/placeholder.jpg',
-    alt: product.description,
-    sizes: product.sizes || ['Standard'],
-    colors: product.colors || ['Default'],
-    capacity: '500ml',
-    inStock: product.stock_quantity > 0,
-    rating: 4.5,
-    reviewCount: Math.floor(Math.random() * 200) + 50,
-    isNew: product.is_new_arrival || false,
-    isBestseller: product.is_featured || false,
-  })) : [];
+  const apiProducts: Product[] = useMemo(() => {
+    return productsData?.data ? productsData.data.map((product: any, index: number) => ({
+      id: product.id.toString(),
+      slug: product.slug || product.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''),
+      name: product.name,
+      category: product.category,
+      price: product.discount_price || product.price,
+      originalPrice: product.price !== product.discount_price ? product.price : undefined,
+      image: product.product_images?.[0] || '/assets/products/placeholder.jpg',
+      alt: product.description,
+      sizes: product.sizes || ['Standard'],
+      colors: product.colors || ['Default'],
+      capacity: '500ml',
+      inStock: product.stock_quantity > 0,
+      rating: 4.5,
+      reviewCount: 50 + (index * 13) % 200,
+      isNew: product.is_new_arrival || false,
+      isBestseller: product.is_featured || false,
+    })) : [];
+  }, [productsData]);
 
   useEffect(() => {
     if (!isHydrated || !apiProducts.length) return;
@@ -99,9 +101,9 @@ const ProductCatalogInteractive = () => {
     setFilteredProducts(result);
   }, [filters, sortBy, isHydrated, apiProducts]);
 
-  const handleAddToCart = (productId: string, size: string, color: string) => {
+  const handleAddToCart = (_productId: string, _size: string, _color: string) => {
     if (!isHydrated) return;
-    console.log(`Added to cart: Product ${productId}, Size: ${size}, Color: ${color}`);
+    // Add to cart logic here
   };
 
   if (!isHydrated || isLoading) {
