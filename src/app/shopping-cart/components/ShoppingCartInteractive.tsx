@@ -53,153 +53,31 @@ export default function ShoppingCartInteractive() {
     setIsHydrated(true);
   }, []);
 
-  // Use API data for cart items (mock data using first few products)
   const apiProducts = productsData?.data || [];
-  
-  const [cartItems, setCartItems] = useState<CartItemData[]>(() => {
-    if (apiProducts.length >= 3) {
-      return [
-        {
-          id: '1',
-          name: apiProducts[0]?.name || 'Product 1',
-          image: (() => {
-            const product = apiProducts[0];
-            if (!product) return '/placeholder.jpg';
-            let productImages = [];
-            if (Array.isArray(product.product_images)) {
-              productImages = product.product_images;
-            } else if (typeof product.product_images === 'string') {
-              try {
-                productImages = JSON.parse(product.product_images || '[]');
-              } catch (error) {
-                productImages = [];
-              }
-            }
-            return productImages?.[0] || '/placeholder.jpg';
-          })(),
-          alt: apiProducts[0]?.description || 'Product description',
-          size: 'Large',
-          color: 'Blue',
-          capacity: '10 Liters',
-          material: 'Virgin Plastic',
-          price: Number(apiProducts[0]?.discount_price) || Number(apiProducts[0]?.price) || 55,
-          quantity: 2,
-          minOrderQty: 1,
-          isWholesale: false,
-          stock: 45,
-        },
-        {
-          id: '2',
-          name: apiProducts[1]?.name || 'Product 2',
-          image: (() => {
-            const product = apiProducts[1];
-            if (!product) return '/placeholder.jpg';
-            let productImages = [];
-            if (Array.isArray(product.product_images)) {
-              productImages = product.product_images;
-            } else if (typeof product.product_images === 'string') {
-              try {
-                productImages = JSON.parse(product.product_images || '[]');
-              } catch (error) {
-                productImages = [];
-              }
-            }
-            return productImages?.[0] || '/placeholder.jpg';
-          })(),
-          alt: apiProducts[1]?.description || 'Product description',
-          size: 'Medium',
-          color: 'Multicolor',
-          capacity: '200ml',
-          material: 'Food Grade Plastic',
-          price: Number(apiProducts[1]?.discount_price) || Number(apiProducts[1]?.price) || 270,
-          quantity: 6,
-          minOrderQty: 1,
-          isWholesale: false,
-          stock: 28,
-        },
-        {
-          id: '3',
-          name: apiProducts[2]?.name || 'Product 3',
-          image: (() => {
-            const product = apiProducts[2];
-            if (!product) return '/placeholder.jpg';
-            let productImages = [];
-            if (Array.isArray(product.product_images)) {
-              productImages = product.product_images;
-            } else if (typeof product.product_images === 'string') {
-              try {
-                productImages = JSON.parse(product.product_images || '[]');
-              } catch (error) {
-                productImages = [];
-              }
-            }
-            return productImages?.[0] || '/placeholder.jpg';
-          })(),
-          alt: apiProducts[2]?.description || 'Product description',
-          size: 'Large',
-          color: 'White',
-          capacity: 'Standard',
-          material: 'High-Quality Plastic',
-          price: Number(apiProducts[2]?.discount_price) || Number(apiProducts[2]?.price) || 80,
-          quantity: 1,
-          minOrderQty: 1,
-          isWholesale: false,
-          stock: 62,
-        },
-      ];
-    }
-    return [];
-  });
+  const [cartItems, setCartItems] = useState<CartItemData[]>([]);
 
-  // Get related products from API data
   const relatedProducts: RelatedProduct[] = apiProducts
-    .slice(3, 11)
-    .map((product: any) => {
-      let productImages = [];
-      if (Array.isArray((product as any).product_images)) {
-        productImages = (product as any).product_images;
-      } else if (typeof (product as any).product_images === 'string') {
-        try {
-          productImages = JSON.parse((product as any).product_images || '[]');
-        } catch (error) {
-          productImages = [];
-        }
-      }
-      
-      return {
-        id: product.id.toString(),
-        name: product.name,
-        image: productImages?.[0] || '/placeholder.jpg',
-        alt: product.description,
-        price: Number(product.discount_price) || Number(product.price),
-        originalPrice: Math.floor((Number(product.discount_price) || Number(product.price)) * 1.3),
-        rating: 4.5,
-        reviews: Math.floor(Math.random() * 200) + 50,
-      };
-    });
+    .slice(0, 8)
+    .map((product: any) => ({
+      id: product.id.toString(),
+      name: product.name,
+      image: '/placeholder.jpg',
+      alt: product.description,
+      price: Number(product.price),
+      originalPrice: Math.floor(Number(product.price) * 1.3),
+      rating: 4.5,
+      reviews: 50,
+    }));
 
   const recentProducts: RecentProduct[] = apiProducts
-    .slice(11, 13)
-    .map((product: any) => {
-      let productImages = [];
-      if (Array.isArray((product as any).product_images)) {
-        productImages = (product as any).product_images;
-      } else if (typeof (product as any).product_images === 'string') {
-        try {
-          productImages = JSON.parse((product as any).product_images || '[]');
-        } catch (error) {
-          productImages = [];
-        }
-      }
-      
-      return {
-        id: product.id.toString(),
-        name: product.name,
-        image: productImages?.[0] || '/placeholder.jpg',
-        alt: product.description,
-        price: Number(product.discount_price) || Number(product.price),
-      };
-    });
+    .slice(0, 2)
+    .map((product: any) => ({
+      id: product.id.toString(),
+      name: product.name,
+      image: '/placeholder.jpg',
+      alt: product.description,
+      price: Number(product.price),
+    }));
 
   const handleQuantityChange = (id: string, newQuantity: number) => {
     setCartItems((prev) =>
@@ -212,8 +90,6 @@ export default function ShoppingCartInteractive() {
   };
 
   const handleSaveForLater = (id: string) => {
-    // Mock save for later functionality
-    console.log('Saved for later:', id);
     handleRemoveItem(id);
   };
 
@@ -222,8 +98,8 @@ export default function ShoppingCartInteractive() {
     setIsClearModalOpen(false);
   };
 
-  const handleApplyPromo = (code: string) => {
-    console.log('Promo code applied:', code);
+  const handleApplyPromo = (_code: string) => {
+    // Promo logic here
   };
 
   if (!isHydrated) {
@@ -267,7 +143,6 @@ export default function ShoppingCartInteractive() {
       <div className="mx-auto max-w-[1200px] px-4 py-8 sm:px-6">
         {cartItems.length > 0 ? (
           <>
-            {/* Header */}
             <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
               <div>
                 <h1 className="font-heading text-3xl font-bold text-foreground">Shopping Cart</h1>
@@ -284,9 +159,7 @@ export default function ShoppingCartInteractive() {
               </button>
             </div>
 
-            {/* Cart Content */}
             <div className="grid gap-8 lg:grid-cols-3">
-              {/* Cart Items */}
               <div className="space-y-4 lg:col-span-2">
                 {cartItems.map((item) => (
                   <CartItem
@@ -299,7 +172,6 @@ export default function ShoppingCartInteractive() {
                 ))}
               </div>
 
-              {/* Order Summary */}
               <div>
                 <OrderSummary
                   summary={orderSummary}
@@ -309,7 +181,6 @@ export default function ShoppingCartInteractive() {
               </div>
             </div>
 
-            {/* Related Products */}
             <RelatedProducts products={relatedProducts} />
           </>
         ) : (
@@ -317,7 +188,6 @@ export default function ShoppingCartInteractive() {
         )}
       </div>
 
-      {/* Clear Cart Modal */}
       <ClearCartModal
         isOpen={isClearModalOpen}
         onClose={() => setIsClearModalOpen(false)}
@@ -326,6 +196,3 @@ export default function ShoppingCartInteractive() {
     </div>
   );
 }
-
-
-
