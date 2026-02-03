@@ -156,11 +156,11 @@ export default function ShoppingCartInteractive() {
     .slice(3, 11)
     .map((product: any) => {
       let productImages = [];
-      if (Array.isArray(product.product_images)) {
-        productImages = product.product_images;
-      } else if (typeof product.product_images === 'string') {
+      if (Array.isArray((product as any).product_images)) {
+        productImages = (product as any).product_images;
+      } else if (typeof (product as any).product_images === 'string') {
         try {
-          productImages = JSON.parse(product.product_images || '[]');
+          productImages = JSON.parse((product as any).product_images || '[]');
         } catch (error) {
           productImages = [];
         }
@@ -182,11 +182,11 @@ export default function ShoppingCartInteractive() {
     .slice(11, 13)
     .map((product: any) => {
       let productImages = [];
-      if (Array.isArray(product.product_images)) {
-        productImages = product.product_images;
-      } else if (typeof product.product_images === 'string') {
+      if (Array.isArray((product as any).product_images)) {
+        productImages = (product as any).product_images;
+      } else if (typeof (product as any).product_images === 'string') {
         try {
-          productImages = JSON.parse(product.product_images || '[]');
+          productImages = JSON.parse((product as any).product_images || '[]');
         } catch (error) {
           productImages = [];
         }
