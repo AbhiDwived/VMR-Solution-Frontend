@@ -34,6 +34,10 @@ export const productsApi = baseApi.injectEndpoints({
       query: (id) => `/products/${id}`,
       providesTags: (_result, _error, id) => [{ type: 'Product', id }],
     }),
+    getProductBySlug: builder.query<any, string>({
+      query: (slug) => `/product/slug/${slug}`,
+      providesTags: (_result, _error, slug) => [{ type: 'Product', id: slug }],
+    }),
     getCategories: builder.query<string[], void>({
       query: () => '/categories',
       providesTags: ['Product'],
@@ -95,6 +99,7 @@ export const productsApi = baseApi.injectEndpoints({
 export const {
   useGetProductsQuery,
   useGetProductQuery,
+  useGetProductBySlugQuery,
   useGetCategoriesQuery,
   useAddAdminProductMutation,
   useGetAdminProductsQuery,

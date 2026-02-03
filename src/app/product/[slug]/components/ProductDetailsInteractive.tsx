@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
-import { useGetAdminProductsQuery } from '@/store/api/productsApi';
+import { useGetProductBySlugQuery } from '@/store/api/productsApi';
 import ProductImageGallery from '../../../product-details/components/ProductImageGallery';
 import ProductInfo from '../../../product-details/components/ProductInfo';
 import ProductTabs from '../../../product-details/components/ProductTabs';
@@ -64,7 +64,7 @@ const ProductDetailsInteractive = () => {
   const router = useRouter();
   const params = useParams();
   const slug = params.slug as string;
-  const { data: productsData, isLoading } = useGetAdminProductsQuery();
+  const { data: productData, isLoading } = useGetProductBySlugQuery(slug);
   const [isHydrated, setIsHydrated] = useState(false);
   const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(null);
   const [currentImages, setCurrentImages] = useState<ProductImage[]>([]);
@@ -75,8 +75,8 @@ const ProductDetailsInteractive = () => {
 
   useEffect(() => {
     setIsHydrated(true);
-    if (slug && productsData?.data) {
-      const foundProduct = productsData.data.find((p: any) => p.slug === slug);
+    if (slug && productData?.data) {
+      const foundProduct = productData.data;
       if (foundProduct) {
         setProduct(foundProduct);
         let images = [];
@@ -130,10 +130,25 @@ const ProductDetailsInteractive = () => {
         setProductVariants(variants);
         if (variants.length > 0) {
           setSelectedVariant(variants[0]);
+        } else {
+          // Create a default variant if no variants exist
+          const defaultVariant: ProductVariant = {
+            id: 'default',
+            size: foundProduct.sizes?.[0] || 'Standard',
+            color: foundProduct.colors?.[0] || 'Default',
+            colorHex: '#000000',
+            capacity: foundProduct.weight ? `${foundProduct.weight}kg` : 'N/A',
+            price: Number(foundProduct.discount_price || foundProduct.price),
+            originalPrice: Number(foundProduct.price),
+            stock: foundProduct.stock_quantity || 0,
+            minOrderQty: 1,
+          };
+          setSelectedVariant(defaultVariant);
+          setProductVariants([defaultVariant]);
         }
       }
     }
-  }, [isHydrated, slug, productsData]);
+  }, [isHydrated, slug, productData]);
 
 
 
