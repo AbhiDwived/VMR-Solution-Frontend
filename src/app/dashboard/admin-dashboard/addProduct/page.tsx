@@ -54,27 +54,7 @@ interface Specification {
   key: string;
   value: string;
 }
-// Cloudinary Upload Function
-const uploadImageToCloudinary = async (file: File) => {
-  const formData = new FormData();
-  formData.append("file", file);
-  formData.append("upload_preset", "campus-needs-upload");
-
-  try {
-    const res = await fetch(
-      `https://api.cloudinary.com/v1_1/dwg8d0bfp/image/upload`,
-      {
-        method: "POST",
-        body: formData,
-      }
-    );
-    const data = await res.json();
-    return data.secure_url;
-  } catch (error) {
-    console.error("Upload failed:", error);
-    throw error;
-  }
-};
+import { uploadImageToImageKit } from '@/lib/utils/imagekit';
 
 const AddProduct = () => {
   const [loading, setLoading] = useState(false);
@@ -260,7 +240,7 @@ const AddProduct = () => {
 
     setLoading(true);
     try {
-      const uploadPromises = files.map((file) => uploadImageToCloudinary(file));
+      const uploadPromises = files.map((file) => uploadImageToImageKit(file, 'products/variants'));
       const uploadedUrls = await Promise.all(uploadPromises);
 
       updateVariantImageSet(setId, 'images',
@@ -389,7 +369,7 @@ const AddProduct = () => {
     const files = Array.from(e.target.files || []);
     setLoading(true);
     try {
-      const uploadPromises = files.map((file) => uploadImageToCloudinary(file));
+      const uploadPromises = files.map((file) => uploadImageToImageKit(file, 'products'));
       const uploadedUrls = await Promise.all(uploadPromises);
       setProductImages((prev) => [...prev, ...uploadedUrls]);
       toast.success("✅ Images uploaded!");

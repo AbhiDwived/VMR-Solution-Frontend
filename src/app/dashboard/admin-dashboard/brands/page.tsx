@@ -203,7 +203,7 @@ export default function BrandsPage() {
                         <td className="px-6 py-4">
                           {brand.image ? (
                             <Image 
-                              src={`${config.apiUrl.replace('/api', '')}${brand.image}`} 
+                              src={brand.image.startsWith('http') ? brand.image : `${config.apiUrl.replace('/api', '')}${brand.image}`}
                               alt={brand.name}
                               width={48}
                               height={48}
