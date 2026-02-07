@@ -201,7 +201,7 @@ export default function BrandsPage() {
                       <tr key={brand.id}>
                         <td className="px-6 py-4 whitespace-nowrap font-medium">{brand.name}</td>
                         <td className="px-6 py-4">
-                          {brand.image ? (
+                          {brand.image && brand.image.trim() ? (
                             <Image 
                               src={brand.image.startsWith('http') ? brand.image : `${config.apiUrl.replace('/api', '')}${brand.image}`}
                               alt={brand.name}

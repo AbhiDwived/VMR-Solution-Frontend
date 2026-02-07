@@ -39,9 +39,9 @@ export default function CategoriesSection() {
           {categories.map((category) => (
             <div key={category.id} className="flex flex-col items-center group cursor-pointer">
               <div className="w-20 h-20 md:w-24 md:h-24 rounded-full overflow-hidden bg-white shadow-lg group-hover:shadow-xl transition-shadow duration-300">
-                {category.image ? (
+                {category.image && category.image.trim() ? (
                   <Image 
-                    src={`${config.apiUrl.replace('/api', '')}${category.image}`} 
+                    src={category.image.startsWith('http') ? category.image : `${config.apiUrl.replace('/api', '')}${category.image}`}
                     alt={category.name}
                     width={96}
                     height={96}

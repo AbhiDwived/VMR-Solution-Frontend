@@ -201,7 +201,7 @@ export default function CategoriesPage() {
                       <tr key={category.id}>
                         <td className="px-6 py-4 whitespace-nowrap font-medium">{category.name}</td>
                         <td className="px-6 py-4">
-                          {category.image ? (
+                          {category.image && category.image.trim() ? (
                             <img src={category.image.startsWith('http') ? category.image : `${config.apiUrl.replace('/api', '')}${category.image}`} alt={category.name} className="w-12 h-12 object-cover rounded" />
                           ) : (
                             <span className="text-gray-400">No image</span>
