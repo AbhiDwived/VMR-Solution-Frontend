@@ -1,9 +1,7 @@
-import ImageKit from '@imagekit/javascript';
-
-const imagekit = new ImageKit({
+const imagekit = {
   publicKey: process.env.NEXT_PUBLIC_IMAGEKIT_PUBLIC_KEY || '',
   urlEndpoint: process.env.NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT || ''
-});
+};
 
 export const uploadImageToImageKit = async (file: File, folder: string = ''): Promise<string> => {
   try {
