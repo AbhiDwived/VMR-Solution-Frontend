@@ -26,6 +26,7 @@ const AdminSidebar = () => {
       items: [
         { title: 'Users', icon: 'UsersIcon', href: '/dashboard/admin-dashboard/users' },
         { title: 'Inquiries', icon: 'ChatBubbleLeftRightIcon', href: '/dashboard/admin-dashboard/inquiries' },
+        { title: 'Contact Us', icon: 'EnvelopeIcon', href: '/dashboard/admin-dashboard/contact' },
         { title: 'Notifications', icon: 'BellIcon', href: '/dashboard/admin-dashboard/notifications' },
       ],
     },

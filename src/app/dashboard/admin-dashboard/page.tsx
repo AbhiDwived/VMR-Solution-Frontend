@@ -1,17 +1,20 @@
-import type { Metadata } from 'next';
+'use client';
+
+import { useState, useEffect } from 'react';
 import Breadcrumb from '@/components/common/Breadcrumb';
 import AdminDashboardView from './components/AdminDashboardView';
 import AdminSidebar from './components/AdminSidebar';
 import MobileSidebar from './components/MobileSidebar';
 import AuthGuard from '@/features/auth/components/AuthGuard';
 
-export const metadata: Metadata = {
-  title: 'Admin Dashboard - VMR Solution',
-  description:
-    'VMR Solution admin dashboard for managing products, orders, users, and business analytics.',
-};
-
 export default function AdminDashboardPage() {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) return null;
   return (
     <AuthGuard requireAuth={true} requireVerification={false} allowedRoles={['admin']}>
       <div className="min-h-screen bg-background">
