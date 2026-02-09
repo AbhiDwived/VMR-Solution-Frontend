@@ -6,6 +6,7 @@ import { config } from '@/config/env';
 interface FilterPanelProps {
   onFilterChange: (filters: FilterState) => void;
   productCount: number;
+  initialFilters?: FilterState;
 }
 
 export interface FilterState {
@@ -16,8 +17,8 @@ export interface FilterState {
   priceRange: [number, number];
 }
 
-const FilterPanel = ({ onFilterChange, productCount }: FilterPanelProps) => {
-  const [filters, setFilters] = useState<FilterState>({
+const FilterPanel = ({ onFilterChange, productCount, initialFilters }: FilterPanelProps) => {
+  const [filters, setFilters] = useState<FilterState>(initialFilters || {
     categories: [],
     sizes: [],
     colors: [],
@@ -28,6 +29,12 @@ const FilterPanel = ({ onFilterChange, productCount }: FilterPanelProps) => {
   const [categories, setCategories] = useState<Array<{ id: string; name: string; slug: string; image: string }>>([]);
   const [brands, setBrands] = useState<Array<{ id: string; name: string; slug: string; image: string }>>([]);
   const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (initialFilters && initialFilters.categories.length > 0) {
+      setFilters(initialFilters);
+    }
+  }, [initialFilters?.categories.join(','), onFilterChange]);
 
   useEffect(() => {
     const fetchFilters = async () => {

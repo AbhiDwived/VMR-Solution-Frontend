@@ -7,9 +7,10 @@ import FilterPanel, { FilterState } from './FilterPanel';
 interface MobileFilterPanelProps {
   onFilterChange: (filters: FilterState) => void;
   productCount: number;
+  initialFilters?: FilterState;
 }
 
-const MobileFilterPanel = ({ onFilterChange, productCount }: MobileFilterPanelProps) => {
+const MobileFilterPanel = ({ onFilterChange, productCount, initialFilters }: MobileFilterPanelProps) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const handleFilterChange = (filters: FilterState) => {
@@ -53,6 +54,7 @@ const MobileFilterPanel = ({ onFilterChange, productCount }: MobileFilterPanelPr
               <FilterPanel
                 onFilterChange={handleFilterChange}
                 productCount={productCount}
+                initialFilters={initialFilters}
               />
             </div>
 

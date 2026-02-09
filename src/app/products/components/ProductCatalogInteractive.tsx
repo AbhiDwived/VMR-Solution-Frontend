@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
+import { useSearchParams } from 'next/navigation';
 import FilterPanel, { FilterState } from './FilterPanel';
 import SortControls, { SortOption } from './SortControls';
 import ProductGrid from './ProductGrid';
@@ -9,6 +10,8 @@ import { Product } from './ProductCard';
 import { useGetProductsQuery } from '@/store/api/productsApi';
 
 const ProductCatalogInteractive = () => {
+  const searchParams = useSearchParams();
+  const categoryFromUrl = searchParams.get('category');
   const [isHydrated, setIsHydrated] = useState(false);
   const [filters, setFilters] = useState<FilterState>({
     categories: [],
@@ -17,6 +20,15 @@ const ProductCatalogInteractive = () => {
     capacityRange: [0, 10000],
     priceRange: [0, 5000],
   });
+
+  useEffect(() => {
+    if (categoryFromUrl) {
+      setFilters(prev => ({
+        ...prev,
+        categories: [categoryFromUrl]
+      }));
+    }
+  }, [categoryFromUrl]);
   const [sortBy, setSortBy] = useState<SortOption>('relevance');
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const { data: productsData, isLoading, error } = useGetProductsQuery({});
@@ -148,6 +160,7 @@ const ProductCatalogInteractive = () => {
             <FilterPanel
               onFilterChange={setFilters}
               productCount={filteredProducts.length}
+              initialFilters={filters}
             />
           </div>
         </aside>
@@ -159,6 +172,7 @@ const ProductCatalogInteractive = () => {
             <MobileFilterPanel
               onFilterChange={setFilters}
               productCount={filteredProducts.length}
+              initialFilters={filters}
             />
             <div className="hidden lg:block">
               <p className="text-sm text-muted-foreground">
