@@ -7,7 +7,7 @@ import Icon from '@/components/ui/AppIcon';
 
 const navigationLinks = [
   { label: 'Home', path: '/', icon: 'HomeIcon' },
-  { label: 'Products', path: '/product-catalog', icon: 'ShoppingBagIcon' },
+  { label: 'Products', path: '/products', icon: 'ShoppingBagIcon' },
   { label: 'Categories', path: '/categories', icon: 'TagIcon' },
   { label: 'Blog', path: '/blog', icon: 'DocumentTextIcon' },
   { label: 'About Us', path: '/about', icon: 'InformationCircleIcon' },
