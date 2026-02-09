@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import Icon from '@/components/ui/AppIcon';
+import { useState, useEffect } from 'react';
+import { config } from '@/config/env';
 
 interface FilterPanelProps {
   onFilterChange: (filters: FilterState) => void;
@@ -25,24 +25,33 @@ const FilterPanel = ({ onFilterChange, productCount }: FilterPanelProps) => {
     priceRange: [0, 5000],
   });
 
-  const categories = [
-    { id: 'flower-pots', label: 'Flower Pots', icon: 'SparklesIcon' },
-    { id: 'mugs', label: 'Mugs', icon: 'BeakerIcon' },
-    { id: 'containers', label: 'Containers', icon: 'ArchiveBoxIcon' },
-    { id: 'buckets', label: 'Buckets', icon: 'CubeIcon' },
-    { id: 'dustbins', label: 'Dustbins', icon: 'TrashIcon' },
-  ];
+  const [categories, setCategories] = useState<Array<{ id: string; name: string; slug: string; image: string }>>([]);
+  const [brands, setBrands] = useState<Array<{ id: string; name: string; slug: string; image: string }>>([]);
+  const [loading, setLoading] = useState(true);
 
-  const sizes = ['Small', 'Medium', 'Large'];
-  
-  const colors = [
-    { name: 'Red', hex: '#EF4444' },
-    { name: 'Blue', hex: '#3B82F6' },
-    { name: 'Green', hex: '#10B981' },
-    { name: 'Yellow', hex: '#F59E0B' },
-    { name: 'White', hex: '#FFFFFF' },
-    { name: 'Black', hex: '#1F2937' },
-  ];
+  useEffect(() => {
+    const fetchFilters = async () => {
+      try {
+        const [categoriesRes, brandsRes] = await Promise.all([
+          fetch(`${config.apiUrl}/categories`),
+          fetch(`${config.apiUrl}/brands`)
+        ]);
+        const categoriesData = await categoriesRes.json();
+        const brandsData = await brandsRes.json();
+        
+        const activeCategories = (categoriesData.categories || []).filter((c: any) => c.status === 'active');
+        const activeBrands = (brandsData.brands || []).filter((b: any) => b.status === 'active');
+        
+        setCategories(activeCategories);
+        setBrands(activeBrands);
+      } catch (error) {
+        console.error('Error fetching filters:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchFilters();
+  }, []);
 
   const toggleCategory = (categoryId: string) => {
     const newCategories = filters.categories.includes(categoryId)
@@ -50,26 +59,6 @@ const FilterPanel = ({ onFilterChange, productCount }: FilterPanelProps) => {
       : [...filters.categories, categoryId];
     
     const newFilters = { ...filters, categories: newCategories };
-    setFilters(newFilters);
-    onFilterChange(newFilters);
-  };
-
-  const toggleSize = (size: string) => {
-    const newSizes = filters.sizes.includes(size)
-      ? filters.sizes.filter((s) => s !== size)
-      : [...filters.sizes, size];
-    
-    const newFilters = { ...filters, sizes: newSizes };
-    setFilters(newFilters);
-    onFilterChange(newFilters);
-  };
-
-  const toggleColor = (color: string) => {
-    const newColors = filters.colors.includes(color)
-      ? filters.colors.filter((c) => c !== color)
-      : [...filters.colors, color];
-    
-    const newFilters = { ...filters, colors: newColors };
     setFilters(newFilters);
     onFilterChange(newFilters);
   };
@@ -132,65 +121,65 @@ const FilterPanel = ({ onFilterChange, productCount }: FilterPanelProps) => {
       {/* Categories */}
       <div className="space-y-3">
         <h3 className="text-sm font-medium text-foreground">Categories</h3>
-        <div className="flex flex-wrap gap-2">
-          {categories.map((category) => (
-            <button
-              key={category.id}
-              onClick={() => toggleCategory(category.id)}
-              className={`flex items-center space-x-2 rounded-md px-3 py-2 text-sm transition-smooth ${
-                filters.categories.includes(category.id)
-                  ? 'bg-primary text-primary-foreground'
-                  : 'bg-muted text-foreground hover:bg-muted/80'
-              }`}
-            >
-              <Icon name={category.icon as any} size={16} />
-              <span>{category.label}</span>
-            </button>
-          ))}
-        </div>
+        {loading ? (
+          <div className="space-y-2">
+            <div className="h-6 w-full animate-pulse rounded bg-muted" />
+            <div className="h-6 w-full animate-pulse rounded bg-muted" />
+          </div>
+        ) : categories.length > 0 ? (
+          <div className="space-y-2">
+            {categories.map((category) => (
+              <label
+                key={category.id}
+                className="flex cursor-pointer items-center gap-3 hover:opacity-80"
+              >
+                <input
+                  type="checkbox"
+                  checked={filters.categories.includes(category.slug)}
+                  onChange={() => toggleCategory(category.slug)}
+                  className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
+                />
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={category.image} alt={category.name} className="h-8 w-8 rounded object-cover" />
+                <span className="text-sm text-foreground">{category.name}</span>
+              </label>
+            ))}
+          </div>
+        ) : (
+          <p className="text-sm text-muted-foreground">No categories available</p>
+        )}
       </div>
 
-      {/* Sizes */}
+      {/* Brands */}
       <div className="space-y-3">
-        <h3 className="text-sm font-medium text-foreground">Size</h3>
-        <div className="flex flex-wrap gap-2">
-          {sizes.map((size) => (
-            <button
-              key={size}
-              onClick={() => toggleSize(size)}
-              className={`rounded-md px-4 py-2 text-sm transition-smooth ${
-                filters.sizes.includes(size)
-                  ? 'bg-primary text-primary-foreground'
-                  : 'bg-muted text-foreground hover:bg-muted/80'
-              }`}
-            >
-              {size}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Colors */}
-      <div className="space-y-3">
-        <h3 className="text-sm font-medium text-foreground">Colors</h3>
-        <div className="flex flex-wrap gap-3">
-          {colors.map((color) => (
-            <button
-              key={color.name}
-              onClick={() => toggleColor(color.name)}
-              className={`flex h-10 w-10 items-center justify-center rounded-full border-2 transition-smooth ${
-                filters.colors.includes(color.name)
-                  ? 'border-primary scale-110' :'border-border hover:scale-105'
-              }`}
-              style={{ backgroundColor: color.hex }}
-              aria-label={`Filter by ${color.name}`}
-            >
-              {filters.colors.includes(color.name) && (
-                <Icon name="CheckIcon" size={20} className="text-white drop-shadow-md" />
-              )}
-            </button>
-          ))}
-        </div>
+        <h3 className="text-sm font-medium text-foreground">Brands</h3>
+        {loading ? (
+          <div className="space-y-2">
+            <div className="h-6 w-full animate-pulse rounded bg-muted" />
+            <div className="h-6 w-full animate-pulse rounded bg-muted" />
+          </div>
+        ) : brands.length > 0 ? (
+          <div className="space-y-2">
+            {brands.map((brand) => (
+              <label
+                key={brand.id}
+                className="flex cursor-pointer items-center gap-3 hover:opacity-80"
+              >
+                <input
+                  type="checkbox"
+                  checked={filters.categories.includes(brand.slug)}
+                  onChange={() => toggleCategory(brand.slug)}
+                  className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
+                />
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={brand.image} alt={brand.name} className="h-8 w-8 rounded object-cover" />
+                <span className="text-sm text-foreground">{brand.name}</span>
+              </label>
+            ))}
+          </div>
+        ) : (
+          <p className="text-sm text-muted-foreground">No brands available</p>
+        )}
       </div>
 
       {/* Capacity Range */}

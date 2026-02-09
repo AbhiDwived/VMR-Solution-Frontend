@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Breadcrumb from '@/components/common/Breadcrumb';
 import AdminSidebar from '../components/AdminSidebar';
@@ -10,14 +10,20 @@ import { AppDispatch, RootState } from '@/store/store';
 export default function InquiriesPage() {
   const dispatch = useDispatch<AppDispatch>();
   const { inquiries, fetchLoading, error } = useSelector((state: RootState) => state.bulkOrder);
+  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
+    setIsClient(true);
     dispatch(fetchBulkOrders());
   }, [dispatch]);
 
   const handleStatusChange = (id: number, newStatus: string) => {
     dispatch(updateBulkOrderStatus({ id, status: newStatus }));
   };
+
+  if (!isClient) {
+    return null;
+  }
 
   return (
     <div className="min-h-screen bg-background">

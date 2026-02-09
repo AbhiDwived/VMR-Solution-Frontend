@@ -19,7 +19,7 @@ const ProductCatalogInteractive = () => {
   });
   const [sortBy, setSortBy] = useState<SortOption>('relevance');
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
-  const { data: productsData, isLoading } = useGetProductsQuery({});
+  const { data: productsData, isLoading, error } = useGetProductsQuery({});
 
   useEffect(() => {
     setIsHydrated(true);
@@ -27,7 +27,8 @@ const ProductCatalogInteractive = () => {
 
   // Convert API data to match Product interface
   const apiProducts: Product[] = useMemo(() => {
-    return productsData?.data ? productsData.data.map((product: any, index: number) => ({
+    if (!productsData?.data) return [];
+    return productsData.data.map((product: any, index: number) => ({
       id: product.id.toString(),
       slug: product.slug || product.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''),
       name: product.name,
@@ -44,7 +45,7 @@ const ProductCatalogInteractive = () => {
       reviewCount: 50 + (index * 13) % 200,
       isNew: product.is_new_arrival || false,
       isBestseller: product.is_featured || false,
-    })) : [];
+    }));
   }, [productsData]);
 
   useEffect(() => {
@@ -111,7 +112,7 @@ const ProductCatalogInteractive = () => {
       <div className="w-full px-1 py-8 sm:px-6">
         <div className="mb-6 h-10 w-48 animate-pulse rounded bg-muted" />
         <div className="flex gap-1 sm:gap-8">
-          <div className="hidden w-64 flex-shrink-0 space-y-6 lg:block">
+          <div className="hidden w-56 flex-shrink-0 space-y-6 lg:block">
             <div className="h-96 animate-pulse rounded-lg bg-muted" />
           </div>
           <div className="flex-1 space-y-6">
@@ -130,12 +131,20 @@ const ProductCatalogInteractive = () => {
     );
   }
 
+  if (error) {
+    return (
+      <div className="flex min-h-[400px] items-center justify-center">
+        <p className="text-red-500">Error loading products. Please try again.</p>
+      </div>
+    );
+  }
+
   return (
     <div className="w-full px-0 py-4 sm:px-6">
-      <div className="flex gap-0 sm:gap-8">
+      <div className="flex gap-6 sm:gap-8">
         {/* Desktop Filter Panel */}
-        <aside className="hidden w-64 flex-shrink-0 lg:block">
-          <div className="sticky top-24">
+        <aside className="hidden w-56 flex-shrink-0 border-r border-border pr-6 lg:block">
+          <div className="sticky top-20 max-h-[calc(100vh-5rem)] overflow-y-auto">
             <FilterPanel
               onFilterChange={setFilters}
               productCount={filteredProducts.length}
