@@ -30,11 +30,14 @@ const FilterPanel = ({ onFilterChange, productCount, initialFilters }: FilterPan
   const [brands, setBrands] = useState<Array<{ id: string; name: string; slug: string; image: string }>>([]);
   const [loading, setLoading] = useState(true);
 
+  const initialCategoriesKey = initialFilters?.categories.join(',') || '';
+
   useEffect(() => {
     if (initialFilters && initialFilters.categories.length > 0) {
       setFilters(initialFilters);
     }
-  }, [initialFilters?.categories.join(','), onFilterChange]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialCategoriesKey]);
 
   useEffect(() => {
     const fetchFilters = async () => {
