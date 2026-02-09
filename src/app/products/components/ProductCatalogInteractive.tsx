@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import FilterPanel, { FilterState } from './FilterPanel';
 import SortControls, { SortOption } from './SortControls';
 import ProductGrid from './ProductGrid';
@@ -10,8 +10,8 @@ import { Product } from './ProductCard';
 import { useGetProductsQuery } from '@/store/api/productsApi';
 
 const ProductCatalogInteractive = () => {
-  const searchParams = useSearchParams();
-  const categoryFromUrl = searchParams.get('category');
+  const params = useParams();
+  const categoryFromUrl = params?.category as string | undefined;
   const [isHydrated, setIsHydrated] = useState(false);
   const [filters, setFilters] = useState<FilterState>({
     categories: [],

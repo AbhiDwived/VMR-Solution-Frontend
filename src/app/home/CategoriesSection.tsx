@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { config } from '@/config/env';
 
 interface Category {
@@ -37,7 +38,7 @@ export default function CategoriesSection() {
         <h2 className="text-3xl font-bold text-center mb-12 text-espresso">Shop by Category</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-8">
           {categories.map((category) => (
-            <div key={category.id} className="flex flex-col items-center group cursor-pointer">
+            <Link key={category.id} href={`/products/${category.slug}`} className="flex flex-col items-center group cursor-pointer">
               <div className="w-20 h-20 md:w-24 md:h-24 rounded-full overflow-hidden bg-white shadow-lg group-hover:shadow-xl transition-shadow duration-300">
                 {category.image && category.image.trim() ? (
                   <Image 
@@ -56,7 +57,7 @@ export default function CategoriesSection() {
               <h3 className="mt-3 text-sm font-medium text-center text-gray-800 group-hover:text-espresso transition-colors">
                 {category.name}
               </h3>
-            </div>
+            </Link>
           ))}
         </div>
       </div>

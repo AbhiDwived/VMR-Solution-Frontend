@@ -57,7 +57,7 @@ const Header = memo(() => {
           {categories.map((category) => (
             <Link
               key={category.id}
-              href={`/products?category=${category.slug}`}
+              href={`/products/${category.slug}`}
               className="flex items-center space-x-1 sm:space-x-2 rounded-md px-2 sm:px-4 py-2 text-xs sm:text-sm font-medium transition-colors hover:bg-muted whitespace-nowrap text-foreground"
             >
               <Icon name="TagIcon" size={16} className="sm:size-5" />
