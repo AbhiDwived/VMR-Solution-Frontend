@@ -2,8 +2,9 @@ import type { Metadata } from 'next';
 import Breadcrumb from '@/components/common/Breadcrumb';
 import ProductCatalogInteractive from '../components/ProductCatalogInteractive';
 
-export async function generateMetadata({ params }: { params: { category: string } }): Promise<Metadata> {
-  const categoryName = params.category.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+export async function generateMetadata({ params }: { params: Promise<{ category: string }> }): Promise<Metadata> {
+  const { category } = await params;
+  const categoryName = category.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
   
   return {
     title: `${categoryName} - VMR Solution`,
@@ -11,8 +12,9 @@ export async function generateMetadata({ params }: { params: { category: string 
   };
 }
 
-export default function CategoryPage({ params }: { params: { category: string } }) {
-  const categoryName = params.category.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+export default async function CategoryPage({ params }: { params: Promise<{ category: string }> }) {
+  const { category } = await params;
+  const categoryName = category.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
 
   return (
     <div className="min-h-screen bg-background">
