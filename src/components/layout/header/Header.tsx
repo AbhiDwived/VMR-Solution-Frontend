@@ -100,26 +100,31 @@ const Header = memo(() => {
                 <span className="hidden sm:inline">{category.name}</span>
               </Link>
               {hoveredCategory === category.slug && categoryProducts[category.slug] && (
-                <div className="absolute left-0 top-full z-50 mt-1 w-64 rounded-md bg-popover shadow-lg border border-border">
-                  <div className="p-3">
-                    <h3 className="text-sm font-semibold mb-2">{category.name} Products</h3>
-                    <div className="space-y-1 max-h-80 overflow-y-auto">
+                <div className="absolute left-1/2 -translate-x-1/2 top-full z-50 pt-1">
+                  <div className="rounded-md bg-popover shadow-lg border border-border p-4 min-w-[600px]">
+                    <h3 className="text-sm font-semibold mb-3 text-center">{category.name} Products</h3>
+                    <div className="grid grid-cols-2 gap-2">
                       {categoryProducts[category.slug].map((product: any) => (
                         <Link
                           key={product.id}
-                          href={`/products/${category.slug}/${product.slug}`}
-                          className="block px-2 py-1.5 text-sm text-foreground hover:bg-muted rounded transition-colors"
+                          href={`/product/${product.slug}`}
+                          className="flex items-center gap-3 p-2 text-sm text-foreground hover:bg-muted rounded transition-colors"
                         >
-                          {product.name}
+                          <img
+                            src={product.images?.[0] || '/placeholder.png'}
+                            alt={product.name}
+                            className="w-8 h-8 object-cover rounded flex-shrink-0"
+                          />
+                          <span className="text-xs flex-1">{product.name}</span>
                         </Link>
                       ))}
                       {categoryProducts[category.slug].length === 0 && (
-                        <p className="text-sm text-muted-foreground px-2 py-1">No products available</p>
+                        <p className="text-sm text-muted-foreground px-2 py-1 col-span-2 text-center">No products available</p>
                       )}
                     </div>
                     <Link
                       href={`/products/${category.slug}`}
-                      className="block mt-2 pt-2 border-t text-xs text-primary hover:underline"
+                      className="block mt-3 pt-3 border-t text-xs text-primary hover:underline text-center"
                     >
                       View all {category.name} →
                     </Link>
