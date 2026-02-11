@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { memo, useState, useEffect } from 'react';
 import Icon from '@/components/ui/AppIcon';
@@ -110,10 +111,12 @@ const Header = memo(() => {
                           href={`/product/${product.slug}`}
                           className="flex items-center gap-3 p-2 text-sm text-foreground hover:bg-muted rounded transition-colors"
                         >
-                          <img
+                          <Image
                             src={product.images?.[0] || '/placeholder.png'}
                             alt={product.name}
-                            className="w-8 h-8 object-cover rounded flex-shrink-0"
+                            width={32}
+                            height={32}
+                            className="object-cover rounded flex-shrink-0"
                           />
                           <span className="text-xs flex-1">{product.name}</span>
                         </Link>

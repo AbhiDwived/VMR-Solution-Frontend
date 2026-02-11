@@ -40,6 +40,13 @@ const AdminSidebar = () => {
         { title: 'Brands', icon: 'TagIcon', href: '/dashboard/admin-dashboard/brands' },
       ],
     },
+     {
+      groupName: 'CONTENT',
+      items: [
+        { title: 'Blog', icon: 'DocumentTextIcon', href: '/dashboard/admin-dashboard/blog' },
+        { title: 'Content', icon: 'NewspaperIcon', href: '/dashboard/admin-dashboard/content' },
+      ],
+    },
     {
       groupName: 'ORDERS & SALES',
       items: [
@@ -50,6 +57,7 @@ const AdminSidebar = () => {
         { title: 'Subscribe', icon: 'CreditCardIcon', href: '/dashboard/admin-dashboard/subscription' },
       ],
     },
+   
   ];
 
   return (
