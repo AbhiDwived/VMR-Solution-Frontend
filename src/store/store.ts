@@ -5,6 +5,7 @@ import authSlice from './slices/auth'
 import bulkOrderSlice from './slices/bulkOrder'
 import { baseApi } from './api/baseApi'
 import { blogApi } from './api/blogApi'
+import { orderApi } from './api/orderApi'
 
 export const store = configureStore({
   reducer: {
@@ -13,13 +14,14 @@ export const store = configureStore({
     bulkOrder: bulkOrderSlice,
     [baseApi.reducerPath]: baseApi.reducer,
     [blogApi.reducerPath]: blogApi.reducer,
+    [orderApi.reducerPath]: orderApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {
         ignoredActions: ['persist/PERSIST', 'persist/REHYDRATE'],
       },
-    }).concat(baseApi.middleware, blogApi.middleware),
+    }).concat(baseApi.middleware, blogApi.middleware, orderApi.middleware),
 })
 
 setupListeners(store.dispatch)

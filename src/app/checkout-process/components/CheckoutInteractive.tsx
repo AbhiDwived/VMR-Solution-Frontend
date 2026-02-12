@@ -2,11 +2,15 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/store/store';
+import { useCreateOrderMutation, useGetUserAddressesQuery } from '@/store/api/orderApi';
 import Icon from '@/components/ui/AppIcon';
 import DeliveryAddressForm from './DeliveryAddressForm';
 import PaymentMethodSelector from './PaymentMethodSelector';
 import OrderReviewSection from './OrderReviewSection';
 import CheckoutProgress from './CheckoutProgress';
+import { toast } from 'react-toastify';
 
 interface Address {
   id: string;
@@ -20,16 +24,6 @@ interface Address {
   isDefault: boolean;
 }
 
-interface CartItem {
-  id: string;
-  name: string;
-  variant: string;
-  quantity: number;
-  price: number;
-  image: string;
-  alt: string;
-}
-
 const CheckoutInteractive = () => {
   const router = useRouter();
   const [isHydrated, setIsHydrated] = useState(false);
@@ -37,47 +31,28 @@ const CheckoutInteractive = () => {
   const [selectedAddress, setSelectedAddress] = useState<Address | null>(null);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string | null>(null);
   const [termsAccepted, setTermsAccepted] = useState(false);
-  const [isPlacingOrder, setIsPlacingOrder] = useState(false);
   const [showOrderSummary, setShowOrderSummary] = useState(false);
+
+  const cartItems = useSelector((state: RootState) => state.cart.items);
+  const { isAuthenticated } = useSelector((state: RootState) => state.auth);
+  const { data: addressesData } = useGetUserAddressesQuery(undefined, { skip: !isAuthenticated });
+  const [createOrder, { isLoading: isPlacingOrder }] = useCreateOrderMutation();
 
   useEffect(() => {
     setIsHydrated(true);
-  }, []);
-
-  const cartItems: CartItem[] = [
-    {
-      id: '1',
-      name: 'Bucket 10Ltr. Frosty',
-      variant: 'Large, Blue',
-      quantity: 2,
-      price: 55,
-      image: '/assets/products/1.jpg',
-      alt: 'Durable 10L plastic bucket',
-    },
-    {
-      id: '2',
-      name: 'Patla Pancham',
-      variant: 'Standard Size, White',
-      quantity: 1,
-      price: 80,
-      image: '/assets/products/55.jpg',
-      alt: 'Pancham design patla',
-    },
-    {
-      id: '3',
-      name: 'Mug Flora 200',
-      variant: 'Small, Multicolor, 200ml',
-      quantity: 4,
-      price: 15,
-      image: '/assets/products/vmr (1).jpg',
-      alt: '200ml Flora mug',
-    },
-  ];
+    if (!isAuthenticated) {
+      router.push('/auth/login?redirect=/checkout-process');
+    }
+    if (cartItems.length === 0) {
+      router.push('/shopping-cart');
+    }
+  }, [isAuthenticated, cartItems, router]);
 
   const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const gst = Math.round(subtotal * 0.18);
   const deliveryCharges = subtotal > 1000 ? 0 : 50;
   const discount = 0;
+  const total = subtotal + gst + deliveryCharges - discount;
 
   const handleAddressSelect = (address: Address) => {
     setSelectedAddress(address);
@@ -103,17 +78,28 @@ const CheckoutInteractive = () => {
 
   const handlePlaceOrder = async () => {
     if (!termsAccepted) {
-      alert('Please accept the terms and conditions to proceed');
+      toast.error('Please accept the terms and conditions');
       return;
     }
 
-    setIsPlacingOrder(true);
-    
-    // Simulate order processing
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    
-    setIsPlacingOrder(false);
-    router.push('/order-tracking');
+    try {
+      const orderData = {
+        items: cartItems,
+        address: selectedAddress,
+        paymentMethod: selectedPaymentMethod,
+        subtotal,
+        gst,
+        deliveryCharges,
+        discount,
+        total,
+      };
+
+      const result = await createOrder(orderData).unwrap();
+      toast.success('Order placed successfully!');
+      router.push(`/order-tracking?orderId=${result.orderId}`);
+    } catch (error) {
+      toast.error('Failed to place order. Please try again.');
+    }
   };
 
   const handleBackStep = () => {
@@ -123,7 +109,7 @@ const CheckoutInteractive = () => {
     }
   };
 
-  if (!isHydrated) {
+  if (!isHydrated || !isAuthenticated || cartItems.length === 0) {
     return (
       <div className="min-h-screen bg-background">
         <div className="mx-auto max-w-[1200px] px-4 py-8 sm:px-6">

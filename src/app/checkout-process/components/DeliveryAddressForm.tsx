@@ -1,6 +1,8 @@
 'use client';
 
 import { useState } from 'react';
+import { useGetUserAddressesQuery, useAddAddressMutation } from '@/store/api/orderApi';
+import { toast } from 'react-toastify';
 import Icon from '@/components/ui/AppIcon';
 
 interface Address {
@@ -33,30 +35,9 @@ const DeliveryAddressForm = ({ onAddressSelect, selectedAddressId }: DeliveryAdd
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  const savedAddresses: Address[] = [
-    {
-      id: '1',
-      name: 'Rajesh Kumar',
-      phone: '+91 98765 43210',
-      addressLine1: '123, Green Park Society',
-      addressLine2: 'Near City Mall',
-      city: 'Mumbai',
-      state: 'Maharashtra',
-      pincode: '400001',
-      isDefault: true,
-    },
-    {
-      id: '2',
-      name: 'Priya Sharma',
-      phone: '+91 87654 32109',
-      addressLine1: '456, Sunrise Apartments',
-      addressLine2: 'Sector 15',
-      city: 'Pune',
-      state: 'Maharashtra',
-      pincode: '411001',
-      isDefault: false,
-    },
-  ];
+  const { data: addressesData, isLoading } = useGetUserAddressesQuery();
+  const [addAddress, { isLoading: isAdding }] = useAddAddressMutation();
+  const savedAddresses = addressesData?.addresses || [];
 
   const indianStates = [
     'Andhra Pradesh', 'Arunachal Pradesh', 'Assam', 'Bihar', 'Chhattisgarh',
@@ -105,25 +86,25 @@ const DeliveryAddressForm = ({ onAddressSelect, selectedAddressId }: DeliveryAdd
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (validateForm()) {
-      const newAddress: Address = {
-        id: Date.now().toString(),
-        ...formData,
-        isDefault: false,
-      };
-      onAddressSelect(newAddress);
-      setShowAddressForm(false);
-      setFormData({
-        name: '',
-        phone: '',
-        addressLine1: '',
-        addressLine2: '',
-        city: '',
-        state: '',
-        pincode: '',
-      });
+      try {
+        await addAddress(formData).unwrap();
+        toast.success('Address added successfully');
+        setShowAddressForm(false);
+        setFormData({
+          name: '',
+          phone: '',
+          addressLine1: '',
+          addressLine2: '',
+          city: '',
+          state: '',
+          pincode: '',
+        });
+      } catch (error) {
+        toast.error('Failed to add address');
+      }
     }
   };
 
@@ -267,49 +248,56 @@ const DeliveryAddressForm = ({ onAddressSelect, selectedAddressId }: DeliveryAdd
 
           <button
             type="submit"
-            className="w-full rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-smooth hover:scale-[0.98]"
+            disabled={isAdding}
+            className="w-full rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-smooth hover:scale-[0.98] disabled:opacity-50"
           >
-            Save Address
+            {isAdding ? 'Saving...' : 'Save Address'}
           </button>
         </form>
       ) : (
         <div className="space-y-3">
-          {savedAddresses.map((address) => (
-            <div
-              key={address.id}
-              onClick={() => onAddressSelect(address)}
-              className={`cursor-pointer rounded-md border-2 p-4 transition-smooth ${
-                selectedAddressId === address.id
-                  ? 'border-primary bg-primary/5' :'border-border bg-card hover:border-primary/50'
-              }`}
-            >
-              <div className="flex items-start justify-between">
-                <div className="flex-1">
-                  <div className="flex items-center space-x-2">
-                    <p className="font-medium text-foreground">{address.name}</p>
-                    {address.isDefault && (
-                      <span className="rounded-full bg-accent px-2 py-0.5 text-xs font-medium text-accent-foreground">
-                        Default
-                      </span>
+          {isLoading ? (
+            <div className="rounded-md bg-muted p-4 animate-pulse h-24" />
+          ) : savedAddresses.length === 0 ? (
+            <p className="text-center text-muted-foreground py-4">No saved addresses. Add a new address to continue.</p>
+          ) : (
+            savedAddresses.map((address: any) => (
+              <div
+                key={address.id}
+                onClick={() => onAddressSelect(address)}
+                className={`cursor-pointer rounded-md border-2 p-4 transition-smooth ${
+                  selectedAddressId === address.id
+                    ? 'border-primary bg-primary/5' :'border-border bg-card hover:border-primary/50'
+                }`}
+              >
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <div className="flex items-center space-x-2">
+                      <p className="font-medium text-foreground">{address.name}</p>
+                      {address.isDefault && (
+                        <span className="rounded-full bg-accent px-2 py-0.5 text-xs font-medium text-accent-foreground">
+                          Default
+                        </span>
+                      )}
+                    </div>
+                    <p className="caption mt-1 text-muted-foreground">{address.phone}</p>
+                    <p className="mt-2 text-sm text-foreground">
+                      {address.addressLine1}
+                      {address.addressLine2 && `, ${address.addressLine2}`}
+                    </p>
+                    <p className="text-sm text-foreground">
+                      {address.city}, {address.state} - {address.pincode}
+                    </p>
+                  </div>
+                  <div className="flex-shrink-0">
+                    {selectedAddressId === address.id && (
+                      <Icon name="CheckCircleIcon" size={24} className="text-primary" variant="solid" />
                     )}
                   </div>
-                  <p className="caption mt-1 text-muted-foreground">{address.phone}</p>
-                  <p className="mt-2 text-sm text-foreground">
-                    {address.addressLine1}
-                    {address.addressLine2 && `, ${address.addressLine2}`}
-                  </p>
-                  <p className="text-sm text-foreground">
-                    {address.city}, {address.state} - {address.pincode}
-                  </p>
-                </div>
-                <div className="flex-shrink-0">
-                  {selectedAddressId === address.id && (
-                    <Icon name="CheckCircleIcon" size={24} className="text-primary" variant="solid" />
-                  )}
                 </div>
               </div>
-            </div>
-          ))}
+            ))
+          )}
         </div>
       )}
     </div>

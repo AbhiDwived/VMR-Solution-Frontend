@@ -4,11 +4,11 @@ import AppImage from '@/components/ui/AppImage';
 interface CartItem {
   id: string;
   name: string;
-  variant: string;
+  variant?: string;
   quantity: number;
   price: number;
   image: string;
-  alt: string;
+  alt?: string;
 }
 
 interface OrderReviewSectionProps {
@@ -34,13 +34,13 @@ const OrderReviewSection = ({ cartItems, subtotal, gst, deliveryCharges, discoun
             <div className="h-16 w-16 flex-shrink-0 overflow-hidden rounded-md bg-muted">
               <AppImage
                 src={item.image}
-                alt={item.alt}
+                alt={item.alt || item.name}
                 className="h-full w-full object-cover"
               />
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium text-foreground truncate">{item.name}</p>
-              <p className="caption text-muted-foreground">{item.variant}</p>
+              {item.variant && <p className="caption text-muted-foreground">{item.variant}</p>}
               <p className="caption text-muted-foreground">Qty: {item.quantity}</p>
             </div>
             <div className="flex-shrink-0 text-right">

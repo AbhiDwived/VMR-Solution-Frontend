@@ -2,6 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
+import { useDispatch } from 'react-redux';
+import { addItem } from '@/store/slices/cart';
+import { toast } from 'react-toastify';
 import { useGetProductBySlugQuery } from '@/store/api/productsApi';
 import ProductImageGallery from '../../../product-details/components/ProductImageGallery';
 import ProductInfo from '../../../product-details/components/ProductInfo';
@@ -62,6 +65,7 @@ interface PricingTier {
 
 const ProductDetailsInteractive = () => {
   const router = useRouter();
+  const dispatch = useDispatch();
   const params = useParams();
   const slug = params.slug as string;
   const { data: productData, isLoading } = useGetProductBySlugQuery(slug);
@@ -374,13 +378,33 @@ const ProductDetailsInteractive = () => {
     }
   };
 
-  const handleAddToCart = (_quantity: number) => {
-    if (!isHydrated) return;
-    alert(`Added ${_quantity} items to cart!`);
+  const handleAddToCart = (quantity: number) => {
+    if (!isHydrated || !product || !selectedVariant) return;
+    
+    dispatch(addItem({
+      id: product.id.toString(),
+      name: product.name,
+      price: selectedVariant.price,
+      image: currentImages[0]?.url || '',
+      quantity,
+      variant: `${selectedVariant.color} - ${selectedVariant.size}`,
+    }));
+    
+    toast.success(`Added ${quantity} item(s) to cart!`);
   };
 
-  const handleBuyNow = (_quantity: number) => {
-    if (!isHydrated) return;
+  const handleBuyNow = (quantity: number) => {
+    if (!isHydrated || !product || !selectedVariant) return;
+    
+    dispatch(addItem({
+      id: product.id.toString(),
+      name: product.name,
+      price: selectedVariant.price,
+      image: currentImages[0]?.url || '',
+      quantity,
+      variant: `${selectedVariant.color} - ${selectedVariant.size}`,
+    }));
+    
     router.push('/checkout-process');
   };
 
