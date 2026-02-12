@@ -1,11 +1,13 @@
 'use client';
 
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import AppImage from '@/components/ui/AppImage';
 import Icon from '@/components/ui/AppIcon';
 import { useGetBlogsQuery } from '@/store/api/blogApi';
 
 const BlogSection = () => {
+  const router = useRouter();
   const { data, isLoading, error } = useGetBlogsQuery(undefined);
   
   const allPosts = data?.blogs || [];
@@ -42,7 +44,8 @@ const BlogSection = () => {
         {publishedPosts.slice(0, 3).map((post: any, index: number) => (
           <article
             key={post.id}
-            className="group overflow-hidden rounded-lg border border-border bg-card shadow-elevation-1 transition-smooth hover:shadow-elevation-2"
+            onClick={() => router.push(`/blog/${post.slug}`)}
+            className="group overflow-hidden rounded-lg border border-border bg-card shadow-elevation-1 transition-smooth hover:shadow-elevation-2 cursor-pointer"
             data-aos="fade-up"
             data-aos-delay={index * 150}
           >
