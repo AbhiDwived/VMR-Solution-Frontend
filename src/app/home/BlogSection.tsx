@@ -30,7 +30,7 @@ const BlogSection = () => {
           </p>
         </div>
         <Link
-          href="/product-catalog"
+          href="/blog"
           className="flex items-center space-x-1 text-sm font-medium text-primary transition-smooth hover:underline"
         >
           <span>View All Posts</span>
@@ -73,7 +73,7 @@ const BlogSection = () => {
                   </span>
                 </div>
                 <Link
-                  href="/product-catalog"
+                  href={`/blog/${post.slug}`}
                   className="flex items-center space-x-1 font-medium text-primary transition-smooth hover:underline"
                 >
                   <span>Read More</span>
