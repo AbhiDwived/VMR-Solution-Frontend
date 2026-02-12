@@ -8,6 +8,7 @@ import { toast, ToastContainer } from 'react-toastify';
 import Image from 'next/image';
 import { Editor } from '@tinymce/tinymce-react';
 import { useGetBlogsQuery, useCreateBlogMutation, useUpdateBlogMutation, useDeleteBlogMutation } from '@/store/api/blogApi';
+import { uploadImageToImageKit } from '@/lib/utils/imagekit';
 
 export default function BlogPage() {
   const { data, isLoading } = useGetBlogsQuery(undefined);
@@ -27,8 +28,8 @@ export default function BlogPage() {
       try {
         await deleteBlog(id).unwrap();
         toast.success('Blog deleted successfully');
-      } catch (error) {
-        toast.error('Failed to delete blog');
+      } catch (err: any) {
+        toast.error(err?.message || 'Failed to delete blog');
       }
     }
   };
@@ -45,20 +46,29 @@ export default function BlogPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const formDataToSend = new FormData();
-    formDataToSend.append('title', formData.title);
-    formDataToSend.append('excerpt', formData.excerpt);
-    formDataToSend.append('content', formData.content);
-    formDataToSend.append('category', formData.category);
-    formDataToSend.append('status', formData.status);
-    if (imageFile) formDataToSend.append('image', imageFile);
-
+    
     try {
+      let imageUrl = editingBlog?.image || '';
+      
+      if (imageFile) {
+        toast.info('Uploading image...');
+        imageUrl = await uploadImageToImageKit(imageFile, 'blogs');
+      }
+      
+      const blogData = {
+        title: formData.title,
+        excerpt: formData.excerpt,
+        content: formData.content,
+        category: formData.category,
+        status: formData.status,
+        image: imageUrl
+      };
+
       if (editingBlog) {
-        await updateBlog({ id: editingBlog.id, formData: formDataToSend }).unwrap();
+        await updateBlog({ id: editingBlog.id, formData: blogData }).unwrap();
         toast.success('Blog updated successfully');
       } else {
-        await createBlog(formDataToSend).unwrap();
+        await createBlog(blogData).unwrap();
         toast.success('Blog created successfully');
       }
       setIsModalOpen(false);
@@ -66,15 +76,15 @@ export default function BlogPage() {
       setImagePreview('');
       setImageFile(null);
       setEditingBlog(null);
-    } catch (error) {
-      toast.error('Failed to save blog');
+    } catch (err: any) {
+      toast.error(err?.message || 'Failed to save blog');
     }
   };
 
   const handleEdit = (blog: any) => {
     setEditingBlog(blog);
     setFormData({ title: blog.title, content: blog.content, excerpt: blog.excerpt, category: blog.category, status: blog.status });
-    setImagePreview(blog.image ? `http://localhost:5000${blog.image}` : '');
+    setImagePreview(blog.image || '');
     setIsModalOpen(true);
   };
 
@@ -118,7 +128,7 @@ export default function BlogPage() {
                         <td className="px-4 py-3">
                           {blog.image ? (
                             <div className="relative w-12 h-12 rounded overflow-hidden">
-                              <Image src={`http://localhost:5000${blog.image}`} alt={blog.title} fill className="object-cover" />
+                              <Image src={blog.image} alt={blog.title} fill className="object-cover" />
                             </div>
                           ) : (
                             <div className="w-12 h-12 bg-gray-200 rounded flex items-center justify-center">

@@ -8,20 +8,12 @@ import { useGetBlogsQuery } from '@/store/api/blogApi';
 const BlogSection = () => {
   const { data, isLoading, error } = useGetBlogsQuery(undefined);
   
-  console.log('Blog API Response:', data);
-  
   const allPosts = data?.blogs || [];
   const publishedPosts = allPosts.filter((blog: any) => blog.status === 'published');
-  const displayPosts = publishedPosts.length > 0 ? publishedPosts : allPosts;
-  
-  console.log('All blogs:', allPosts.length, 'Published:', publishedPosts.length);
 
   if (isLoading) return <div className="mx-auto max-w-[1400px] px-4 py-12 text-center">Loading blogs...</div>;
-  if (error) {
-    console.error('Blog fetch error:', error);
-    return null;
-  }
-  if (!displayPosts.length) return null;
+  if (error) return null;
+  if (!publishedPosts.length) return null;
 
   return (
     <section className="mx-auto max-w-[1400px] px-4 py-12 sm:px-6 sm:py-16">
@@ -47,7 +39,7 @@ const BlogSection = () => {
       </div>
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-        {displayPosts.slice(0, 3).map((post: any, index: number) => (
+        {publishedPosts.slice(0, 3).map((post: any, index: number) => (
           <article
             key={post.id}
             className="group overflow-hidden rounded-lg border border-border bg-card shadow-elevation-1 transition-smooth hover:shadow-elevation-2"
@@ -56,7 +48,7 @@ const BlogSection = () => {
           >
             <div className="relative aspect-[16/9] overflow-hidden bg-muted">
               <AppImage
-                src={post.image ? `http://localhost:5000${post.image}` : '/assets/products/1.jpg'}
+                src={post.image || '/assets/products/1.jpg'}
                 alt={post.title}
                 className="h-full w-full object-cover transition-smooth group-hover:scale-105"
               />
