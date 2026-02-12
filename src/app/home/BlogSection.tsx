@@ -3,51 +3,25 @@
 import Link from 'next/link';
 import AppImage from '@/components/ui/AppImage';
 import Icon from '@/components/ui/AppIcon';
-
-interface BlogPost {
-  id: string;
-  title: string;
-  excerpt: string;
-  image: string;
-  alt: string;
-  category: string;
-  date: string;
-  readTime: string;
-}
+import { useGetBlogsQuery } from '@/store/api/blogApi';
 
 const BlogSection = () => {
-  const posts: BlogPost[] = [
-    {
-      id: '1',
-      title: 'Best Plastic Buckets for Every Household Need in 2025',
-      excerpt: 'Discover our range of durable plastic buckets from 5L to 25L capacity. Perfect for cleaning, storage, and industrial use.',
-      image: '/assets/products/1.jpg',
-      alt: 'VMR Solution plastic buckets in different sizes and colors',
-      category: 'Product Guide',
-      date: 'Jan 15, 2025',
-      readTime: '5 min read',
-    },
-    {
-      id: '2',
-      title: 'Traditional Patlas: Modern Manufacturing, Timeless Design',
-      excerpt: 'Learn about our premium quality patlas made with food-grade plastic. From Pancham to Elephanta designs.',
-      image: '/assets/products/55.jpg',
-      alt: 'Traditional plastic patlas showcasing various designs and sizes',
-      category: 'Heritage Products',
-      date: 'Jan 12, 2025',
-      readTime: '7 min read',
-    },
-    {
-      id: '3',
-      title: 'Kitchen Organization Made Easy with VMR Containers',
-      excerpt: 'Transform your kitchen with our range of storage containers, lunch boxes, and kitchen accessories.',
-      image: '/assets/products/vmr (19).jpg',
-      alt: 'VMR kitchen products including containers and storage solutions',
-      category: 'Home Tips',
-      date: 'Jan 8, 2025',
-      readTime: '6 min read',
-    },
-  ];
+  const { data, isLoading, error } = useGetBlogsQuery(undefined);
+  
+  console.log('Blog API Response:', data);
+  
+  const allPosts = data?.blogs || [];
+  const publishedPosts = allPosts.filter((blog: any) => blog.status === 'published');
+  const displayPosts = publishedPosts.length > 0 ? publishedPosts : allPosts;
+  
+  console.log('All blogs:', allPosts.length, 'Published:', publishedPosts.length);
+
+  if (isLoading) return <div className="mx-auto max-w-[1400px] px-4 py-12 text-center">Loading blogs...</div>;
+  if (error) {
+    console.error('Blog fetch error:', error);
+    return null;
+  }
+  if (!displayPosts.length) return null;
 
   return (
     <section className="mx-auto max-w-[1400px] px-4 py-12 sm:px-6 sm:py-16">
@@ -73,7 +47,7 @@ const BlogSection = () => {
       </div>
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-        {posts.map((post, index) => (
+        {displayPosts.slice(0, 3).map((post: any, index: number) => (
           <article
             key={post.id}
             className="group overflow-hidden rounded-lg border border-border bg-card shadow-elevation-1 transition-smooth hover:shadow-elevation-2"
@@ -82,8 +56,8 @@ const BlogSection = () => {
           >
             <div className="relative aspect-[16/9] overflow-hidden bg-muted">
               <AppImage
-                src={post.image}
-                alt={post.alt}
+                src={post.image ? `http://localhost:5000${post.image}` : '/assets/products/1.jpg'}
+                alt={post.title}
                 className="h-full w-full object-cover transition-smooth group-hover:scale-105"
               />
               <div className="absolute left-4 top-4 rounded-md bg-primary px-3 py-1 text-xs font-medium text-primary-foreground">
@@ -99,11 +73,11 @@ const BlogSection = () => {
                 <div className="flex items-center space-x-4">
                   <span className="flex items-center space-x-1">
                     <Icon name="CalendarIcon" size={14} />
-                    <span>{post.date}</span>
+                    <span>{new Date(post.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
                   </span>
                   <span className="flex items-center space-x-1">
-                    <Icon name="ClockIcon" size={14} />
-                    <span>{post.readTime}</span>
+                    <Icon name="EyeIcon" size={14} />
+                    <span>{post.views} views</span>
                   </span>
                 </div>
                 <Link

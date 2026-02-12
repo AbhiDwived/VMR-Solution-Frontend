@@ -7,52 +7,75 @@ import Icon from '@/components/ui/AppIcon';
 import { toast, ToastContainer } from 'react-toastify';
 import Image from 'next/image';
 import { Editor } from '@tinymce/tinymce-react';
+import { useGetBlogsQuery, useCreateBlogMutation, useUpdateBlogMutation, useDeleteBlogMutation } from '@/store/api/blogApi';
 
 export default function BlogPage() {
-  const [blogs, setBlogs] = useState([
-    { id: 1, title: 'Getting Started with VMR', author: 'Admin', status: 'published', date: '2024-01-15', views: 1250 },
-    { id: 2, title: 'Product Care Tips', author: 'Admin', status: 'draft', date: '2024-01-20', views: 890 },
-  ]);
+  const { data, isLoading } = useGetBlogsQuery(undefined);
+  const [createBlog] = useCreateBlogMutation();
+  const [updateBlog] = useUpdateBlogMutation();
+  const [deleteBlog] = useDeleteBlogMutation();
+  
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [formData, setFormData] = useState({ title: '', content: '', excerpt: '', category: 'General', status: 'draft', image: '' });
+  const [editingBlog, setEditingBlog] = useState<any>(null);
+  const [formData, setFormData] = useState({ title: '', content: '', excerpt: '', category: 'General', status: 'draft' });
+  const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState('');
   const editorRef = useRef<any>(null);
 
-  const handleDelete = (id: number) => {
+  const handleDelete = async (id: number) => {
     if (window.confirm('Are you sure you want to delete this blog?')) {
-      setBlogs(blogs.filter(b => b.id !== id));
-      toast.success('Blog deleted successfully');
+      try {
+        await deleteBlog(id).unwrap();
+        toast.success('Blog deleted successfully');
+      } catch (error) {
+        toast.error('Failed to delete blog');
+      }
     }
   };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      setImageFile(file);
       const reader = new FileReader();
-      reader.onloadend = () => {
-        const result = reader.result as string;
-        setImagePreview(result);
-        setFormData({...formData, image: result});
-      };
+      reader.onloadend = () => setImagePreview(reader.result as string);
       reader.readAsDataURL(file);
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const newBlog = {
-      id: blogs.length + 1,
-      title: formData.title,
-      author: 'Admin',
-      status: formData.status,
-      date: new Date().toISOString().split('T')[0],
-      views: 0
-    };
-    setBlogs([...blogs, newBlog]);
-    setIsModalOpen(false);
-    setFormData({ title: '', content: '', excerpt: '', category: 'General', status: 'draft', image: '' });
-    setImagePreview('');
-    toast.success('Blog created successfully');
+    const formDataToSend = new FormData();
+    formDataToSend.append('title', formData.title);
+    formDataToSend.append('excerpt', formData.excerpt);
+    formDataToSend.append('content', formData.content);
+    formDataToSend.append('category', formData.category);
+    formDataToSend.append('status', formData.status);
+    if (imageFile) formDataToSend.append('image', imageFile);
+
+    try {
+      if (editingBlog) {
+        await updateBlog({ id: editingBlog.id, formData: formDataToSend }).unwrap();
+        toast.success('Blog updated successfully');
+      } else {
+        await createBlog(formDataToSend).unwrap();
+        toast.success('Blog created successfully');
+      }
+      setIsModalOpen(false);
+      setFormData({ title: '', content: '', excerpt: '', category: 'General', status: 'draft' });
+      setImagePreview('');
+      setImageFile(null);
+      setEditingBlog(null);
+    } catch (error) {
+      toast.error('Failed to save blog');
+    }
+  };
+
+  const handleEdit = (blog: any) => {
+    setEditingBlog(blog);
+    setFormData({ title: blog.title, content: blog.content, excerpt: blog.excerpt, category: blog.category, status: blog.status });
+    setImagePreview(blog.image ? `http://localhost:5000${blog.image}` : '');
+    setIsModalOpen(true);
   };
 
   return (
@@ -64,59 +87,72 @@ export default function BlogPage() {
           <Breadcrumb />
           <div className="space-y-6">
             <div className="flex justify-between items-center">
-              <h1 className="text-3xl font-bold text-espresso">Blog Posts ({blogs.length})</h1>
-              <button onClick={() => setIsModalOpen(true)} className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90">
+              <h1 className="text-3xl font-bold text-espresso">Blog Posts ({data?.blogs?.length || 0})</h1>
+              <button onClick={() => { setEditingBlog(null); setFormData({ title: '', content: '', excerpt: '', category: 'General', status: 'draft' }); setImagePreview(''); setIsModalOpen(true); }} className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90">
                 <Icon name="PlusIcon" size={20} />
                 Add New Post
               </button>
             </div>
 
-            <div className="bg-white rounded-2xl shadow-sm border border-border overflow-hidden">
-              <table className="w-full text-sm">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Title</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Author</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Views</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-200">
-                  {blogs.map((blog) => (
-                    <tr key={blog.id} className="hover:bg-gray-50">
-                      <td className="px-4 py-3 font-mono text-xs">{blog.id}</td>
-                      <td className="px-4 py-3 font-medium">{blog.title}</td>
-                      <td className="px-4 py-3 text-xs">{blog.author}</td>
-                      <td className="px-4 py-3">
-                        <span className={`inline-flex px-2 py-1 text-xs rounded-full ${
-                          blog.status === 'published' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
-                        }`}>
-                          {blog.status}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3 text-xs">{new Date(blog.date).toLocaleDateString()}</td>
-                      <td className="px-4 py-3 text-xs">{blog.views}</td>
-                      <td className="px-4 py-3">
-                        <div className="flex items-center space-x-2">
-                          <button className="p-1.5 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100" title="View">
-                            <Icon name="EyeIcon" size={16} />
-                          </button>
-                          <button className="p-1.5 rounded-lg bg-green-50 text-green-600 hover:bg-green-100" title="Edit">
-                            <Icon name="PencilSquareIcon" size={16} />
-                          </button>
-                          <button className="p-1.5 rounded-lg bg-red-50 text-red-600 hover:bg-red-100" title="Delete" onClick={() => handleDelete(blog.id)}>
-                            <Icon name="TrashIcon" size={16} />
-                          </button>
-                        </div>
-                      </td>
+            {isLoading ? (
+              <div className="text-center py-8">Loading...</div>
+            ) : (
+              <div className="bg-white rounded-2xl shadow-sm border border-border overflow-hidden">
+                <table className="w-full text-sm">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Image</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Title</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Author</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Views</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody className="divide-y divide-gray-200">
+                    {data?.blogs?.map((blog: any) => (
+                      <tr key={blog.id} className="hover:bg-gray-50">
+                        <td className="px-4 py-3 font-mono text-xs">{blog.id}</td>
+                        <td className="px-4 py-3">
+                          {blog.image ? (
+                            <div className="relative w-12 h-12 rounded overflow-hidden">
+                              <Image src={`http://localhost:5000${blog.image}`} alt={blog.title} fill className="object-cover" />
+                            </div>
+                          ) : (
+                            <div className="w-12 h-12 bg-gray-200 rounded flex items-center justify-center">
+                              <Icon name="PhotoIcon" size={20} className="text-gray-400" />
+                            </div>
+                          )}
+                        </td>
+                        <td className="px-4 py-3 font-medium">{blog.title}</td>
+                        <td className="px-4 py-3 text-xs">{blog.author}</td>
+                        <td className="px-4 py-3">
+                          <span className={`inline-flex px-2 py-1 text-xs rounded-full ${
+                            blog.status === 'published' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
+                          }`}>
+                            {blog.status}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3 text-xs">{new Date(blog.created_at).toLocaleDateString()}</td>
+                        <td className="px-4 py-3 text-xs">{blog.views}</td>
+                        <td className="px-4 py-3">
+                          <div className="flex items-center space-x-2">
+                            <button className="p-1.5 rounded-lg bg-green-50 text-green-600 hover:bg-green-100" title="Edit" onClick={() => handleEdit(blog)}>
+                              <Icon name="PencilSquareIcon" size={16} />
+                            </button>
+                            <button className="p-1.5 rounded-lg bg-red-50 text-red-600 hover:bg-red-100" title="Delete" onClick={() => handleDelete(blog.id)}>
+                              <Icon name="TrashIcon" size={16} />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </div>
         </div>
       </main>
@@ -125,8 +161,8 @@ export default function BlogPage() {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-white rounded-2xl shadow-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto m-4">
             <div className="sticky top-0 bg-white border-b px-6 py-4 flex justify-between items-center">
-              <h2 className="text-2xl font-bold text-espresso">Create New Blog Post</h2>
-              <button onClick={() => setIsModalOpen(false)} className="p-2 hover:bg-gray-100 rounded-lg">
+              <h2 className="text-2xl font-bold text-espresso">{editingBlog ? 'Edit Blog Post' : 'Create New Blog Post'}</h2>
+              <button onClick={() => { setIsModalOpen(false); setEditingBlog(null); }} className="p-2 hover:bg-gray-100 rounded-lg">
                 <Icon name="XMarkIcon" size={24} />
               </button>
             </div>
