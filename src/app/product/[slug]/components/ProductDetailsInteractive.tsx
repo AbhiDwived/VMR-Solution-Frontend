@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { useDispatch } from 'react-redux';
 import { addItem } from '@/store/slices/cart';
+import { useAddToCartMutation } from '@/store/api/cartApi';
 import { toast } from 'react-toastify';
 import { useGetProductBySlugQuery } from '@/store/api/productsApi';
 import ProductImageGallery from '../../../product-details/components/ProductImageGallery';
@@ -69,6 +70,7 @@ const ProductDetailsInteractive = () => {
   const params = useParams();
   const slug = params.slug as string;
   const { data: productData, isLoading } = useGetProductBySlugQuery(slug);
+  const [addToCartApi] = useAddToCartMutation();
   const [isHydrated, setIsHydrated] = useState(false);
   const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(null);
   const [currentImages, setCurrentImages] = useState<ProductImage[]>([]);
@@ -378,23 +380,57 @@ const ProductDetailsInteractive = () => {
     }
   };
 
-  const handleAddToCart = (quantity: number) => {
-    if (!isHydrated || !product || !selectedVariant) return;
+  const handleAddToCart = async (quantity: number) => {
+    if (!product || !selectedVariant) {
+      toast.error('Please select a product variant');
+      return;
+    }
     
-    dispatch(addItem({
-      id: product.id.toString(),
-      name: product.name,
-      price: selectedVariant.price,
-      image: currentImages[0]?.url || '',
-      quantity,
-      variant: `${selectedVariant.color} - ${selectedVariant.size}`,
-    }));
-    
-    toast.success(`Added ${quantity} item(s) to cart!`);
+    try {
+      await addToCartApi({
+        product_id: product.id,
+        variant_id: selectedVariant.id,
+        quantity,
+      }).unwrap();
+      
+      dispatch(addItem({
+        id: product.id.toString(),
+        name: product.name,
+        price: selectedVariant.price,
+        image: currentImages[0]?.url || '',
+        quantity,
+        variant: `${selectedVariant.color} - ${selectedVariant.size}`,
+      }));
+      
+      toast.success(`Added ${quantity} item(s) to cart!`);
+    } catch (error) {
+      dispatch(addItem({
+        id: product.id.toString(),
+        name: product.name,
+        price: selectedVariant.price,
+        image: currentImages[0]?.url || '',
+        quantity,
+        variant: `${selectedVariant.color} - ${selectedVariant.size}`,
+      }));
+      toast.success(`Added ${quantity} item(s) to cart!`);
+    }
   };
 
-  const handleBuyNow = (quantity: number) => {
-    if (!isHydrated || !product || !selectedVariant) return;
+  const handleBuyNow = async (quantity: number) => {
+    if (!product || !selectedVariant) {
+      toast.error('Please select a product variant');
+      return;
+    }
+    
+    try {
+      await addToCartApi({
+        product_id: product.id,
+        variant_id: selectedVariant.id,
+        quantity,
+      }).unwrap();
+    } catch (error) {
+      // Continue even if API fails
+    }
     
     dispatch(addItem({
       id: product.id.toString(),
@@ -454,6 +490,8 @@ const ProductDetailsInteractive = () => {
           rating={4.7}
           reviewCount={1247}
           variants={productVariants}
+          selectedVariant={selectedVariant}
+          currentImage={currentImages[0]?.url || ''}
           onVariantChange={handleVariantChange}
           onAddToCart={handleAddToCart}
           onBuyNow={handleBuyNow}

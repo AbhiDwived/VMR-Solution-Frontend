@@ -1,12 +1,16 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import Link from 'next/link';
 import Icon from '@/components/ui/AppIcon';
 import { useAuth } from '@/features/auth/hooks/useAuth';
+import type { RootState } from '@/store/store';
 
 const Navbar = () => {
   const { user, logout } = useAuth();
+  const cartItemCount = useSelector((state: RootState) => state.cart.itemCount);
+  const wishlistItemCount = useSelector((state: RootState) => state.wishlist.items.length);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isHydrated, setIsHydrated] = useState(false);
@@ -82,19 +86,29 @@ const Navbar = () => {
             {/* Wishlist */}
             <Link
               href={isHydrated && user ? '/wishlist' : '/auth/login'}
-              className="flex h-10 w-10 items-center justify-center rounded-md text-foreground transition-smooth hover:bg-muted"
+              className="relative flex h-10 w-10 items-center justify-center rounded-md text-foreground transition-smooth hover:bg-muted"
               aria-label="Wishlist"
             >
               <Icon name="HeartIcon" size={20} />
+              {wishlistItemCount > 0 && (
+                <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-error text-[10px] font-bold text-white">
+                  {wishlistItemCount}
+                </span>
+              )}
             </Link>
 
             {/* Cart */}
             <Link
               href={isHydrated && user ? '/shopping-cart' : '/auth/login'}
-              className="flex h-10 w-10 items-center justify-center rounded-md text-foreground transition-smooth hover:bg-muted"
+              className="relative flex h-10 w-10 items-center justify-center rounded-md text-foreground transition-smooth hover:bg-muted"
               aria-label="Shopping cart"
             >
               <Icon name="ShoppingCartIcon" size={20} />
+              {cartItemCount > 0 && (
+                <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-white">
+                  {cartItemCount}
+                </span>
+              )}
             </Link>
 
             {/* Mobile Search Button */}

@@ -1,10 +1,12 @@
 import React from 'react';
 import type { Metadata, Viewport } from 'next';
+import { ToastContainer } from 'react-toastify';
 import { StoreProvider } from '@/lib/providers/StoreProvider';
 import { BulkOrderProvider } from '@/components/ui/modal/BulkOrderContext';
 import BulkOrderModal from '@/components/ui/modal/BulkOrderModal';
 import '../styles/index.css';
 import '../styles/toastify.css';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Header = React.lazy(() => import('@/components/common/Header'));
 const Footer = React.lazy(() => import('@/components/common/Footer'));
@@ -40,6 +42,7 @@ export default function RootLayout({
               <Footer />
             </React.Suspense>
             <BulkOrderModal />
+            <ToastContainer position="top-right" autoClose={3000} />
           </BulkOrderProvider>
         </StoreProvider>
       </body>

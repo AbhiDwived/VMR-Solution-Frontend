@@ -3,6 +3,7 @@ import { setupListeners } from '@reduxjs/toolkit/query'
 import cartSlice from './slices/cart'
 import authSlice from './slices/auth'
 import bulkOrderSlice from './slices/bulkOrder'
+import wishlistSlice from './slices/wishlist'
 import { baseApi } from './api/baseApi'
 import { blogApi } from './api/blogApi'
 import { orderApi } from './api/orderApi'
@@ -12,6 +13,7 @@ export const store = configureStore({
     cart: cartSlice,
     auth: authSlice,
     bulkOrder: bulkOrderSlice,
+    wishlist: wishlistSlice,
     [baseApi.reducerPath]: baseApi.reducer,
     [blogApi.reducerPath]: blogApi.reducer,
     [orderApi.reducerPath]: orderApi.reducer,

@@ -1,7 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { toggleWishlistItem } from '@/store/slices/wishlist';
+import { useAddToWishlistMutation, useRemoveFromWishlistMutation } from '@/store/api/wishlistApi';
+import { toast } from 'react-toastify';
 import Icon from '@/components/ui/AppIcon';
+import type { RootState } from '@/store/store';
 
 interface ProductVariant {
   id: string;
@@ -21,6 +26,8 @@ interface ProductInfoProps {
   rating: number;
   reviewCount: number;
   variants: ProductVariant[];
+  selectedVariant?: ProductVariant;
+  currentImage?: string;
   onVariantChange: (_variant: ProductVariant) => void;
   onAddToCart: (_quantity: number) => void;
   onBuyNow: (_quantity: number) => void;
@@ -32,11 +39,17 @@ const ProductInfo = ({
   rating,
   reviewCount,
   variants,
+  selectedVariant: initialSelectedVariant,
+  currentImage = '',
   onVariantChange,
   onAddToCart,
   onBuyNow,
 }: ProductInfoProps) => {
-  const [selectedVariant, setSelectedVariant] = useState<ProductVariant | undefined>(variants[0]);
+  const dispatch = useDispatch();
+  const wishlistItems = useSelector((state: RootState) => state.wishlist.items);
+  const [addToWishlistApi] = useAddToWishlistMutation();
+  const [removeFromWishlistApi] = useRemoveFromWishlistMutation();
+  const [selectedVariant, setSelectedVariant] = useState<ProductVariant | undefined>(initialSelectedVariant || variants[0]);
   const [quantity, setQuantity] = useState(variants[0]?.minOrderQty || 1);
   const [isWishlisted, setIsWishlisted] = useState(false);
 
@@ -47,6 +60,21 @@ const ProductInfo = ({
 
   const [selectedSize, setSelectedSize] = useState(selectedVariant?.size || '');
   const [selectedColor, setSelectedColor] = useState(selectedVariant?.color || '');
+
+  useEffect(() => {
+    if (initialSelectedVariant) {
+      setSelectedVariant(initialSelectedVariant);
+      setSelectedSize(initialSelectedVariant.size);
+      setSelectedColor(initialSelectedVariant.color);
+    }
+  }, [initialSelectedVariant]);
+
+  useEffect(() => {
+    if (selectedVariant) {
+      const inWishlist = wishlistItems.some(item => item.id === selectedVariant.id);
+      setIsWishlisted(inWishlist);
+    }
+  }, [selectedVariant, wishlistItems]);
 
   const handleSizeChange = (size: string) => {
     setSelectedSize(size);
@@ -82,8 +110,41 @@ const ProductInfo = ({
     onBuyNow(quantity);
   };
 
-  const toggleWishlist = () => {
-    setIsWishlisted(!isWishlisted);
+  const toggleWishlist = async () => {
+    if (!selectedVariant) {
+      toast.error('Please select a variant');
+      return;
+    }
+    
+    const wishlistItem = {
+      id: selectedVariant.id,
+      name: productName,
+      price: selectedVariant.price,
+      image: currentImage,
+      variant: `${selectedVariant.color} - ${selectedVariant.size}`,
+    };
+    
+    const newWishlistState = !isWishlisted;
+    
+    try {
+      if (newWishlistState) {
+        await addToWishlistApi({
+          product_id: selectedVariant.id,
+          variant_id: selectedVariant.id,
+        }).unwrap();
+      } else {
+        const item = wishlistItems.find(i => i.id === selectedVariant.id);
+        if (item) {
+          await removeFromWishlistApi(item.id).unwrap();
+        }
+      }
+    } catch (error) {
+      // Continue with local state even if API fails
+    }
+    
+    dispatch(toggleWishlistItem(wishlistItem));
+    setIsWishlisted(newWishlistState);
+    toast.success(newWishlistState ? 'Added to wishlist!' : 'Removed from wishlist!');
   };
 
   const discountPercentage = selectedVariant?.originalPrice

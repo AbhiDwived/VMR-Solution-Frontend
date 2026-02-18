@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { cartApi } from '../api/cartApi'
 
 interface CartItem {
   id: string
@@ -54,10 +55,32 @@ const cartSlice = createSlice({
       state.itemCount = state.items.reduce((total, item) => total + item.quantity, 0)
       state.total = state.items.reduce((total, item) => total + (item.price * item.quantity), 0)
     },
+    syncCart: (state, action: PayloadAction<CartItem[]>) => {
+      state.items = action.payload
+      cartSlice.caseReducers.calculateTotals(state)
+    },
+  },
+  extraReducers: (builder) => {
+    builder.addMatcher(
+      cartApi.endpoints.getCart.matchFulfilled,
+      (state, { payload }) => {
+        if (payload.success && payload.data) {
+          state.items = payload.data.map((item: any) => ({
+            id: item.id.toString(),
+            name: item.name,
+            price: item.discount_price || item.price,
+            image: JSON.parse(item.product_images || '[]')[0] || '',
+            quantity: item.quantity,
+            variant: item.variant_id,
+          }))
+          cartSlice.caseReducers.calculateTotals(state)
+        }
+      }
+    )
   },
 })
 
-export const { addItem, removeItem, updateQuantity, toggleCart } = cartSlice.actions
+export const { addItem, removeItem, updateQuantity, toggleCart, syncCart } = cartSlice.actions
 export default cartSlice.reducer
 
 
