@@ -56,7 +56,7 @@ const OrderReviewSection = ({ cartItems, subtotal, gst, deliveryCharges, discoun
         <h3 className="mb-3 font-medium text-foreground">Price Details</h3>
         <div className="space-y-2">
           <div className="flex items-center justify-between text-sm">
-            <span className="text-muted-foreground">Subtotal ({cartItems.length} items)</span>
+            <span className="text-muted-foreground">Subtotal ({cartItems.reduce((sum, item) => sum + item.quantity, 0)} items)</span>
             <span className="data-text text-foreground">₹{subtotal.toLocaleString('en-IN')}</span>
           </div>
           <div className="flex items-center justify-between text-sm">

@@ -20,14 +20,39 @@ export const cartApi = baseApi.injectEndpoints({
         method: 'PUT',
         body: { quantity },
       }),
-      invalidatesTags: ['Cart'],
+      async onQueryStarted({ id, quantity }, { dispatch, queryFulfilled }) {
+        const patchResult = dispatch(
+          cartApi.util.updateQueryData('getCart', undefined, (draft) => {
+            const item = draft.data?.find((item: any) => item.id.toString() === id);
+            if (item) item.quantity = quantity;
+          })
+        );
+        try {
+          await queryFulfilled;
+        } catch {
+          patchResult.undo();
+        }
+      },
     }),
     removeFromCart: builder.mutation({
       query: (id) => ({
         url: `/protected/cart/${id}`,
         method: 'DELETE',
       }),
-      invalidatesTags: ['Cart'],
+      async onQueryStarted(id, { dispatch, queryFulfilled }) {
+        const patchResult = dispatch(
+          cartApi.util.updateQueryData('getCart', undefined, (draft) => {
+            if (draft.data) {
+              draft.data = draft.data.filter((item: any) => item.id.toString() !== id);
+            }
+          })
+        );
+        try {
+          await queryFulfilled;
+        } catch {
+          patchResult.undo();
+        }
+      },
     }),
     clearCart: builder.mutation({
       query: () => ({

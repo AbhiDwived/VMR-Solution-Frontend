@@ -14,7 +14,7 @@ export const orderApi = createApi({
       return headers;
     },
   }),
-  tagTypes: ['Addresses'],
+  tagTypes: ['Addresses', 'Orders'],
   endpoints: (builder) => ({
     createOrder: builder.mutation({
       query: (orderData) => ({
@@ -22,6 +22,15 @@ export const orderApi = createApi({
         method: 'POST',
         body: orderData,
       }),
+      invalidatesTags: ['Orders'],
+    }),
+    getUserOrders: builder.query({
+      query: () => '/orders/user',
+      providesTags: ['Orders'],
+    }),
+    getOrderById: builder.query({
+      query: (orderId) => `/orders/${orderId}`,
+      providesTags: (_result, _error, orderId) => [{ type: 'Orders', id: orderId }],
     }),
     getUserAddresses: builder.query({
       query: () => '/orders/addresses',
@@ -38,4 +47,10 @@ export const orderApi = createApi({
   }),
 });
 
-export const { useCreateOrderMutation, useGetUserAddressesQuery, useAddAddressMutation } = orderApi;
+export const { 
+  useCreateOrderMutation, 
+  useGetUserOrdersQuery,
+  useGetOrderByIdQuery,
+  useGetUserAddressesQuery, 
+  useAddAddressMutation 
+} = orderApi;

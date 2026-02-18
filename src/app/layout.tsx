@@ -4,6 +4,7 @@ import { ToastContainer } from 'react-toastify';
 import { StoreProvider } from '@/lib/providers/StoreProvider';
 import { BulkOrderProvider } from '@/components/ui/modal/BulkOrderContext';
 import BulkOrderModal from '@/components/ui/modal/BulkOrderModal';
+import DataSync from '@/components/common/DataSync';
 import '../styles/index.css';
 import '../styles/toastify.css';
 import 'react-toastify/dist/ReactToastify.css';
@@ -33,6 +34,7 @@ export default function RootLayout({
     <html lang="en" data-theme="light" style={{ colorScheme: 'light' }}>
       <body>
         <StoreProvider>
+          <DataSync />
           <BulkOrderProvider>
             <React.Suspense fallback={<div className="h-16 bg-card border-b" />}>
               <Header />

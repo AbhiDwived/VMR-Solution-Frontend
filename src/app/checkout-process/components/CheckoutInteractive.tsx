@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '@/store/store';
+import { syncCart } from '@/store/slices/cart';
 import { useCreateOrderMutation, useGetUserAddressesQuery } from '@/store/api/orderApi';
 import Icon from '@/components/ui/AppIcon';
 import DeliveryAddressForm from './DeliveryAddressForm';
@@ -26,6 +27,7 @@ interface Address {
 
 const CheckoutInteractive = () => {
   const router = useRouter();
+  const dispatch = useDispatch();
   const [isHydrated, setIsHydrated] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
   const [selectedAddress, setSelectedAddress] = useState<Address | null>(null);
@@ -42,11 +44,16 @@ const CheckoutInteractive = () => {
     setIsHydrated(true);
     if (!isAuthenticated) {
       router.push('/auth/login?redirect=/checkout-process');
+      return;
     }
-    if (cartItems.length === 0) {
-      router.push('/shopping-cart');
+  }, [isAuthenticated, router]);
+
+  useEffect(() => {
+    if (isHydrated && isAuthenticated && cartItems.length === 0) {
+      toast.error('Your cart is empty');
+      router.push('/products');
     }
-  }, [isAuthenticated, cartItems, router]);
+  }, [isHydrated, isAuthenticated, cartItems, router]);
 
   const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const gst = Math.round(subtotal * 0.18);
@@ -95,6 +102,10 @@ const CheckoutInteractive = () => {
       };
 
       const result = await createOrder(orderData).unwrap();
+      
+      // Clear cart after successful order
+      dispatch(syncCart([]));
+      
       toast.success('Order placed successfully!');
       router.push(`/order-tracking?orderId=${result.orderId}`);
     } catch (error) {
@@ -109,12 +120,30 @@ const CheckoutInteractive = () => {
     }
   };
 
-  if (!isHydrated || !isAuthenticated || cartItems.length === 0) {
+  if (!isHydrated || !isAuthenticated) {
     return (
       <div className="min-h-screen bg-background">
         <div className="mx-auto max-w-[1200px] px-4 py-8 sm:px-6">
           <div className="h-8 w-48 animate-pulse rounded-md bg-muted" />
           <div className="mt-6 h-64 animate-pulse rounded-md bg-muted" />
+        </div>
+      </div>
+    );
+  }
+
+  if (cartItems.length === 0) {
+    return (
+      <div className="min-h-screen bg-background">
+        <div className="mx-auto max-w-[1200px] px-4 py-8 sm:px-6 text-center">
+          <Icon name="ShoppingCartIcon" size={64} className="mx-auto text-muted-foreground" />
+          <h2 className="mt-4 text-xl font-semibold text-foreground">Your cart is empty</h2>
+          <p className="mt-2 text-muted-foreground">Add items to your cart to proceed with checkout</p>
+          <button
+            onClick={() => router.push('/products')}
+            className="mt-6 rounded-md bg-primary px-6 py-2 text-sm font-medium text-primary-foreground transition-smooth hover:scale-[0.98]"
+          >
+            Continue Shopping
+          </button>
         </div>
       </div>
     );

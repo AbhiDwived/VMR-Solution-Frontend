@@ -8,16 +8,9 @@ interface CartItemData {
   id: string;
   name: string;
   image: string;
-  alt: string;
-  size: string;
-  color: string;
-  capacity: string;
-  material: string;
   price: number;
   quantity: number;
-  minOrderQty: number;
-  isWholesale: boolean;
-  stock: number;
+  variant?: string;
 }
 
 interface CartItemProps {
@@ -28,12 +21,10 @@ interface CartItemProps {
 }
 
 export default function CartItem({ item, onQuantityChange, onRemove, onSaveForLater }: CartItemProps) {
-  const [quantity, setQuantity] = useState(item.quantity);
   const [isRemoving, setIsRemoving] = useState(false);
 
   const handleQuantityChange = (newQty: number) => {
-    if (newQty >= item.minOrderQty && newQty <= item.stock) {
-      setQuantity(newQty);
+    if (newQty >= 1) {
       onQuantityChange(item.id, newQty);
     }
   };
@@ -45,7 +36,7 @@ export default function CartItem({ item, onQuantityChange, onRemove, onSaveForLa
     }, 300);
   };
 
-  const itemTotal = item.price * quantity;
+  const itemTotal = item.price * item.quantity;
 
   return (
     <div
@@ -57,7 +48,7 @@ export default function CartItem({ item, onQuantityChange, onRemove, onSaveForLa
       <div className="h-32 w-32 flex-shrink-0 overflow-hidden rounded-md bg-muted">
         <AppImage
           src={item.image}
-          alt={item.alt}
+          alt={item.name}
           className="h-full w-full object-cover transition-smooth hover:scale-105"
         />
       </div>
@@ -70,10 +61,8 @@ export default function CartItem({ item, onQuantityChange, onRemove, onSaveForLa
               <h3 className="font-heading text-lg font-semibold text-card-foreground">
                 {item.name}
               </h3>
-              {item.isWholesale && (
-                <span className="mt-1 inline-block rounded-md bg-accent/10 px-2 py-1 text-xs font-medium text-accent">
-                  Wholesale Item
-                </span>
+              {item.variant && (
+                <p className="mt-1 text-sm text-muted-foreground">{item.variant}</p>
               )}
             </div>
             <button
@@ -84,37 +73,6 @@ export default function CartItem({ item, onQuantityChange, onRemove, onSaveForLa
               <Icon name="TrashIcon" size={18} />
             </button>
           </div>
-
-          {/* Variant Details */}
-          <div className="mb-3 space-y-1">
-            <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted-foreground">
-              <span className="flex items-center gap-1">
-                <Icon name="Square3Stack3DIcon" size={16} />
-                Size: <span className="font-medium text-card-foreground">{item.size}</span>
-              </span>
-              <span className="flex items-center gap-1">
-                <Icon name="SwatchIcon" size={16} />
-                Color: <span className="font-medium text-card-foreground">{item.color}</span>
-              </span>
-            </div>
-            <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted-foreground">
-              <span className="flex items-center gap-1">
-                <Icon name="BeakerIcon" size={16} />
-                Capacity: <span className="font-medium text-card-foreground">{item.capacity}</span>
-              </span>
-              <span className="flex items-center gap-1">
-                <Icon name="CubeIcon" size={16} />
-                Material: <span className="font-medium text-card-foreground">{item.material}</span>
-              </span>
-            </div>
-          </div>
-
-          {/* Stock Status */}
-          {item.stock < 10 && (
-            <p className="caption mb-2 text-warning">
-              Only {item.stock} items left in stock
-            </p>
-          )}
         </div>
 
         {/* Price and Quantity Controls */}
@@ -125,8 +83,8 @@ export default function CartItem({ item, onQuantityChange, onRemove, onSaveForLa
               <span className="text-sm text-muted-foreground">Qty:</span>
               <div className="flex items-center rounded-md border border-border">
                 <button
-                  onClick={() => handleQuantityChange(quantity - 1)}
-                  disabled={quantity <= item.minOrderQty}
+                  onClick={() => handleQuantityChange(item.quantity - 1)}
+                  disabled={item.quantity <= 1}
                   className="flex h-8 w-8 items-center justify-center text-foreground transition-smooth hover:bg-muted disabled:cursor-not-allowed disabled:opacity-40"
                   aria-label="Decrease quantity"
                 >
@@ -134,18 +92,16 @@ export default function CartItem({ item, onQuantityChange, onRemove, onSaveForLa
                 </button>
                 <input
                   type="number"
-                  value={quantity}
+                  value={item.quantity}
                   onChange={(e) => {
-                    const val = parseInt(e.target.value) || item.minOrderQty;
+                    const val = parseInt(e.target.value) || 1;
                     handleQuantityChange(val);
                   }}
-                  min={item.minOrderQty}
-                  max={item.stock}
+                  min={1}
                   className="data-text h-8 w-16 border-x border-border bg-transparent text-center text-sm focus:outline-none"
                 />
                 <button
-                  onClick={() => handleQuantityChange(quantity + 1)}
-                  disabled={quantity >= item.stock}
+                  onClick={() => handleQuantityChange(item.quantity + 1)}
                   className="flex h-8 w-8 items-center justify-center text-foreground transition-smooth hover:bg-muted disabled:cursor-not-allowed disabled:opacity-40"
                   aria-label="Increase quantity"
                 >
@@ -153,21 +109,11 @@ export default function CartItem({ item, onQuantityChange, onRemove, onSaveForLa
                 </button>
               </div>
             </div>
-
-            {/* Min Order Qty Info */}
-            {item.isWholesale && (
-              <span className="caption text-muted-foreground">
-                Min: {item.minOrderQty} pcs
-              </span>
-            )}
           </div>
 
           {/* Price */}
           <div className="flex items-center gap-3">
             <div className="text-right">
-              <p className="data-text text-sm text-muted-foreground line-through">
-                ₹{(item.price * 1.2).toLocaleString('en-IN')}
-              </p>
               <p className="data-text text-xl font-semibold text-primary">
                 ₹{itemTotal.toLocaleString('en-IN')}
               </p>

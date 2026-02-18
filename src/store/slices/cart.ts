@@ -65,14 +65,25 @@ const cartSlice = createSlice({
       cartApi.endpoints.getCart.matchFulfilled,
       (state, { payload }) => {
         if (payload.success && payload.data) {
-          state.items = payload.data.map((item: any) => ({
-            id: item.id.toString(),
-            name: item.name,
-            price: item.discount_price || item.price,
-            image: JSON.parse(item.product_images || '[]')[0] || '',
-            quantity: item.quantity,
-            variant: item.variant_id,
-          }))
+          console.log('📥 Cart data from API:', payload.data);
+          state.items = payload.data.map((item: any) => {
+            let images = []
+            try {
+              images = typeof item.product_images === 'string' ? JSON.parse(item.product_images) : item.product_images
+            } catch (e) {
+              images = []
+            }
+            const mapped = {
+              id: item.id.toString(),
+              name: item.name,
+              price: item.discount_price || item.price,
+              image: Array.isArray(images) ? images[0] || '' : '',
+              quantity: item.quantity,
+              variant: item.variant_id,
+            };
+            console.log('🔄 Mapped item:', { original: item.id, mapped: mapped.id });
+            return mapped;
+          })
           cartSlice.caseReducers.calculateTotals(state)
         }
       }

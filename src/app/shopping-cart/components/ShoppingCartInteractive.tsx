@@ -1,6 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { RootState } from '@/store/store';
+import { removeItem, updateQuantity } from '@/store/slices/cart';
+import { useUpdateCartMutation, useRemoveFromCartMutation } from '@/store/api/cartApi';
 import CartItem from './CartItem';
 import OrderSummary from './OrderSummary';
 import RelatedProducts from './RelatedProducts';
@@ -8,22 +12,6 @@ import EmptyCart from './EmptyCart';
 import ClearCartModal from './ClearCartModal';
 import Icon from '@/components/ui/AppIcon';
 import { useGetProductsQuery } from '@/store/api/productsApi';
-
-interface CartItemData {
-  id: string;
-  name: string;
-  image: string;
-  alt: string;
-  size: string;
-  color: string;
-  capacity: string;
-  material: string;
-  price: number;
-  quantity: number;
-  minOrderQty: number;
-  isWholesale: boolean;
-  stock: number;
-}
 
 interface RelatedProduct {
   id: string;
@@ -45,16 +33,20 @@ interface RecentProduct {
 }
 
 export default function ShoppingCartInteractive() {
+  const dispatch = useDispatch();
+  const cartItems = useSelector((state: RootState) => state.cart.items);
   const [isHydrated, setIsHydrated] = useState(false);
   const [isClearModalOpen, setIsClearModalOpen] = useState(false);
   const { data: productsData } = useGetProductsQuery({});
+  const [updateCartApi] = useUpdateCartMutation();
+  const [removeFromCartApi] = useRemoveFromCartMutation();
+  const updateTimeoutRef = useRef<NodeJS.Timeout>();
 
   useEffect(() => {
     setIsHydrated(true);
   }, []);
 
   const apiProducts = productsData?.data || [];
-  const [cartItems, setCartItems] = useState<CartItemData[]>([]);
 
   const relatedProducts: RelatedProduct[] = apiProducts
     .slice(0, 8)
@@ -80,13 +72,27 @@ export default function ShoppingCartInteractive() {
     }));
 
   const handleQuantityChange = (id: string, newQuantity: number) => {
-    setCartItems((prev) =>
-      prev.map((item) => (item.id === id ? { ...item, quantity: newQuantity } : item))
-    );
+    console.log('🔄 Quantity change:', { id, newQuantity, currentItems: cartItems });
+    dispatch(updateQuantity({ id, quantity: newQuantity }));
+    
+    if (updateTimeoutRef.current) clearTimeout(updateTimeoutRef.current);
+    updateTimeoutRef.current = setTimeout(() => {
+      console.log('📡 API call - Update cart:', { id, quantity: newQuantity });
+      updateCartApi({ id, quantity: newQuantity })
+        .unwrap()
+        .then((result) => console.log('✅ DB updated successfully:', result))
+        .catch((err) => console.error('❌ DB update failed:', err));
+    }, 500);
   };
 
   const handleRemoveItem = (id: string) => {
-    setCartItems((prev) => prev.filter((item) => item.id !== id));
+    console.log('🗑️ Remove item:', { id, currentItems: cartItems });
+    dispatch(removeItem(id));
+    console.log('📡 API call - Remove from cart:', id);
+    removeFromCartApi(id)
+      .unwrap()
+      .then((result) => console.log('✅ Item removed from DB:', result))
+      .catch((err) => console.error('❌ Remove failed:', err));
   };
 
   const handleSaveForLater = (id: string) => {
@@ -94,7 +100,7 @@ export default function ShoppingCartInteractive() {
   };
 
   const handleClearCart = () => {
-    setCartItems([]);
+    cartItems.forEach(item => dispatch(removeItem(item.id)));
     setIsClearModalOpen(false);
   };
 

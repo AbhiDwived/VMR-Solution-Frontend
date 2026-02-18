@@ -18,6 +18,10 @@ export interface Order {
 
 export const ordersApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
+    getAllOrders: builder.query({
+      query: () => '/admin/orders',
+      providesTags: ['Order'],
+    }),
     getOrders: builder.query<Order[], void>({
       query: () => '/orders',
       providesTags: ['Order'],
@@ -38,6 +42,7 @@ export const ordersApi = baseApi.injectEndpoints({
 })
 
 export const {
+  useGetAllOrdersQuery,
   useGetOrdersQuery,
   useGetOrderQuery,
   useCreateOrderMutation,

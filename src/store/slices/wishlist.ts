@@ -47,13 +47,21 @@ const wishlistSlice = createSlice({
       wishlistApi.endpoints.getWishlist.matchFulfilled,
       (state, { payload }) => {
         if (payload.success && payload.data) {
-          state.items = payload.data.map((item: any) => ({
-            id: item.id.toString(),
-            name: item.name,
-            price: item.discount_price || item.price,
-            image: JSON.parse(item.product_images || '[]')[0] || '',
-            variant: item.variant_id,
-          }))
+          state.items = payload.data.map((item: any) => {
+            let images = []
+            try {
+              images = typeof item.product_images === 'string' ? JSON.parse(item.product_images) : item.product_images
+            } catch (e) {
+              images = []
+            }
+            return {
+              id: item.id.toString(),
+              name: item.name,
+              price: item.discount_price || item.price,
+              image: Array.isArray(images) ? images[0] || '' : '',
+              variant: item.variant_id,
+            }
+          })
         }
       }
     )
