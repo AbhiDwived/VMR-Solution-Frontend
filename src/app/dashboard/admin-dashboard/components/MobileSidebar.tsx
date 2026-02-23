@@ -42,6 +42,13 @@ const MobileSidebar = () => {
       ],
     },
     {
+      groupName: 'CONTENT',
+      items: [
+        { title: 'Blog', icon: 'DocumentTextIcon', href: '/dashboard/admin-dashboard/blog' },
+        { title: 'Content', icon: 'NewspaperIcon', href: '/dashboard/admin-dashboard/content' },
+      ],
+    },
+    {
       groupName: 'ORDERS & SALES',
       items: [
         { title: 'Orders', icon: 'ShoppingBagIcon', href: '/dashboard/admin-dashboard/orders' },
