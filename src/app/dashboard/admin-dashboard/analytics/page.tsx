@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import Breadcrumb from '@/components/common/Breadcrumb';
 import AdminSidebar from '../components/AdminSidebar';
+import MobileSidebar from '../components/MobileSidebar';
+import AnalyticsDashboard from './AnalyticsDashboard';
 
 export const metadata: Metadata = {
   title: 'Analytics - Admin Dashboard',
@@ -10,14 +12,14 @@ export const metadata: Metadata = {
 export default function AnalyticsPage() {
   return (
     <div className="min-h-screen bg-background">
+      <MobileSidebar />
       <main className="flex">
         <AdminSidebar />
-        <div className="flex-1 p-6">
-          <Breadcrumb />
-          <div className="space-y-6">
-            <h1 className="text-3xl font-bold text-espresso">Analytics</h1>
-            <div className="bg-white p-8 rounded-2xl shadow-sm border border-border">
-              <p className="text-mocha-grey">Analytics dashboard content will be implemented here.</p>
+        <div className="flex-1 min-h-screen">
+          <div className="p-6 lg:p-8 lg:pl-8 pl-16">
+            <Breadcrumb />
+            <div className="mt-6">
+              <AnalyticsDashboard />
             </div>
           </div>
         </div>

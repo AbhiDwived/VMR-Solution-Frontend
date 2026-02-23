@@ -5,6 +5,7 @@ import { useAuth } from '@/features/auth/hooks/useAuth';
 import { useGetAllOrdersQuery } from '@/store/api/ordersApi';
 import { useGetInventoryStatsQuery, useGetLowStockProductsQuery } from '@/store/api/productsApi';
 import { useGetAllUsersQuery } from '@/store/api/usersApi';
+import AnalyticsDashboard from '../analytics/AnalyticsDashboard';
 
 const AdminDashboardView = () => {
   const { user } = useAuth();
@@ -82,7 +83,8 @@ const AdminDashboardView = () => {
         ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
         <div className="bg-white p-8 rounded-2xl shadow-elevation-1 border border-border hover:shadow-elevation-2 transition-all duration-200">
           <div className="flex justify-between items-center mb-6">
             <h3 className="text-xl font-bold text-espresso font-heading">Recent Orders</h3>
@@ -205,6 +207,8 @@ const AdminDashboardView = () => {
           </div>
         </div>
       </div>
+      <AnalyticsDashboard />
+
     </div>
   );
 };

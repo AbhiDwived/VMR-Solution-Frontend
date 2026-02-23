@@ -16,10 +16,40 @@ export interface Order {
   updatedAt: string
 }
 
+export interface AdminAnalyticsResponse {
+  success: boolean
+  data: {
+    kpis: {
+      totalRevenue: number
+      totalOrders: number
+      conversionRate: number
+      avgOrderValue: number
+    }
+    monthlySalesData: Array<{
+      month: string
+      revenue: number
+      orders: number
+      refunds: number
+    }>
+    categoryData: Array<{
+      name: string
+      value: number
+    }>
+    trafficSourceData: Array<{
+      source: string
+      visitors: number
+    }>
+  }
+}
+
 export const ordersApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getAllOrders: builder.query({
       query: () => '/admin/orders',
+      providesTags: ['Order'],
+    }),
+    getAdminAnalytics: builder.query<AdminAnalyticsResponse, void>({
+      query: () => '/admin/analytics',
       providesTags: ['Order'],
     }),
     getOrderById: builder.query({
@@ -55,6 +85,7 @@ export const ordersApi = baseApi.injectEndpoints({
 
 export const {
   useGetAllOrdersQuery,
+  useGetAdminAnalyticsQuery,
   useGetOrderByIdQuery,
   useUpdateOrderStatusMutation,
   useGetOrdersQuery,

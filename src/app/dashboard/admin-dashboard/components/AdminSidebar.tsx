@@ -11,17 +11,6 @@ const AdminSidebar = () => {
 
   const menuGroups = [
     {
-      groupName: 'OVERVIEW',
-      items: [
-        { title: 'Dashboard', icon: 'ChartBarIcon', href: '/dashboard/admin-dashboard' },
-        {
-          title: 'Analytics',
-          icon: 'PresentationChartLineIcon',
-          href: '/dashboard/admin-dashboard/analytics',
-        },
-      ],
-    },
-    {
       groupName: 'CUSTOMERS',
       items: [
         { title: 'Users', icon: 'UsersIcon', href: '/dashboard/admin-dashboard/users' },
