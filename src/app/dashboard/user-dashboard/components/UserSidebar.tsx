@@ -4,10 +4,12 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import Icon from '@/components/ui/AppIcon';
 import { useAuth } from '@/features/auth/hooks/useAuth';
+import { useGetUserUnreadCountQuery } from '@/store/api/userNotificationApi';
 
 const UserSidebar = () => {
   const pathname = usePathname();
   const { logout } = useAuth();
+  const { data: unreadData } = useGetUserUnreadCountQuery();
 
   const menuGroups = [
     {
@@ -40,7 +42,7 @@ const UserSidebar = () => {
       items: [
         { title: 'My Coupons', icon: 'TicketIcon', href: '/dashboard/user-dashboard/coupons' },
         { title: 'My Reviews & Ratings', icon: 'StarIcon', href: '/dashboard/user-dashboard/reviews' },
-        { title: 'All Notifications', icon: 'BellIcon', href: '/dashboard/user-dashboard/notifications' },
+        { title: 'All Notifications', icon: 'BellIcon', href: '/dashboard/user-dashboard/notifications', badge: unreadData?.count },
         { title: 'My Wishlist', icon: 'HeartIcon', href: '/dashboard/user-dashboard/wishlist' },
       ],
     },
@@ -92,7 +94,12 @@ const UserSidebar = () => {
                       >
                         <Icon name={item.icon as any} size={14} />
                       </div>
-                      <span className="text-sm font-medium">{item.title}</span>
+                      <span className="text-sm font-medium flex-1">{item.title}</span>
+                      {item.badge !== undefined && item.badge > 0 && (
+                        <span className="bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full min-w-[20px] text-center">
+                          {item.badge > 99 ? '99+' : item.badge}
+                        </span>
+                      )}
                     </Link>
                   );
                 })}
