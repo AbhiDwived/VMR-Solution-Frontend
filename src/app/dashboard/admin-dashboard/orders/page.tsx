@@ -5,11 +5,12 @@ import Link from 'next/link';
 import { useGetAllOrdersQuery, useGetOrderByIdQuery, useUpdateOrderStatusMutation } from '@/store/api/ordersApi';
 import { config } from '@/config/env';
 import Breadcrumb from '@/components/common/Breadcrumb';
+import AppImage from '@/components/ui/AppImage';
 import AdminSidebar from '../components/AdminSidebar';
 import { X, Eye, Search } from 'lucide-react';
 
 export default function OrdersPage() {
-  const { data, isLoading } = useGetAllOrdersQuery();
+  const { data, isLoading } = useGetAllOrdersQuery(undefined);
   const [updateStatus] = useUpdateOrderStatusMutation();
   const orders = data?.orders || [];
   const [selectedOrderId, setSelectedOrderId] = useState<number | null>(null);
@@ -306,13 +307,13 @@ export default function OrdersPage() {
                           className="flex gap-4 bg-gray-50 p-4 rounded-lg hover:bg-gray-100 transition cursor-pointer block"
                         >
                           {imageUrl ? (
-                            <img
+                            <AppImage
                               src={imageUrl}
                               alt={item.name}
+                              width={80}
+                              height={80}
                               className="w-20 h-20 object-cover rounded"
-                              onError={(e) => {
-                                e.currentTarget.src = '/assets/images/no_image.svg';
-                              }}
+                              fallbackSrc="/assets/images/no_image.svg"
                             />
                           ) : (
                             <div className="w-20 h-20 bg-gray-200 rounded flex items-center justify-center text-xs">No image</div>
