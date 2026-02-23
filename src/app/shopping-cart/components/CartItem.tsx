@@ -24,7 +24,9 @@ export default function CartItem({ item, onQuantityChange, onRemove, onSaveForLa
   const [isRemoving, setIsRemoving] = useState(false);
 
   const handleQuantityChange = (newQty: number) => {
-    if (newQty >= 1) {
+    if (newQty <= 0) {
+      handleRemove();
+    } else {
       onQuantityChange(item.id, newQty);
     }
   };

@@ -10,7 +10,6 @@ import { useGetProductBySlugQuery } from '@/store/api/productsApi';
 import ProductImageGallery from '../../../product-details/components/ProductImageGallery';
 import ProductInfo from '../../../product-details/components/ProductInfo';
 import ProductTabs from '../../../product-details/components/ProductTabs';
-import BulkPricingCalculator from '../../../product-details/components/BulkPricingCalculator';
 import RelatedProducts from '../../../product-details/components/RelatedProducts';
 
 interface ProductImage {
@@ -497,12 +496,6 @@ const ProductDetailsInteractive = () => {
           onBuyNow={handleBuyNow}
         />
       </div>
-
-      {/* Bulk Pricing Calculator */}
-      <BulkPricingCalculator
-        pricingTiers={pricingTiers}
-        basePrice={selectedVariant.price}
-      />
 
       {/* Product Details Tabs */}
       <ProductTabs

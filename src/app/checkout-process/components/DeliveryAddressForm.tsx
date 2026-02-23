@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { useGetUserAddressesQuery, useAddAddressMutation } from '@/store/api/orderApi';
+import { useState, useEffect } from 'react';
+import { useGetUserAddressesQuery, useAddAddressMutation, useSetDefaultAddressMutation } from '@/store/api/orderApi';
 import { toast } from 'react-toastify';
 import Icon from '@/components/ui/AppIcon';
 
@@ -24,6 +24,7 @@ interface DeliveryAddressFormProps {
 
 const DeliveryAddressForm = ({ onAddressSelect, selectedAddressId }: DeliveryAddressFormProps) => {
   const [showAddressForm, setShowAddressForm] = useState(false);
+  const [showAllAddresses, setShowAllAddresses] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
@@ -37,7 +38,15 @@ const DeliveryAddressForm = ({ onAddressSelect, selectedAddressId }: DeliveryAdd
 
   const { data: addressesData, isLoading } = useGetUserAddressesQuery();
   const [addAddress, { isLoading: isAdding }] = useAddAddressMutation();
+  const [setDefaultAddress] = useSetDefaultAddressMutation();
   const savedAddresses = addressesData?.addresses || [];
+  const defaultAddress = savedAddresses.find((addr: any) => addr.isDefault) || savedAddresses[0];
+
+  useEffect(() => {
+    if (defaultAddress && !selectedAddressId) {
+      onAddressSelect(defaultAddress);
+    }
+  }, [defaultAddress, selectedAddressId]);
 
   const indianStates = [
     'Andhra Pradesh', 'Arunachal Pradesh', 'Assam', 'Bihar', 'Chhattisgarh',
@@ -105,6 +114,15 @@ const DeliveryAddressForm = ({ onAddressSelect, selectedAddressId }: DeliveryAdd
       } catch (error) {
         toast.error('Failed to add address');
       }
+    }
+  };
+
+  const handleSetDefault = async (addressId: string) => {
+    try {
+      await setDefaultAddress(addressId).unwrap();
+      toast.success('Default address updated');
+    } catch (error) {
+      toast.error('Failed to update default address');
     }
   };
 
@@ -260,6 +278,38 @@ const DeliveryAddressForm = ({ onAddressSelect, selectedAddressId }: DeliveryAdd
             <div className="rounded-md bg-muted p-4 animate-pulse h-24" />
           ) : savedAddresses.length === 0 ? (
             <p className="text-center text-muted-foreground py-4">No saved addresses. Add a new address to continue.</p>
+          ) : !showAllAddresses && defaultAddress ? (
+            <>
+              <div className="cursor-pointer rounded-md border-2 border-primary bg-primary/5 p-4 transition-smooth">
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <div className="flex items-center space-x-2">
+                      <p className="font-medium text-foreground">{defaultAddress.name}</p>
+                      <span className="rounded-full bg-accent px-2 py-0.5 text-xs font-medium text-accent-foreground">
+                        Default
+                      </span>
+                    </div>
+                    <p className="caption mt-1 text-muted-foreground">{defaultAddress.phone}</p>
+                    <p className="mt-2 text-sm text-foreground">
+                      {defaultAddress.addressLine1}
+                      {defaultAddress.addressLine2 && `, ${defaultAddress.addressLine2}`}
+                    </p>
+                    <p className="text-sm text-foreground">
+                      {defaultAddress.city}, {defaultAddress.state} - {defaultAddress.pincode}
+                    </p>
+                  </div>
+                  <Icon name="CheckCircleIcon" size={24} className="text-primary" variant="solid" />
+                </div>
+              </div>
+              {savedAddresses.length > 1 && (
+                <button
+                  onClick={() => setShowAllAddresses(true)}
+                  className="w-full rounded-md border-2 border-dashed border-border bg-card p-4 text-sm font-medium text-primary transition-smooth hover:border-primary hover:bg-primary/5"
+                >
+                  Change Address ({savedAddresses.length - 1} more available)
+                </button>
+              )}
+            </>
           ) : (
             savedAddresses.map((address: any) => (
               <div
@@ -288,6 +338,17 @@ const DeliveryAddressForm = ({ onAddressSelect, selectedAddressId }: DeliveryAdd
                     <p className="text-sm text-foreground">
                       {address.city}, {address.state} - {address.pincode}
                     </p>
+                    {!address.isDefault && (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleSetDefault(address.id);
+                        }}
+                        className="mt-2 text-xs font-medium text-primary transition-smooth hover:text-primary/80"
+                      >
+                        Set as Default
+                      </button>
+                    )}
                   </div>
                   <div className="flex-shrink-0">
                     {selectedAddressId === address.id && (
@@ -305,6 +366,3 @@ const DeliveryAddressForm = ({ onAddressSelect, selectedAddressId }: DeliveryAdd
 };
 
 export default DeliveryAddressForm;
-
-
-

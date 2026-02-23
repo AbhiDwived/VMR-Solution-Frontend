@@ -44,6 +44,13 @@ export const orderApi = createApi({
       }),
       invalidatesTags: ['Addresses'],
     }),
+    setDefaultAddress: builder.mutation({
+      query: (addressId) => ({
+        url: `/orders/addresses/${addressId}/default`,
+        method: 'PUT',
+      }),
+      invalidatesTags: ['Addresses'],
+    }),
   }),
 });
 
@@ -52,5 +59,6 @@ export const {
   useGetUserOrdersQuery,
   useGetOrderByIdQuery,
   useGetUserAddressesQuery, 
-  useAddAddressMutation 
+  useAddAddressMutation,
+  useSetDefaultAddressMutation
 } = orderApi;

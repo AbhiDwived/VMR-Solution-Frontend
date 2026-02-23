@@ -1,10 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { RootState } from '@/store/store';
-import { removeItem, updateQuantity } from '@/store/slices/cart';
-import { useUpdateCartMutation, useRemoveFromCartMutation } from '@/store/api/cartApi';
+import { useGetCartQuery, useUpdateCartMutation, useRemoveFromCartMutation } from '@/store/api/cartApi';
 import CartItem from './CartItem';
 import OrderSummary from './OrderSummary';
 import RelatedProducts from './RelatedProducts';
@@ -33,8 +30,7 @@ interface RecentProduct {
 }
 
 export default function ShoppingCartInteractive() {
-  const dispatch = useDispatch();
-  const cartItems = useSelector((state: RootState) => state.cart.items);
+  const { data: cartData, isLoading } = useGetCartQuery(undefined);
   const [isHydrated, setIsHydrated] = useState(false);
   const [isClearModalOpen, setIsClearModalOpen] = useState(false);
   const { data: productsData } = useGetProductsQuery({});
@@ -47,6 +43,25 @@ export default function ShoppingCartInteractive() {
   }, []);
 
   const apiProducts = productsData?.data || [];
+  
+  // Get cart items from API response
+  const rawCartItems = cartData?.data || [];
+  const cartItems = rawCartItems.map((item: any) => {
+    let images = [];
+    try {
+      images = typeof item.product_images === 'string' ? JSON.parse(item.product_images) : item.product_images;
+    } catch (e) {
+      images = [];
+    }
+    return {
+      id: item.id.toString(),
+      name: item.name,
+      price: item.discount_price || item.price,
+      image: Array.isArray(images) ? images[0] || '' : '',
+      quantity: item.quantity,
+      variant: item.variant_id,
+    };
+  });
 
   const relatedProducts: RelatedProduct[] = apiProducts
     .slice(0, 8)
@@ -72,8 +87,12 @@ export default function ShoppingCartInteractive() {
     }));
 
   const handleQuantityChange = (id: string, newQuantity: number) => {
-    console.log('🔄 Quantity change:', { id, newQuantity, currentItems: cartItems });
-    dispatch(updateQuantity({ id, quantity: newQuantity }));
+    console.log('🔄 Quantity change:', { id, newQuantity });
+    
+    if (newQuantity <= 0) {
+      handleRemoveItem(id);
+      return;
+    }
     
     if (updateTimeoutRef.current) clearTimeout(updateTimeoutRef.current);
     updateTimeoutRef.current = setTimeout(() => {
@@ -86,8 +105,7 @@ export default function ShoppingCartInteractive() {
   };
 
   const handleRemoveItem = (id: string) => {
-    console.log('🗑️ Remove item:', { id, currentItems: cartItems });
-    dispatch(removeItem(id));
+    console.log('🗑️ Remove item:', id);
     console.log('📡 API call - Remove from cart:', id);
     removeFromCartApi(id)
       .unwrap()
@@ -100,7 +118,7 @@ export default function ShoppingCartInteractive() {
   };
 
   const handleClearCart = () => {
-    cartItems.forEach(item => dispatch(removeItem(item.id)));
+    cartItems.forEach(item => removeFromCartApi(item.id));
     setIsClearModalOpen(false);
   };
 
@@ -108,7 +126,7 @@ export default function ShoppingCartInteractive() {
     // Promo logic here
   };
 
-  if (!isHydrated) {
+  if (!isHydrated || isLoading) {
     return (
       <div className="min-h-screen bg-background">
         <div className="mx-auto max-w-[1200px] px-4 py-8 sm:px-6">

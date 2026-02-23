@@ -44,7 +44,11 @@ const cartSlice = createSlice({
     updateQuantity: (state, action: PayloadAction<{ id: string; quantity: number }>) => {
       const item = state.items.find(item => item.id === action.payload.id)
       if (item) {
-        item.quantity = action.payload.quantity
+        if (action.payload.quantity <= 0) {
+          state.items = state.items.filter(item => item.id !== action.payload.id)
+        } else {
+          item.quantity = action.payload.quantity
+        }
       }
       cartSlice.caseReducers.calculateTotals(state)
     },

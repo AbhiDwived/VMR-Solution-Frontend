@@ -115,6 +115,12 @@ const AddProduct = () => {
       const product = adminProductsData.data.find((p: any) => p.id === editId || p.id.toString() === editId);
       
       if (product) {
+        console.log('Loading product for edit:', product);
+        console.log('product.product_images:', product.product_images);
+        console.log('product.productImages:', product.productImages);
+        console.log('Raw product_images type:', typeof product.product_images);
+        console.log('Raw product_images value:', JSON.stringify(product.product_images));
+        
         setProductData({
           name: product.name || "",
           slug: product.slug || "",
@@ -135,12 +141,14 @@ const AddProduct = () => {
         });
 
         try {
-          const parsedSpecs = product.specifications ? JSON.parse(product.specifications) : [];
+          const parsedSpecs = typeof product.specifications === 'string' 
+            ? JSON.parse(product.specifications) 
+            : product.specifications || [];
           setSpecifications(Array.isArray(parsedSpecs) ? parsedSpecs : []);
 
-          // Handle product images with proper parsing
           const parseJsonField = (field: any, fallback: any[] = []) => {
             if (!field) return fallback;
+            if (Array.isArray(field)) return field;
             if (typeof field === 'string') {
               if (field.startsWith('[') || field.startsWith('{')) {
                 try {
@@ -151,14 +159,43 @@ const AddProduct = () => {
               }
               return [field];
             }
-            return Array.isArray(field) ? field : fallback;
+            return fallback;
           };
 
-          setProductImages(parseJsonField(product.product_images, []));
-          setColors(parseJsonField(product.colors, []));
-          setSizes(parseJsonField(product.sizes, []));
-          setFeatures(parseJsonField(product.features, []));
-          setVariantImageSets(parseJsonField(product.variants, []));
+          const images = parseJsonField(product.product_images, []);
+          const productColors = parseJsonField(product.colors, []);
+          const productSizes = parseJsonField(product.sizes, []);
+          const productFeatures = parseJsonField(product.features, []);
+          const productVariants = parseJsonField(product.variants, []);
+
+          console.log('Images:', images);
+          console.log('Colors:', productColors);
+          console.log('Sizes:', productSizes);
+          console.log('Features:', productFeatures);
+          console.log('Variants:', productVariants);
+
+          setProductImages(images);
+          setColors(productColors);
+          setSizes(productSizes);
+          setFeatures(productFeatures);
+          
+          const formattedVariants = productVariants
+            .filter((v: any) => v.images && Array.isArray(v.images) && v.images.length > 0)
+            .filter((v: any, index: number, self: any[]) => 
+              index === self.findIndex((t: any) => 
+                (t.variantId === v.variantId || t.id === v.id) &&
+                (t.color?.code || t.color) === (v.color?.code || v.color) &&
+                t.size === v.size
+              )
+            )
+            .map((v: any) => ({
+              id: v.variantId || v.id || Date.now().toString(),
+              color: v.color?.code || v.color || '',
+              size: v.size || '',
+              images: Array.isArray(v.images) ? v.images : []
+            }));
+          console.log('Formatted variants (with images only):', formattedVariants);
+          setVariantImageSets(formattedVariants);
         } catch (e) {
           console.warn('Error parsing product data:', e);
           setSpecifications([]);
