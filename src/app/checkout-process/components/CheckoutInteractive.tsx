@@ -108,7 +108,7 @@ const CheckoutInteractive = () => {
       
       toast.success('Order placed successfully!');
       router.push(`/order-tracking?orderId=${result.orderId}`);
-    } catch (error) {
+    } catch {
       toast.error('Failed to place order. Please try again.');
     }
   };
@@ -363,6 +363,7 @@ const CheckoutInteractive = () => {
 };
 
 export default CheckoutInteractive;
+
 
 
 
