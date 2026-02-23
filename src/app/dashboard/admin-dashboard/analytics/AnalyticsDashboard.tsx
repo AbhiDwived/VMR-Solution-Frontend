@@ -35,7 +35,7 @@ const formatCompact = (value: number) =>
   }).format(value);
 
 export default function AnalyticsDashboard() {
-  const { data, isLoading, isError } = useGetAdminAnalyticsQuery();
+  const { data, isError } = useGetAdminAnalyticsQuery();
   const { data: ordersData, isLoading: ordersLoading } = useGetAllOrdersQuery(undefined, {
     skip: !isError,
   });
@@ -129,29 +129,6 @@ export default function AnalyticsDashboard() {
   const fallbackAnalytics = buildFallbackAnalytics();
   const useFallback = isError;
   const analytics = useFallback ? fallbackAnalytics : data?.data;
-
-  const kpiCards = [
-    {
-      title: 'Total Revenue',
-      value: formatCurrency(analytics?.kpis.totalRevenue || 0),
-      change: 'Live data',
-    },
-    {
-      title: 'Total Orders',
-      value: (analytics?.kpis.totalOrders || 0).toLocaleString('en-US'),
-      change: 'Live data',
-    },
-    {
-      title: 'Conversion Rate',
-      value: `${(analytics?.kpis.conversionRate || 0).toFixed(1)}%`,
-      change: 'Delivered / all orders',
-    },
-    {
-      title: 'Avg. Order Value',
-      value: formatCurrency(analytics?.kpis.avgOrderValue || 0),
-      change: 'Live data',
-    },
-  ];
 
   const monthlySalesData = analytics?.monthlySalesData || [];
   const categoryData = analytics?.categoryData || [];

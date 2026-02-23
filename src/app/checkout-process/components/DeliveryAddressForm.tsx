@@ -36,7 +36,7 @@ const DeliveryAddressForm = ({ onAddressSelect, selectedAddressId }: DeliveryAdd
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  const { data: addressesData, isLoading } = useGetUserAddressesQuery();
+  const { data: addressesData, isLoading } = useGetUserAddressesQuery(undefined);
   const [addAddress, { isLoading: isAdding }] = useAddAddressMutation();
   const [setDefaultAddress] = useSetDefaultAddressMutation();
   const savedAddresses = addressesData?.addresses || [];
@@ -111,7 +111,7 @@ const DeliveryAddressForm = ({ onAddressSelect, selectedAddressId }: DeliveryAdd
           state: '',
           pincode: '',
         });
-      } catch (error) {
+      } catch {
         toast.error('Failed to add address');
       }
     }
@@ -121,7 +121,7 @@ const DeliveryAddressForm = ({ onAddressSelect, selectedAddressId }: DeliveryAdd
     try {
       await setDefaultAddress(addressId).unwrap();
       toast.success('Default address updated');
-    } catch (error) {
+    } catch {
       toast.error('Failed to update default address');
     }
   };
@@ -366,3 +366,4 @@ const DeliveryAddressForm = ({ onAddressSelect, selectedAddressId }: DeliveryAdd
 };
 
 export default DeliveryAddressForm;
+

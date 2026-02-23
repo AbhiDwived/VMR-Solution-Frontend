@@ -2,13 +2,21 @@
 import { useState } from 'react';
 import Breadcrumb from '@/components/common/Breadcrumb';
 import AdminSidebar from '../components/AdminSidebar';
-import { useGetAllNotificationsQuery, useMarkAsReadMutation, useMarkAllAsReadMutation, useDeleteNotificationMutation, useGetNotificationStatsQuery, useCreateNotificationMutation } from '@/store/api/notificationApi';
-import { Bell, Check, Trash2, Filter, Plus, X } from 'lucide-react';
+import { useGetAllNotificationsQuery, useMarkAsReadMutation, useMarkAllAsReadMutation, useDeleteNotificationMutation, useGetNotificationStatsQuery, useCreateNotificationMutation, Notification } from '@/store/api/notificationApi';
+import { Check, Trash2, Filter, Plus, X } from 'lucide-react';
+
+type NotificationFilter = {
+  type?: Notification['type'];
+  is_read?: boolean;
+  priority?: Notification['priority'];
+};
+
+type DraftNotification = Pick<Notification, 'type' | 'title' | 'message' | 'priority' | 'link'>;
 
 export default function NotificationsPage() {
-  const [filter, setFilter] = useState<{ type?: string; is_read?: boolean; priority?: string }>({});
+  const [filter, setFilter] = useState<NotificationFilter>({});
   const [showCreateModal, setShowCreateModal] = useState(false);
-  const [newNotification, setNewNotification] = useState({ type: 'system', title: '', message: '', priority: 'medium', link: '' });
+  const [newNotification, setNewNotification] = useState<DraftNotification>({ type: 'system', title: '', message: '', priority: 'medium', link: '' });
 
   const { data, isLoading, refetch } = useGetAllNotificationsQuery(filter);
   const { data: stats } = useGetNotificationStatsQuery();
@@ -42,7 +50,7 @@ export default function NotificationsPage() {
     refetch();
   };
 
-  const getPriorityColor = (priority: string) => {
+  const getPriorityColor = (priority: Notification['priority']) => {
     switch (priority) {
       case 'critical': return 'bg-red-100 text-red-800';
       case 'high': return 'bg-orange-100 text-orange-800';
@@ -52,7 +60,7 @@ export default function NotificationsPage() {
     }
   };
 
-  const getTypeIcon = (type: string) => {
+  const getTypeIcon = (type: Notification['type']) => {
     switch (type) {
       case 'order': return '📦';
       case 'inventory': return '📊';
@@ -105,7 +113,21 @@ export default function NotificationsPage() {
 
             <div className="bg-white p-4 rounded-lg shadow-sm border flex gap-3 items-center">
               <Filter size={18} />
-              <select value={filter.type || ''} onChange={(e) => setFilter({ ...filter, type: e.target.value || undefined })} className="px-3 py-1 border rounded">
+              <select
+                value={filter.type || ''}
+                onChange={(e) =>
+                  setFilter((prev) => {
+                    const next = { ...prev };
+                    if (e.target.value) {
+                      next.type = e.target.value as Notification['type'];
+                    } else {
+                      delete next.type;
+                    }
+                    return next;
+                  })
+                }
+                className="px-3 py-1 border rounded"
+              >
                 <option value="">All Types</option>
                 <option value="order">Order</option>
                 <option value="inventory">Inventory</option>
@@ -113,12 +135,40 @@ export default function NotificationsPage() {
                 <option value="promotion">Promotion</option>
                 <option value="alert">Alert</option>
               </select>
-              <select value={filter.is_read === undefined ? '' : filter.is_read.toString()} onChange={(e) => setFilter({ ...filter, is_read: e.target.value === '' ? undefined : e.target.value === 'true' })} className="px-3 py-1 border rounded">
+              <select
+                value={filter.is_read === undefined ? '' : filter.is_read.toString()}
+                onChange={(e) =>
+                  setFilter((prev) => {
+                    const next = { ...prev };
+                    if (e.target.value === '') {
+                      delete next.is_read;
+                    } else {
+                      next.is_read = e.target.value === 'true';
+                    }
+                    return next;
+                  })
+                }
+                className="px-3 py-1 border rounded"
+              >
                 <option value="">All Status</option>
                 <option value="false">Unread</option>
                 <option value="true">Read</option>
               </select>
-              <select value={filter.priority || ''} onChange={(e) => setFilter({ ...filter, priority: e.target.value || undefined })} className="px-3 py-1 border rounded">
+              <select
+                value={filter.priority || ''}
+                onChange={(e) =>
+                  setFilter((prev) => {
+                    const next = { ...prev };
+                    if (e.target.value) {
+                      next.priority = e.target.value as Notification['priority'];
+                    } else {
+                      delete next.priority;
+                    }
+                    return next;
+                  })
+                }
+                className="px-3 py-1 border rounded"
+              >
                 <option value="">All Priorities</option>
                 <option value="low">Low</option>
                 <option value="medium">Medium</option>
@@ -184,7 +234,7 @@ export default function NotificationsPage() {
             <form onSubmit={handleCreate} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium mb-1">Type</label>
-                <select value={newNotification.type} onChange={(e) => setNewNotification({ ...newNotification, type: e.target.value })} className="w-full px-3 py-2 border rounded" required>
+                <select value={newNotification.type} onChange={(e) => setNewNotification({ ...newNotification, type: e.target.value as Notification['type'] })} className="w-full px-3 py-2 border rounded" required>
                   <option value="order">Order</option>
                   <option value="inventory">Inventory</option>
                   <option value="system">System</option>
@@ -194,7 +244,7 @@ export default function NotificationsPage() {
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1">Priority</label>
-                <select value={newNotification.priority} onChange={(e) => setNewNotification({ ...newNotification, priority: e.target.value })} className="w-full px-3 py-2 border rounded" required>
+                <select value={newNotification.priority} onChange={(e) => setNewNotification({ ...newNotification, priority: e.target.value as Notification['priority'] })} className="w-full px-3 py-2 border rounded" required>
                   <option value="low">Low</option>
                   <option value="medium">Medium</option>
                   <option value="high">High</option>

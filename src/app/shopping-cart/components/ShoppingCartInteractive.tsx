@@ -29,6 +29,15 @@ interface RecentProduct {
   price: number;
 }
 
+interface ShoppingCartItem {
+  id: string;
+  name: string;
+  price: number;
+  image: string;
+  quantity: number;
+  variant: string;
+}
+
 export default function ShoppingCartInteractive() {
   const { data: cartData, isLoading } = useGetCartQuery(undefined);
   const [isHydrated, setIsHydrated] = useState(false);
@@ -36,7 +45,7 @@ export default function ShoppingCartInteractive() {
   const { data: productsData } = useGetProductsQuery({});
   const [updateCartApi] = useUpdateCartMutation();
   const [removeFromCartApi] = useRemoveFromCartMutation();
-  const updateTimeoutRef = useRef<NodeJS.Timeout>();
+  const updateTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     setIsHydrated(true);
@@ -46,7 +55,7 @@ export default function ShoppingCartInteractive() {
   
   // Get cart items from API response
   const rawCartItems = cartData?.data || [];
-  const cartItems = rawCartItems.map((item: any) => {
+  const cartItems: ShoppingCartItem[] = rawCartItems.map((item: any): ShoppingCartItem => {
     let images = [];
     try {
       images = typeof item.product_images === 'string' ? JSON.parse(item.product_images) : item.product_images;

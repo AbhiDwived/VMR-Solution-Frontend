@@ -54,7 +54,7 @@ const MobileFilterPanel = ({ onFilterChange, productCount, initialFilters }: Mob
               <FilterPanel
                 onFilterChange={handleFilterChange}
                 productCount={productCount}
-                initialFilters={initialFilters}
+                {...(initialFilters ? { initialFilters } : {})}
               />
             </div>
 

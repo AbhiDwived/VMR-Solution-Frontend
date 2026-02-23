@@ -56,13 +56,6 @@ interface RelatedProduct {
   category: string;
 }
 
-interface PricingTier {
-  minQty: number;
-  maxQty: number | null;
-  pricePerUnit: number;
-  discount: number;
-}
-
 const ProductDetailsInteractive = () => {
   const router = useRouter();
   const dispatch = useDispatch();
@@ -258,13 +251,6 @@ const ProductDetailsInteractive = () => {
       rating: 4.5,
       category: 'Planters',
     },
-  ];
-
-  const pricingTiers: PricingTier[] = [
-    { minQty: 10, maxQty: 49, pricePerUnit: 249, discount: 0 },
-    { minQty: 50, maxQty: 99, pricePerUnit: 229, discount: 8 },
-    { minQty: 100, maxQty: 249, pricePerUnit: 209, discount: 16 },
-    { minQty: 250, maxQty: null, pricePerUnit: 189, discount: 24 },
   ];
 
   useEffect(() => {
