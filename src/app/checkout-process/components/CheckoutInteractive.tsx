@@ -37,7 +37,7 @@ const CheckoutInteractive = () => {
 
   const cartItems = useSelector((state: RootState) => state.cart.items);
   const { isAuthenticated } = useSelector((state: RootState) => state.auth);
-  const { data: addressesData } = useGetUserAddressesQuery(undefined, { skip: !isAuthenticated });
+  useGetUserAddressesQuery(undefined, { skip: !isAuthenticated });
   const [createOrder, { isLoading: isPlacingOrder }] = useCreateOrderMutation();
 
   useEffect(() => {
@@ -363,6 +363,7 @@ const CheckoutInteractive = () => {
 };
 
 export default CheckoutInteractive;
+
 
 
 
