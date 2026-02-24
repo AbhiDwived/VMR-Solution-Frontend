@@ -48,6 +48,46 @@ const OffersSection = () => {
       icon: 'SparklesIcon',
       bgColor: 'bg-accent/10',
     },
+    {
+      id: '4',
+      title: 'First Order Bonus',
+      description: 'Flat ₹100 off on your first purchase',
+      code: 'FIRST100',
+      discount: '₹100 OFF',
+      expiresAt: new Date('2026-12-31'),
+      icon: 'SparklesIcon',
+      bgColor: 'bg-accent/10',
+    },
+    {
+      id: '5',
+      title: 'First Order Bonus',
+      description: 'Flat ₹100 off on your first purchase',
+      code: 'FIRST100',
+      discount: '₹100 OFF',
+      expiresAt: new Date('2026-12-31'),
+      icon: 'SparklesIcon',
+      bgColor: 'bg-accent/10',
+    },
+    {
+      id: '6',
+      title: 'First Order Bonus',
+      description: 'Flat ₹100 off on your first purchase',
+      code: 'FIRST100',
+      discount: '₹100 OFF',
+      expiresAt: new Date('2026-12-31'),
+      icon: 'SparklesIcon',
+      bgColor: 'bg-accent/10',
+    },
+    {
+      id: '7',
+      title: 'First Order Bonus',
+      description: 'Flat ₹100 off on your first purchase',
+      code: 'FIRST100',
+      discount: '₹100 OFF',
+      expiresAt: new Date('2026-12-31'),
+      icon: 'SparklesIcon',
+      bgColor: 'bg-accent/10',
+    },
   ], []);
 
   useEffect(() => {
@@ -90,7 +130,7 @@ const OffersSection = () => {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 sm:gap-6 md:grid-cols-3 lg:grid-cols-6">
+      <div className="grid gap-4 sm:gap-6 md:grid-cols-3 lg:grid-cols-5">
         {offers.map((offer, index) => (
           <div
             key={offer.id}

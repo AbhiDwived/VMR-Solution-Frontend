@@ -9,7 +9,7 @@ import { useGetBlogsQuery } from '@/store/api/blogApi';
 const BlogSection = () => {
   const router = useRouter();
   const { data, isLoading, error } = useGetBlogsQuery(undefined);
-  
+
   const allPosts = data?.blogs || [];
   const publishedPosts = allPosts.filter((blog: any) => blog.status === 'published');
 
@@ -23,11 +23,11 @@ const BlogSection = () => {
         <div>
           <div className="mb-2 flex items-center space-x-2">
             <Icon name="NewspaperIcon" size={32} className="text-primary" variant="solid" />
-            <h2 className="font-heading text-3xl font-bold text-foreground sm:text-4xl">
+            <h2 className="font-heading text-xl font-bold  sm:text-4xl">
               Latest from Our Blog
             </h2>
           </div>
-          <p className="text-muted-foreground">
+          <p className="text-muted-foreground text-[12px] sm:text-[16px]">
             Tips, guides, and inspiration for your home
           </p>
         </div>
@@ -40,7 +40,7 @@ const BlogSection = () => {
         </Link>
       </div>
 
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
         {publishedPosts.slice(0, 3).map((post: any, index: number) => (
           <article
             key={post.id}

@@ -35,7 +35,7 @@ const FeaturedProducts = () => {
         productImages = [];
       }
     }
-    
+
     return {
       id: product.id.toString(),
       slug: product.slug,
@@ -74,8 +74,8 @@ const FeaturedProducts = () => {
     const container = document.getElementById('featured-carousel');
     if (container) {
       const scrollAmount = 300;
-      const newPosition = direction === 'left' 
-        ? scrollPosition - scrollAmount 
+      const newPosition = direction === 'left'
+        ? scrollPosition - scrollAmount
         : scrollPosition + scrollAmount;
       container.scrollTo({ left: newPosition, behavior: 'smooth' });
       setScrollPosition(newPosition);
@@ -111,10 +111,8 @@ const FeaturedProducts = () => {
           <Icon name="ChevronLeftIcon" size={20} />
         </button>
 
-        <div
-          id="featured-carousel"
-          className="grid grid-cols-2 gap-1 sm:gap-2 lg:grid-cols-6"
-        >
+        <div id="featured-carousel"
+          className="grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-4 lg:grid-cols-5">
           {featuredProducts.map((product) => {
             const discount = product.originalPrice
               ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
@@ -148,7 +146,7 @@ const FeaturedProducts = () => {
           <Icon name="ChevronRightIcon" size={20} />
         </button>
       </div>
-    </section>
+    </section >
   );
 };
 

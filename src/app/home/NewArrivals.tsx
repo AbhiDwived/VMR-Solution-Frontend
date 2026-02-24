@@ -62,7 +62,7 @@ const NewArrivals = () => {
     <section className="bg-background py-8 sm:py-12">
       <div className="w-full px-2 sm:px-4">
         <div className="mb-6 text-center sm:mb-8" data-aos="fade-up">
-          <div className="mb-1 flex items-center justify-center space-x-2 sm:mb-2">
+          <div className="mb-1 flex items-center justify-center space-x-2 sm:mb-2 ">
             <Icon name="SparklesIcon" size={24} className="text-primary sm:size-8" variant="solid" />
             <h2 className="font-heading text-2xl font-bold text-foreground sm:text-3xl lg:text-4xl">
               New Arrivals
@@ -73,7 +73,7 @@ const NewArrivals = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-2 gap-1 sm:gap-2 lg:grid-cols-6">
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-4 lg:grid-cols-5">
           {newProducts.map((product, index) => (
             <ProductCard
               key={product.id}
