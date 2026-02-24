@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { Suspense } from 'react';
 import Breadcrumb from '@/components/common/Breadcrumb';
 import OrderTrackingInteractive from './components/OrderTrackingInteractive';
 
@@ -22,7 +23,14 @@ export default function OrderTrackingPage() {
           </p>
         </div>
 
-        <OrderTrackingInteractive />
+        <Suspense fallback={
+          <div className="space-y-6">
+            <div className="h-64 animate-pulse rounded-md bg-muted" />
+            <div className="h-48 animate-pulse rounded-md bg-muted" />
+          </div>
+        }>
+          <OrderTrackingInteractive />
+        </Suspense>
       </main>
 
       <footer className="mt-16 border-t border-border bg-card">
