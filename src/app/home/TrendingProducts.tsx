@@ -36,7 +36,7 @@ const TrendingProducts = () => {
           productImages = [];
         }
       }
-      
+
       return {
         id: product.id.toString(),
         slug: product.slug || product.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''),
@@ -98,7 +98,7 @@ const TrendingProducts = () => {
         </Link>
       </div>
 
-      <div className="grid grid-cols-2 gap-1 sm:gap-2 lg:grid-cols-6">
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-4 lg:grid-cols-5">
         {trendingProducts.map((product, index) => {
           const discount = product.originalPrice
             ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
