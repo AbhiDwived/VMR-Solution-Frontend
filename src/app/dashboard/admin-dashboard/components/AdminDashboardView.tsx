@@ -92,50 +92,50 @@ const AdminDashboardView = () => {
               View All
             </button>
           </div>
-          <div className="space-y-4">
-            {ordersLoading ? (
-              [1, 2, 3, 4].map((i) => (
-                <div
-                  key={i}
-                  className="flex items-center justify-between p-4 bg-soft-linen rounded-xl hover:bg-opacity-80 transition-all"
-                >
-                  <div className="flex items-center space-x-4">
-                    <div className="w-12 h-12 bg-white rounded-lg flex items-center justify-center border border-border shadow-sm">
-                      <Icon name="ShoppingBagIcon" size={20} className="text-mocha-grey" />
+          <div className='overflow-x-auto sm:overflow-visible'>
+            <div className="min-w-[430px] sm:min-w-0 space-y-4">
+              {ordersLoading ? (
+                [1, 2, 3, 4].map((i) => (
+                  <div
+                    key={i}
+                    className="flex items-center justify-between p-4 bg-soft-linen rounded-xl hover:bg-opacity-80 transition-all"
+                  >
+                    <div className="flex items-center space-x-4">
+                      <div className="w-12 h-12 bg-white rounded-lg flex items-center justify-center border border-border shadow-sm">
+                        <Icon name="ShoppingBagIcon" size={20} className="text-mocha-grey" />
+                      </div>
+                      <div>
+                        <h4 className="font-bold text-espresso">Loading...</h4>
+                        <p className="text-xs text-mocha-grey font-medium">Please wait</p>
+                      </div>
                     </div>
-                    <div>
-                      <h4 className="font-bold text-espresso">Loading...</h4>
-                      <p className="text-xs text-mocha-grey font-medium">Please wait</p>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <p className="font-bold text-espresso">...</p>
-                    <span className="text-[10px] px-2 py-1 bg-yellow-100 text-yellow-700 rounded-full font-bold uppercase tracking-wider">
-                      Pending
-                    </span>
-                  </div>
-                </div>
-              ))
-            ) : recentOrders.length > 0 ? (
-              recentOrders.map((order: any) => (
-                <div
-                  key={order.id}
-                  className="flex items-center justify-between p-4 bg-soft-linen rounded-xl hover:bg-opacity-80 transition-all"
-                >
-                  <div className="flex items-center space-x-4">
-                    <div className="w-12 h-12 bg-white rounded-lg flex items-center justify-center border border-border shadow-sm">
-                      <Icon name="ShoppingBagIcon" size={20} className="text-mocha-grey" />
-                    </div>
-                    <div>
-                      <h4 className="font-bold text-espresso">Order #VMR-{String(order.id).padStart(3, '0')}</h4>
-                      <p className="text-xs text-mocha-grey font-medium">{order.email || '-'}</p>
+                    <div className="text-right">
+                      <p className="font-bold text-espresso">...</p>
+                      <span className="text-[10px] px-2 py-1 bg-yellow-100 text-yellow-700 rounded-full font-bold uppercase tracking-wider">
+                        Pending
+                      </span>
                     </div>
                   </div>
-                  <div className="text-right">
-                    <p className="font-bold text-espresso">₹{Number(order.total || 0).toLocaleString('en-IN')}</p>
-                    <span
-                      className={`text-[10px] px-2 py-1 rounded-full font-bold uppercase tracking-wider ${
-                        order.status === 'delivered'
+                ))
+              ) : recentOrders.length > 0 ? (
+                recentOrders.map((order: any) => (
+                  <div
+                    key={order.id}
+                    className="flex items-center justify-between  p-4 bg-soft-linen rounded-xl hover:bg-opacity-80 transition-all"
+                  >
+                    <div className="flex items-center space-x-4">
+                      <div className="w-12 h-12 bg-white rounded-lg flex items-center justify-center border border-border shadow-sm">
+                        <Icon name="ShoppingBagIcon" size={20} className="text-mocha-grey" />
+                      </div>
+                      <div>
+                        <h4 className="font-bold text-espresso">Order #VMR-{String(order.id).padStart(3, '0')}</h4>
+                        <p className="text-xs text-mocha-grey font-medium">{order.email || '-'}</p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className="font-bold text-espresso">₹{Number(order.total || 0).toLocaleString('en-IN')}</p>
+                      <span
+                        className={`text-[10px] px-2 py-1 rounded-full font-bold uppercase tracking-wider ${order.status === 'delivered'
                           ? 'bg-green-100 text-green-700'
                           : order.status === 'shipped'
                             ? 'bg-blue-100 text-blue-700'
@@ -144,17 +144,17 @@ const AdminDashboardView = () => {
                               : order.status === 'cancelled'
                                 ? 'bg-red-100 text-red-700'
                                 : 'bg-yellow-100 text-yellow-700'
-                      }`}
-                    >
-                      {order.status || 'pending'}
-                    </span>
+                          }`}
+                      >
+                        {order.status || 'pending'}
+                      </span>
+                    </div>
                   </div>
-                </div>
-              ))
-            ) : (
-              <div className="p-4 text-sm text-mocha-grey bg-soft-linen rounded-xl">No recent orders</div>
-            )}
-          </div>
+                ))
+              ) : (
+                <div className="p-4 text-sm text-mocha-grey bg-soft-linen rounded-xl">No recent orders</div>
+              )}
+            </div></div>
         </div>
 
         <div className="bg-white p-8 rounded-2xl shadow-elevation-1 border border-border hover:shadow-elevation-2 transition-all duration-200">

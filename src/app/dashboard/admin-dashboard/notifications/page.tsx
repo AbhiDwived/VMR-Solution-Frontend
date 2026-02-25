@@ -72,10 +72,10 @@ export default function NotificationsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <main className="flex">
+    <div className="min-h-screen bg-background overflow-x-auto">
+      <main className="flex w-max min-w-full">
         <AdminSidebar />
-        <div className="flex-1 p-6">
+        <div className="flex-1 p-6 min-w-0">
           <Breadcrumb />
           <div className="space-y-6">
             <div className="flex justify-between items-center">
