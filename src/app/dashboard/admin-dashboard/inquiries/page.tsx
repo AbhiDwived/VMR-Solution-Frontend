@@ -29,11 +29,11 @@ export default function InquiriesPage() {
     <div className="min-h-screen bg-background">
       <main className="flex">
         <AdminSidebar />
-        <div className="flex-1 p-6">
+        <div className="flex-1 min-w-0 p-6">
           <Breadcrumb />
           <div className="space-y-6">
             <h1 className="text-3xl font-bold text-espresso">Bulk Order Inquiries</h1>
-            
+
             {fetchLoading ? (
               <div className="bg-white p-8 rounded-2xl shadow-sm border border-border">
                 <p className="text-mocha-grey">Loading inquiries...</p>
@@ -47,9 +47,9 @@ export default function InquiriesPage() {
                 <p className="text-mocha-grey">No inquiries found.</p>
               </div>
             ) : (
-              <div className="bg-white rounded-2xl shadow-sm border border-border overflow-hidden">
-                <div className="overflow-x-auto">
-                  <table className="w-full">
+              <div className="bg-white rounded-2xl shadow-sm border border-border ">
+                <div className="block sm:block overflow-x-auto lg3:overflow-visible">
+                  <table className="min-w-[900px] md:min-w-0 w-full">
                     <thead className="bg-gray-50">
                       <tr>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
