@@ -13,13 +13,13 @@ const BlogSection = () => {
   const allPosts = data?.blogs || [];
   const publishedPosts = allPosts.filter((blog: any) => blog.status === 'published');
 
-  if (isLoading) return <div className="mx-auto max-w-[1400px] px-4 py-12 text-center">Loading blogs...</div>;
+  if (isLoading) return <div className="mx-auto max-w-[1400px] px-4 py-4 text-center">Loading blogs...</div>;
   if (error) return null;
   if (!publishedPosts.length) return null;
 
   return (
-    <section className="mx-auto max-w-[1400px] px-4 py-12 sm:px-6 sm:py-16">
-      <div className="mb-8 flex items-center justify-between" data-aos="fade-up">
+    <section className="mx-auto max-w-[1400px] px-4 py-4 sm:px-6 sm:py-6">
+      <div className="mb-4 flex items-center justify-between" data-aos="fade-up">
         <div>
           <div className="mb-2 flex items-center space-x-2">
             <Icon name="NewspaperIcon" size={32} className="text-primary" variant="solid" />
@@ -40,8 +40,8 @@ const BlogSection = () => {
         </Link>
       </div>
 
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {publishedPosts.slice(0, 3).map((post: any, index: number) => (
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+        {publishedPosts.slice(0, 4).map((post: any, index: number) => (
           <article
             key={post.id}
             onClick={() => router.push(`/blog/${post.slug}`)}

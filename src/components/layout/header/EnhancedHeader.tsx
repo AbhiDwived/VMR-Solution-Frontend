@@ -213,7 +213,7 @@ const EnhancedHeader = () => {
       {isMobileMenuOpen && (
         <>
           <div
-            className="fixed inset-0 z-[250] bg-background md:hidden"
+            className="fixed inset-0 z-[250] bg-black/50 md:hidden"
             onClick={closeMobileMenu}
           />
           <nav className="fixed left-0 top-16 z-[300] h-[calc(100vh-4rem)] w-64 overflow-y-auto bg-card shadow-elevation-4 md:hidden">

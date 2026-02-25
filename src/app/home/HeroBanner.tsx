@@ -75,7 +75,7 @@ const HeroBanner = ({
                     <p className="text-sm font-bold text-red-400 sm:text-lg md:text-xl">{discount}</p>
                     <p className="text-xs sm:text-sm">All Sizes Available</p>
                     <Link
-                      href="/product-catalog"
+                      href="/products"
                       className="inline-block rounded-full bg-gradient-to-r from-blue-500 to-green-500 px-2 py-1 text-xs font-semibold text-white shadow-lg sm:px-3 sm:py-1.5 md:px-4 md:py-2 md:text-sm"
                     >
                       Shop Now

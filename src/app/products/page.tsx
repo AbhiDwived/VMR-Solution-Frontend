@@ -10,10 +10,10 @@ export const metadata: Metadata = {
 export default function ProductCatalogPage() {
   return (
     <div className="min-h-screen bg-background">
-      <main className="mx-auto max-w-[1600px] px-4 py-6 sm:px-6">
+      <main className="mx-auto max-w-[1600px] px-4 py-2 sm:px-6">
         <Breadcrumb />
         
-        <div className="mb-8" data-aos="fade-up">
+        <div className="mb-4" data-aos="fade-up">
           <h1 className="mb-2 font-heading text-3xl font-bold text-foreground sm:text-4xl">
             Product Catalog
           </h1>

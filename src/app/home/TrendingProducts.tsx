@@ -65,7 +65,7 @@ const TrendingProducts = () => {
 
   if (isLoading) {
     return (
-      <section className="w-full px-2 py-8 sm:px-4 sm:py-12">
+      <section className="w-full px-2 py-4 sm:px-4 sm:py-6">
         <div className="text-center">Loading trending products...</div>
       </section>
     );
@@ -76,8 +76,8 @@ const TrendingProducts = () => {
   }
 
   return (
-    <section className="w-full px-2 py-8 sm:px-4 sm:py-12">
-      <div className="mb-6 flex items-center justify-between sm:mb-8" data-aos="fade-up">
+    <section className="w-full px-2 py-4 sm:px-4 sm:py-6">
+      <div className="mb-4 flex items-center justify-between sm:mb-6" data-aos="fade-up">
         <div>
           <div className="mb-1 flex items-center space-x-2 sm:mb-2">
             <Icon name="FireIcon" size={24} className="text-accent sm:size-8" variant="solid" />
@@ -90,7 +90,7 @@ const TrendingProducts = () => {
           </p>
         </div>
         <Link
-          href="/product-catalog"
+          href="/products"
           className="flex items-center space-x-1 text-xs font-medium text-primary transition-smooth hover:underline sm:text-sm"
         >
           <span>View All</span>
@@ -98,7 +98,7 @@ const TrendingProducts = () => {
         </Link>
       </div>
 
-      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-4 lg:grid-cols-5">
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-4 lg:grid-cols-6">
         {trendingProducts.map((product, index) => {
           const discount = product.originalPrice
             ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)

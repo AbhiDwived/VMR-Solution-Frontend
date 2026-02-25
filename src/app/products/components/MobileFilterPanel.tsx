@@ -5,7 +5,7 @@ import Icon from '@/components/ui/AppIcon';
 import FilterPanel, { FilterState } from './FilterPanel';
 
 interface MobileFilterPanelProps {
-  onFilterChange: (filters: FilterState) => void;
+  onFilterChange: (_filters: FilterState) => void;
   productCount: number;
   initialFilters?: FilterState;
 }
@@ -13,8 +13,8 @@ interface MobileFilterPanelProps {
 const MobileFilterPanel = ({ onFilterChange, productCount, initialFilters }: MobileFilterPanelProps) => {
   const [isOpen, setIsOpen] = useState(false);
 
-  const handleFilterChange = (filters: FilterState) => {
-    onFilterChange(filters);
+  const handleFilterChange = (_filters: FilterState) => {
+    onFilterChange(_filters);
   };
 
   return (
@@ -35,7 +35,7 @@ const MobileFilterPanel = ({ onFilterChange, productCount, initialFilters }: Mob
             className="fixed inset-0 z-[250] bg-background/80 backdrop-blur-sm lg:hidden"
             onClick={() => setIsOpen(false)}
           />
-          <div className="fixed bottom-0 left-0 right-0 top-0 z-[300] flex flex-col bg-card lg:hidden">
+          <div className="fixed bottom-0 left-0 top-0 z-[300] flex sm:w-1/2 flex-col bg-card shadow-xl lg:hidden">
             {/* Header */}
             <div className="flex items-center justify-between border-b border-border p-4">
               <h2 className="font-heading text-lg font-semibold text-card-foreground">
@@ -75,6 +75,3 @@ const MobileFilterPanel = ({ onFilterChange, productCount, initialFilters }: Mob
 };
 
 export default MobileFilterPanel;
-
-
-

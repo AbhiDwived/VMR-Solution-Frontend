@@ -50,12 +50,23 @@ const Testimonials = () => {
       avatar: 'https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg',
       verified: true,
     },
+    {
+      id: '4',
+      name: 'Vikram Singh',
+      location: 'Pune, Maharashtra',
+      rating: 5,
+      comment: 'Amazing quality buckets! Very durable and the handles are strong. Perfect for household use.',
+      productPurchased: 'Heavy Duty Plastic Bucket',
+      date: 'Jan 3, 2026',
+      avatar: 'https://images.pexels.com/photos/1516680/pexels-photo-1516680.jpeg',
+      verified: true,
+    },
   ];
 
   return (
-    <section className="bg-muted/30 py-12 sm:py-16">
+    <section className="bg-muted/30 py-4 sm:py-6">
       <div className="mx-auto max-w-[1400px] px-4 sm:px-6">
-        <div className="mb-8 text-center" data-aos="fade-up">
+        <div className="mb-4 text-center" data-aos="fade-up">
           <div className="mb-2 flex items-center justify-center space-x-2">
             <Icon name="ChatBubbleLeftRightIcon" size={32} className="text-secondary" variant="solid" />
             <h2 className="font-heading text-3xl font-bold text-foreground sm:text-4xl">
@@ -67,7 +78,7 @@ const Testimonials = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
           {testimonials.map((testimonial, index) => (
             <div
               key={testimonial.id}

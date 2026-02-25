@@ -33,28 +33,28 @@ export default function CategoriesSection() {
   }, [fetchCategories]);
 
   return (
-    <section className="py-16 bg-gray-50">
+    <section className="py-4 sm:py-6 bg-gray-50">
       <div className="container mx-auto px-4">
-        <h2 className="text-3xl font-bold text-center mb-12 text-espresso">Shop by Category</h2>
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-8">
+        <h2 className="text-3xl font-bold text-center mb-6 text-espresso">Shop by Category</h2>
+        <div className="grid grid-cols-6 gap-2 md:gap-8 md:grid-cols-4 lg:grid-cols-6">
           {categories.map((category) => (
             <Link key={category.id} href={`/products/${category.slug}`} className="flex flex-col items-center group cursor-pointer">
-              <div className="w-20 h-20 md:w-24 md:h-24 rounded-full overflow-hidden bg-white shadow-lg group-hover:shadow-xl transition-shadow duration-300">
+              <div className="w-12 h-12 md:w-24 md:h-24 rounded-full overflow-hidden bg-white shadow-lg group-hover:shadow-xl transition-shadow duration-300 flex items-center justify-center">
                 {category.image && category.image.trim() ? (
                   <Image 
                     src={category.image.startsWith('http') ? category.image : `${config.apiUrl.replace('/api', '')}${category.image}`}
                     alt={category.name}
                     width={96}
                     height={96}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-contain p-1"
                   />
                 ) : (
                   <div className="w-full h-full bg-gray-200 flex items-center justify-center">
-                    <span className="text-gray-400 text-xs">No Image</span>
+                    <span className="text-gray-400 text-[8px] md:text-xs">No Image</span>
                   </div>
                 )}
               </div>
-              <h3 className="mt-3 text-sm font-medium text-center text-gray-800 group-hover:text-espresso transition-colors">
+              <h3 className="mt-1 text-[10px] md:text-sm font-medium text-center text-gray-800 group-hover:text-espresso transition-colors leading-tight">
                 {category.name}
               </h3>
             </Link>

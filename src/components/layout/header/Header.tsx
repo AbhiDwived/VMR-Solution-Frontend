@@ -66,7 +66,7 @@ const Header = memo(() => {
   };
 
   return (
-    <div className="w-full bg-card border-b border-border">
+    <div className="w-full bg-card border-b border-border hidden lg:block">
       <nav className="w-full">
         <div className="flex items-center justify-center space-x-1 py-2 px-1">
           {navigationLinks.map((link) => {

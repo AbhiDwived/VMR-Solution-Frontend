@@ -83,8 +83,8 @@ const FeaturedProducts = () => {
   };
 
   return (
-    <section className="w-full px-2 py-8 sm:px-4 sm:py-12">
-      <div className="mb-6 flex items-center justify-between sm:mb-8" data-aos="fade-up">
+    <section className="w-full px-2 py-4 sm:px-4 sm:py-6">
+      <div className="mb-4 flex items-center justify-between sm:mb-6" data-aos="fade-up">
         <div>
           <h2 className="font-heading text-2xl font-bold text-foreground sm:text-3xl lg:text-4xl">
             Our Products
@@ -94,7 +94,7 @@ const FeaturedProducts = () => {
           </p>
         </div>
         <Link
-          href="/product-catalog"
+          href="/products"
           className="flex items-center space-x-1 text-xs font-medium text-primary transition-smooth hover:underline sm:text-sm"
         >
           <span>View All</span>
@@ -112,7 +112,7 @@ const FeaturedProducts = () => {
         </button>
 
         <div id="featured-carousel"
-          className="grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-4 lg:grid-cols-5">
+          className="grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-4 lg:grid-cols-6">
           {featuredProducts.map((product) => {
             const discount = product.originalPrice
               ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)

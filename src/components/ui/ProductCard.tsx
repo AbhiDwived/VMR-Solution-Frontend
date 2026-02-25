@@ -1,9 +1,14 @@
 'use client';
 
+import { useDispatch, useSelector } from 'react-redux';
 import Link from 'next/link';
+import { toast } from 'react-toastify';
 import AppImage from '@/components/ui/AppImage';
 import Icon from '@/components/ui/AppIcon';
 import { useBulkOrder } from '@/components/ui/modal/BulkOrderContext';
+import { useAddToWishlistMutation } from '@/store/api/wishlistApi';
+import { toggleWishlistItem } from '@/store/slices/wishlist';
+import type { RootState } from '@/store/store';
 
 interface ProductCardProps {
   id: string;
@@ -32,9 +37,23 @@ const ProductCard = ({
   rating,
   discount = 0,
   showThumbnails = true,
-  animationDelay = 0
+  animationDelay: _animationDelay = 0
 }: ProductCardProps) => {
   const { openModal } = useBulkOrder();
+  const dispatch = useDispatch();
+  const [addToWishlist] = useAddToWishlistMutation();
+  const wishlistItems = useSelector((state: RootState) => state.wishlist.items);
+  const isInWishlist = wishlistItems.some(item => item.id === id);
+
+  const handleWishlistToggle = async () => {
+    try {
+      await addToWishlist({ product_id: id }).unwrap();
+      dispatch(toggleWishlistItem({ id, name, price, image }));
+      toast.success(isInWishlist ? 'Removed from wishlist' : 'Added to wishlist');
+    } catch {
+      toast.error('Failed to update wishlist');
+    }
+  };
   return (
     <div
       className="group relative overflow-hidden rounded-xl border border-border bg-white shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg"
@@ -50,9 +69,10 @@ const ProductCard = ({
       <div className="absolute right-3 top-3 z-20 flex flex-col gap-2">
         <button
           type="button"
+          onClick={handleWishlistToggle}
           className="flex h-7 w-7 items-center justify-center rounded-lg bg-white shadow transition hover:bg-gray-100"
         >
-          <Icon name="HeartIcon" size={14} className="text-orange-500" />
+          <Icon name="HeartIcon" size={14} className={isInWishlist ? 'text-red-500' : 'text-orange-500'} variant={isInWishlist ? 'solid' : 'outline'} />
         </button>
 
         <button
@@ -65,7 +85,7 @@ const ProductCard = ({
 
       {/* Image - Full width */}
       <Link href={`/product/${slug}`}>
-        <div className="relative h-40 w-full overflow-hidden rounded-t-xl sm:h-44">
+        <div className="relative h-32 w-full overflow-hidden rounded-t-xl sm:h-44">
           <AppImage
             src={image}
             alt={alt}

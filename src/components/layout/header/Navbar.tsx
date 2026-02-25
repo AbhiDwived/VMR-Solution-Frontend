@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
+import Image from 'next/image';
 import Link from 'next/link';
 import Icon from '@/components/ui/AppIcon';
 import { useAuth } from '@/features/auth/hooks/useAuth';
@@ -45,14 +46,14 @@ const Navbar = () => {
             className="flex items-center space-x-2 transition-smooth hover:opacity-80"
             onClick={closeMobileMenu}
           >
-            <img
+            <Image
               src="/assets/images/logo.png"
               alt="VMR Solution Logo"
-              width="40"
-              height="40"
+              width={40}
+              height={40}
               className="transition-smooth"
             />
-            <span className="font-heading text-xl font-semibold text-foreground">VMR Solution</span>
+            <span className="hidden sm:block font-heading text-xl font-semibold text-foreground">VMR Solution</span>
           </Link>
 
           {/* Center Search Bar */}
@@ -77,7 +78,7 @@ const Navbar = () => {
             {isHydrated && !user && (
               <Link
                 href="/auth/login"
-                className="text-sm font-medium text-foreground hover:text-primary transition-smooth px-2"
+                className="hidden md:block text-sm font-medium text-foreground hover:text-primary transition-smooth px-2"
               >
                 Login
               </Link>
@@ -85,8 +86,8 @@ const Navbar = () => {
 
             {/* Wishlist */}
             <Link
-              href={isHydrated && user ? '/wishlist' : '/auth/login'}
-              className="relative flex h-10 w-10 items-center justify-center rounded-md text-foreground transition-smooth hover:bg-muted"
+              href="/wishlist"
+              className="hidden md:flex relative h-10 w-10 items-center justify-center rounded-md text-foreground transition-smooth hover:bg-muted"
               aria-label="Wishlist"
             >
               <Icon name="HeartIcon" size={20} />
@@ -100,7 +101,7 @@ const Navbar = () => {
             {/* Cart */}
             <Link
               href={isHydrated && user ? '/shopping-cart' : '/auth/login'}
-              className="relative flex h-10 w-10 items-center justify-center rounded-md text-foreground transition-smooth hover:bg-muted"
+              className="hidden md:flex relative h-10 w-10 items-center justify-center rounded-md text-foreground transition-smooth hover:bg-muted"
               aria-label="Shopping cart"
             >
               <Icon name="ShoppingCartIcon" size={20} />
@@ -113,7 +114,7 @@ const Navbar = () => {
 
             {/* Mobile Search Button */}
             <button
-              className="flex h-10 w-10 items-center justify-center rounded-md text-foreground transition-smooth hover:bg-muted md:hidden"
+              className="hidden md:flex h-10 w-10 items-center justify-center rounded-md text-foreground transition-smooth hover:bg-muted"
               aria-label="Search products"
             >
               <Icon name="MagnifyingGlassIcon" size={20} />
@@ -121,7 +122,7 @@ const Navbar = () => {
 
             {/* User Menu - Only for Logged In Users */}
             {isHydrated && user && (
-              <div className="relative">
+              <div className="relative hidden md:block">
                 <button
                   onClick={toggleUserMenu}
                   className="flex h-10 w-10 items-center justify-center rounded-md text-foreground transition-smooth hover:bg-muted"
@@ -178,6 +179,16 @@ const Navbar = () => {
               </div>
             )}
 
+            {/* Mobile Login Button - Only for guests */}
+            {isHydrated && !user && (
+              <Link
+                href="/auth/login"
+                className="md:hidden text-sm font-medium text-foreground hover:text-primary transition-smooth px-2"
+              >
+                Login
+              </Link>
+            )}
+
             {/* Mobile Menu Toggle */}
             <button
               onClick={toggleMobileMenu}
@@ -194,12 +205,55 @@ const Navbar = () => {
       {isMobileMenuOpen && (
         <>
           <div
-            className="fixed inset-0 z-[250] bg-background md:hidden"
+            className="fixed inset-0 z-[250] bg-black/50 md:hidden"
             onClick={closeMobileMenu}
           />
-          <nav className="fixed left-0 top-16 z-[300] h-[calc(100vh-4rem)] w-64 overflow-y-auto bg-card shadow-elevation-4 md:hidden">
-            <div className="space-y-1 p-4">
-              <p className="text-sm text-muted-foreground px-4 py-2">Use navigation below</p>
+          <nav className="fixed left-0 top-0 z-[300] h-screen w-56 overflow-y-auto bg-card shadow-elevation-4 md:hidden">
+            <div className="flex items-center justify-between p-4 border-b border-border">
+              <span className="font-heading text-lg font-semibold text-foreground">Menu</span>
+              <button onClick={closeMobileMenu} className="flex h-8 w-8 items-center justify-center rounded-md text-foreground hover:bg-muted">
+                <Icon name="XMarkIcon" size={24} />
+              </button>
+            </div>
+            <div className="space-y-1 p-3">
+              <Link href="/" onClick={closeMobileMenu} className="flex items-center space-x-3 rounded-md px-4 py-3 text-sm font-medium text-foreground hover:bg-muted">
+                <Icon name="HomeIcon" size={20} />
+                <span>Home</span>
+              </Link>
+              <Link href="/products" onClick={closeMobileMenu} className="flex items-center space-x-3 rounded-md px-4 py-3 text-sm font-medium text-foreground hover:bg-muted">
+                <Icon name="ShoppingBagIcon" size={20} />
+                <span>Products</span>
+              </Link>
+              <Link href="/blog" onClick={closeMobileMenu} className="flex items-center space-x-3 rounded-md px-4 py-3 text-sm font-medium text-foreground hover:bg-muted">
+                <Icon name="DocumentTextIcon" size={20} />
+                <span>Blog</span>
+              </Link>
+              <Link href="/about" onClick={closeMobileMenu} className="flex items-center space-x-3 rounded-md px-4 py-3 text-sm font-medium text-foreground hover:bg-muted">
+                <Icon name="InformationCircleIcon" size={20} />
+                <span>About Us</span>
+              </Link>
+              <Link href="/contact" onClick={closeMobileMenu} className="flex items-center space-x-3 rounded-md px-4 py-3 text-sm font-medium text-foreground hover:bg-muted">
+                <Icon name="PhoneIcon" size={20} />
+                <span>Contact Us</span>
+              </Link>
+              <Link href="/shopping-cart" onClick={closeMobileMenu} className="flex items-center space-x-3 rounded-md px-4 py-3 text-sm font-medium text-foreground hover:bg-muted">
+                <Icon name="ShoppingCartIcon" size={20} />
+                <span>Cart</span>
+              </Link>
+              <Link href="/wishlist" onClick={closeMobileMenu} className="flex items-center space-x-3 rounded-md px-4 py-3 text-sm font-medium text-foreground hover:bg-muted">
+                <Icon name="HeartIcon" size={20} />
+                <span>Wishlist</span>
+              </Link>
+              {isHydrated && user && (
+                <Link href={user.role === 'admin' ? '/dashboard/admin-dashboard' : '/dashboard/user-dashboard'} onClick={closeMobileMenu} className="flex items-center space-x-3 rounded-md px-4 py-3 text-sm font-medium text-foreground hover:bg-muted">
+                  <Icon name="UserIcon" size={20} />
+                  <span>Dashboard</span>
+                </Link>
+              )}
+              <Link href="/order-tracking" onClick={closeMobileMenu} className="flex items-center space-x-3 rounded-md px-4 py-3 text-sm font-medium text-foreground hover:bg-muted">
+                <Icon name="TruckIcon" size={20} />
+                <span>Track Orders</span>
+              </Link>
             </div>
           </nav>
         </>
