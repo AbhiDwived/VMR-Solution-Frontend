@@ -113,7 +113,7 @@ export default function CouponsPage() {
       const token = localStorage.getItem('auth_token');
       const url = editingCoupon ? `/api/admin/coupon/${editingCoupon.id}` : '/api/admin/coupon';
       const method = editingCoupon ? 'PUT' : 'POST';
-      
+
       const response = await fetch(url, {
         method,
         headers: {
@@ -140,7 +140,7 @@ export default function CouponsPage() {
 
   const handleDelete = async (id: number) => {
     if (!confirm('Are you sure you want to delete this coupon?')) return;
-    
+
     try {
       const token = localStorage.getItem('auth_token');
       const response = await fetch(`/api/admin/coupon/${id}`, {
@@ -240,7 +240,7 @@ export default function CouponsPage() {
     <div className="min-h-screen bg-background">
       <main className="flex">
         <AdminSidebar />
-        <div className="flex-1 p-6">
+        <div className="flex-1 min-w-0 p-6">
           <Breadcrumb />
           <div className="space-y-6">
             <div className="flex justify-between items-center">
@@ -292,7 +292,7 @@ export default function CouponsPage() {
                         <input
                           type="text"
                           value={formData.code}
-                          onChange={(e) => setFormData({...formData, code: e.target.value.toUpperCase()})}
+                          onChange={(e) => setFormData({ ...formData, code: e.target.value.toUpperCase() })}
                           className="w-full p-2 border rounded-lg text-sm"
                           required
                         />
@@ -302,17 +302,17 @@ export default function CouponsPage() {
                         <input
                           type="text"
                           value={formData.name}
-                          onChange={(e) => setFormData({...formData, name: e.target.value})}
+                          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                           className="w-full p-2 border rounded-lg text-sm"
                           required
                         />
                       </div>
-                      
+
                       <div>
                         <label className="block text-sm font-medium mb-1">Description</label>
                         <textarea
                           value={formData.description}
-                          onChange={(e) => setFormData({...formData, description: e.target.value})}
+                          onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                           className="w-full p-2 border rounded-lg text-sm"
                           rows={2}
                         />
@@ -323,7 +323,7 @@ export default function CouponsPage() {
                           <label className="block text-sm font-medium mb-1">Type</label>
                           <select
                             value={formData.type}
-                            onChange={(e) => setFormData({...formData, type: e.target.value as any})}
+                            onChange={(e) => setFormData({ ...formData, type: e.target.value as any })}
                             className="w-full p-2 border rounded-lg text-sm"
                           >
                             <option value="percentage">Percentage</option>
@@ -339,7 +339,7 @@ export default function CouponsPage() {
                           <input
                             type="number"
                             value={formData.value}
-                            onChange={(e) => setFormData({...formData, value: parseFloat(e.target.value)})}
+                            onChange={(e) => setFormData({ ...formData, value: parseFloat(e.target.value) })}
                             className="w-full p-2 border rounded-lg text-sm"
                             required
                           />
@@ -352,7 +352,7 @@ export default function CouponsPage() {
                           <input
                             type="number"
                             value={formData.minimum_amount}
-                            onChange={(e) => setFormData({...formData, minimum_amount: parseFloat(e.target.value)})}
+                            onChange={(e) => setFormData({ ...formData, minimum_amount: parseFloat(e.target.value) })}
                             className="w-full p-2 border rounded-lg text-sm"
                           />
                         </div>
@@ -361,7 +361,7 @@ export default function CouponsPage() {
                           <input
                             type="number"
                             value={formData.maximum_discount}
-                            onChange={(e) => setFormData({...formData, maximum_discount: parseFloat(e.target.value)})}
+                            onChange={(e) => setFormData({ ...formData, maximum_discount: parseFloat(e.target.value) })}
                             className="w-full p-2 border rounded-lg text-sm"
                           />
                         </div>
@@ -373,7 +373,7 @@ export default function CouponsPage() {
                           <input
                             type="number"
                             value={formData.usage_limit}
-                            onChange={(e) => setFormData({...formData, usage_limit: parseInt(e.target.value)})}
+                            onChange={(e) => setFormData({ ...formData, usage_limit: parseInt(e.target.value) })}
                             className="w-full p-2 border rounded-lg text-sm"
                           />
                         </div>
@@ -382,7 +382,7 @@ export default function CouponsPage() {
                           <input
                             type="number"
                             value={formData.user_limit}
-                            onChange={(e) => setFormData({...formData, user_limit: parseInt(e.target.value)})}
+                            onChange={(e) => setFormData({ ...formData, user_limit: parseInt(e.target.value) })}
                             className="w-full p-2 border rounded-lg text-sm"
                           />
                         </div>
@@ -394,7 +394,7 @@ export default function CouponsPage() {
                           <input
                             type="date"
                             value={formData.start_date}
-                            onChange={(e) => setFormData({...formData, start_date: e.target.value})}
+                            onChange={(e) => setFormData({ ...formData, start_date: e.target.value })}
                             className="w-full p-2 border rounded-lg text-sm"
                             required
                           />
@@ -404,7 +404,7 @@ export default function CouponsPage() {
                           <input
                             type="date"
                             value={formData.end_date}
-                            onChange={(e) => setFormData({...formData, end_date: e.target.value})}
+                            onChange={(e) => setFormData({ ...formData, end_date: e.target.value })}
                             className="w-full p-2 border rounded-lg text-sm"
                             required
                           />
@@ -433,9 +433,9 @@ export default function CouponsPage() {
             )}
 
             {/* Coupons Table */}
-            <div className="bg-white rounded-lg shadow-sm border overflow-hidden">
+            <div className="bg-white rounded-lg shadow-sm border ">
               <div className="overflow-x-auto">
-                <table className="w-full">
+                <table className=" min-w-[900px] w-full">
                   <thead className="bg-gray-50">
                     <tr>
                       <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">Code</th>
@@ -452,7 +452,7 @@ export default function CouponsPage() {
                     {coupons.map((coupon) => {
                       const isExpired = new Date(coupon.end_date) < new Date();
                       const currentStatus = isExpired ? 'expired' : coupon.status;
-                      
+
                       return (
                         <tr key={coupon.id} className="hover:bg-gray-50">
                           <td className="px-4 py-3 font-mono text-sm font-medium">{coupon.code}</td>
@@ -477,7 +477,7 @@ export default function CouponsPage() {
                           <td className="px-4 py-3 text-sm">
                             {new Date(coupon.end_date).toLocaleString('en-GB', {
                               day: '2-digit',
-                              month: '2-digit', 
+                              month: '2-digit',
                               year: '2-digit',
                             })}
                           </td>

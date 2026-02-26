@@ -15,7 +15,7 @@ export default function BlogPage() {
   const [createBlog] = useCreateBlogMutation();
   const [updateBlog] = useUpdateBlogMutation();
   const [deleteBlog] = useDeleteBlogMutation();
-  
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingBlog, setEditingBlog] = useState<any>(null);
   const [formData, setFormData] = useState({ title: '', content: '', excerpt: '', category: 'General', status: 'draft' });
@@ -46,15 +46,15 @@ export default function BlogPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     try {
       let imageUrl = editingBlog?.image || '';
-      
+
       if (imageFile) {
         toast.info('Uploading image...');
         imageUrl = await uploadImageToImageKit(imageFile, 'blogs');
       }
-      
+
       const blogData = {
         title: formData.title,
         excerpt: formData.excerpt,
@@ -107,60 +107,61 @@ export default function BlogPage() {
             {isLoading ? (
               <div className="text-center py-8">Loading...</div>
             ) : (
-              <div className="bg-white rounded-2xl shadow-sm border border-border overflow-hidden">
-                <table className="w-full text-sm">
-                  <thead className="bg-gray-50">
-                    <tr>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Image</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Title</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Author</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Views</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-200">
-                    {data?.blogs?.map((blog: any) => (
-                      <tr key={blog.id} className="hover:bg-gray-50">
-                        <td className="px-4 py-3 font-mono text-xs">{blog.id}</td>
-                        <td className="px-4 py-3">
-                          {blog.image ? (
-                            <div className="relative w-12 h-12 rounded overflow-hidden">
-                              <Image src={blog.image} alt={blog.title} fill className="object-cover" />
-                            </div>
-                          ) : (
-                            <div className="w-12 h-12 bg-gray-200 rounded flex items-center justify-center">
-                              <Icon name="PhotoIcon" size={20} className="text-gray-400" />
-                            </div>
-                          )}
-                        </td>
-                        <td className="px-4 py-3 font-medium">{blog.title}</td>
-                        <td className="px-4 py-3 text-xs">{blog.author}</td>
-                        <td className="px-4 py-3">
-                          <span className={`inline-flex px-2 py-1 text-xs rounded-full ${
-                            blog.status === 'published' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
-                          }`}>
-                            {blog.status}
-                          </span>
-                        </td>
-                        <td className="px-4 py-3 text-xs">{new Date(blog.created_at).toLocaleDateString()}</td>
-                        <td className="px-4 py-3 text-xs">{blog.views}</td>
-                        <td className="px-4 py-3">
-                          <div className="flex items-center space-x-2">
-                            <button className="p-1.5 rounded-lg bg-green-50 text-green-600 hover:bg-green-100" title="Edit" onClick={() => handleEdit(blog)}>
-                              <Icon name="PencilSquareIcon" size={16} />
-                            </button>
-                            <button className="p-1.5 rounded-lg bg-red-50 text-red-600 hover:bg-red-100" title="Delete" onClick={() => handleDelete(blog.id)}>
-                              <Icon name="TrashIcon" size={16} />
-                            </button>
-                          </div>
-                        </td>
+              <div className="bg-white rounded-2xl shadow-sm border border-border ">
+                <div className='overflow-x-auto sm:overflow-visible'>
+                  <table className="min-w-[1200px] md:min-w-full w-full text-sm">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Image</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Title</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Author</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Views</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody className="divide-y divide-gray-200">
+                      {data?.blogs?.map((blog: any) => (
+                        <tr key={blog.id} className="hover:bg-gray-50">
+                          <td className="px-4 py-3 font-mono text-xs">{blog.id}</td>
+                          <td className="px-4 py-3">
+                            {blog.image ? (
+                              <div className="relative w-12 h-12 rounded overflow-hidden">
+                                <Image src={blog.image} alt={blog.title} fill className="object-cover" />
+                              </div>
+                            ) : (
+                              <div className="w-12 h-12 bg-gray-200 rounded flex items-center justify-center">
+                                <Icon name="PhotoIcon" size={20} className="text-gray-400" />
+                              </div>
+                            )}
+                          </td>
+                          <td className="px-4 py-3 font-medium">{blog.title}</td>
+                          <td className="px-4 py-3 text-xs">{blog.author}</td>
+                          <td className="px-4 py-3">
+                            <span className={`inline-flex px-2 py-1 text-xs rounded-full ${blog.status === 'published' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
+                              }`}>
+                              {blog.status}
+                            </span>
+                          </td>
+                          <td className="px-4 py-3 text-xs">{new Date(blog.created_at).toLocaleDateString()}</td>
+                          <td className="px-4 py-3 text-xs">{blog.views}</td>
+                          <td className="px-4 py-3">
+                            <div className="flex items-center space-x-2">
+                              <button className="p-1.5 rounded-lg bg-green-50 text-green-600 hover:bg-green-100" title="Edit" onClick={() => handleEdit(blog)}>
+                                <Icon name="PencilSquareIcon" size={16} />
+                              </button>
+                              <button className="p-1.5 rounded-lg bg-red-50 text-red-600 hover:bg-red-100" title="Delete" onClick={() => handleDelete(blog.id)}>
+                                <Icon name="TrashIcon" size={16} />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             )}
           </div>
@@ -198,7 +199,7 @@ export default function BlogPage() {
                   type="text"
                   required
                   value={formData.title}
-                  onChange={(e) => setFormData({...formData, title: e.target.value})}
+                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                   placeholder="Enter blog title"
                 />
@@ -207,7 +208,7 @@ export default function BlogPage() {
                 <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
                 <select
                   value={formData.category}
-                  onChange={(e) => setFormData({...formData, category: e.target.value})}
+                  onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                 >
                   <option value="General">General</option>
@@ -222,7 +223,7 @@ export default function BlogPage() {
                 <textarea
                   required
                   value={formData.excerpt}
-                  onChange={(e) => setFormData({...formData, excerpt: e.target.value})}
+                  onChange={(e) => setFormData({ ...formData, excerpt: e.target.value })}
                   minLength={50}
                   maxLength={250}
                   rows={3}
@@ -238,7 +239,7 @@ export default function BlogPage() {
                   licenseKey="gpl"
                   onInit={(evt, editor) => editorRef.current = editor}
                   value={formData.content}
-                  onEditorChange={(content) => setFormData({...formData, content})}
+                  onEditorChange={(content) => setFormData({ ...formData, content })}
                   init={{
                     height: 400,
                     menubar: true,
@@ -256,7 +257,7 @@ export default function BlogPage() {
                 <label className="block text-sm font-medium text-gray-700 mb-2">Status</label>
                 <select
                   value={formData.status}
-                  onChange={(e) => setFormData({...formData, status: e.target.value})}
+                  onChange={(e) => setFormData({ ...formData, status: e.target.value })}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                 >
                   <option value="draft">Draft</option>

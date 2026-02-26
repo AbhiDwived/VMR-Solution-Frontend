@@ -34,14 +34,14 @@ export default function SubscriptionPage() {
 
   const handleDelete = async (id: number) => {
     if (!confirm('Are you sure you want to delete this subscription?')) return;
-    
+
     try {
       const token = localStorage.getItem('auth_token');
       const response = await fetch(`${config.apiUrl}/admin/subscription/${id}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
       });
-      
+
       if (response.ok) fetchSubscriptions();
     } catch (error) {
       console.error('Error deleting subscription:', error);
@@ -52,19 +52,19 @@ export default function SubscriptionPage() {
     <div className="min-h-screen bg-background">
       <main className="flex">
         <AdminSidebar />
-        <div className="flex-1 p-6">
+        <div className="flex-1 min-w-0 p-6">
           <Breadcrumb />
           <div className="space-y-6">
             <div className="flex justify-between items-center">
               <h1 className="text-3xl font-bold text-espresso">Newsletter Subscriptions</h1>
             </div>
 
-            <div className="bg-white rounded-2xl shadow-sm border border-border overflow-hidden">
+            <div className="bg-white rounded-2xl shadow-sm border border-border ">
               <div className="p-6 border-b border-border">
                 <h2 className="text-xl font-semibold">All Subscriptions ({subscriptions.length})</h2>
               </div>
-              <div className="overflow-x-auto">
-                <table className="w-full">
+              <div className="overflow-x-auto md:overflow-visible">
+                <table className="min-w-[900px] md:min-w-0 w-full">
                   <thead className="bg-gray-50">
                     <tr>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
@@ -78,9 +78,8 @@ export default function SubscriptionPage() {
                       <tr key={subscription.id}>
                         <td className="px-6 py-4 whitespace-nowrap font-medium">{subscription.email}</td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <span className={`px-2 py-1 text-xs rounded-full ${
-                            subscription.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                          }`}>
+                          <span className={`px-2 py-1 text-xs rounded-full ${subscription.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                            }`}>
                             {subscription.status}
                           </span>
                         </td>

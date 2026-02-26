@@ -42,25 +42,25 @@ export default function CategoriesPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    
+
     try {
       const token = localStorage.getItem('auth_token');
       if (!token) {
         alert('No authentication token found. Please login again.');
         return;
       }
-      
-      const url = editingId 
+
+      const url = editingId
         ? `${config.apiUrl}/admin/category/${editingId}`
         : `${config.apiUrl}/admin/category`;
-      
+
       const formDataToSend = new FormData();
       formDataToSend.append('name', formData.name);
       formDataToSend.append('status', formData.status);
       if (formData.image) {
         formDataToSend.append('image', formData.image);
       }
-      
+
       const response = await fetch(url, {
         method: editingId ? 'PUT' : 'POST',
         headers: {
@@ -88,14 +88,14 @@ export default function CategoriesPage() {
 
   const handleDelete = async (id: number) => {
     if (!confirm('Are you sure you want to delete this category?')) return;
-    
+
     try {
       const token = localStorage.getItem('auth_token');
       const response = await fetch(`${config.apiUrl}/admin/category/${id}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
       });
-      
+
       if (response.ok) fetchCategories();
     } catch (error) {
       console.error('Error deleting category:', error);
@@ -110,12 +110,12 @@ export default function CategoriesPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <main className="flex">
+      <main className="flex flex-col sm:flex-row">
         <AdminSidebar />
         <div className="flex-1 p-6">
           <Breadcrumb />
           <div className="space-y-6">
-            <div className="flex justify-between items-center">
+            <div className="flex justify-between items-center ">
               <h1 className="text-3xl font-bold text-espresso">Categories</h1>
               <button
                 onClick={() => setShowForm(!showForm)}
@@ -126,7 +126,7 @@ export default function CategoriesPage() {
             </div>
 
             {showForm && (
-              <div className="bg-white p-6 rounded-2xl shadow-sm border border-border">
+              <div className="bg-white p-6 rounded-2xl shadow-sm border border-border ">
                 <h2 className="text-xl font-semibold mb-4">
                   {editingId ? 'Edit Category' : 'Add New Category'}
                 </h2>
@@ -181,12 +181,12 @@ export default function CategoriesPage() {
               </div>
             )}
 
-            <div className="bg-white rounded-2xl shadow-sm border border-border overflow-hidden">
+            <div className="bg-white rounded-2xl shadow-sm border border-border ">
               <div className="p-6 border-b border-border">
                 <h2 className="text-xl font-semibold">All Categories</h2>
               </div>
-              <div className="overflow-x-auto">
-                <table className="w-full">
+              <div className="overflow-x-auto sm:overflow-visible">
+                <table className="min-w-[800px] sm:min-w-full w-full">
                   <thead className="bg-gray-50">
                     <tr>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
@@ -208,9 +208,8 @@ export default function CategoriesPage() {
                           )}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <span className={`px-2 py-1 text-xs rounded-full ${
-                            category.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                          }`}>
+                          <span className={`px-2 py-1 text-xs rounded-full ${category.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                            }`}>
                             {category.status}
                           </span>
                         </td>
