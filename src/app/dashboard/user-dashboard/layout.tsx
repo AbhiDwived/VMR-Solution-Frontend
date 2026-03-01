@@ -1,3 +1,5 @@
+'use client';
+
 import UserSidebar from './components/UserSidebar';
 import Breadcrumb from '@/components/common/Breadcrumb';
 import AuthGuard from '@/features/auth/components/AuthGuard';

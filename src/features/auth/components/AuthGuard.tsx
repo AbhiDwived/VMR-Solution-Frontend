@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '../hooks/useAuth';
 
@@ -21,25 +21,27 @@ export default function AuthGuard({
 }: AuthGuardProps) {
   const router = useRouter();
   const { isAuthenticated, isVerified, hasRole, user, loading } = useAuth();
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    if (loading) {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!mounted || loading) {
       return;
     }
 
-    // Check if authentication is required
     if (requireAuth && !isAuthenticated()) {
       router.push(redirectTo);
       return;
     }
 
-    // Check if verification is required
     if (requireVerification && !isVerified()) {
       router.push(`/auth/verify-otp?contact=${encodeURIComponent(user?.email || '')}`);
       return;
     }
 
-    // Check role-based access
     if (allowedRoles && allowedRoles.length > 0) {
       const hasValidRole = allowedRoles.some(role => hasRole(role));
       if (!hasValidRole) {
@@ -47,21 +49,16 @@ export default function AuthGuard({
         return;
       }
     }
-  }, [isAuthenticated, isVerified, hasRole, user, loading, requireAuth, requireVerification, allowedRoles, router, redirectTo]);
+  }, [mounted, isAuthenticated, isVerified, hasRole, user, loading, requireAuth, requireVerification, allowedRoles, router, redirectTo]);
 
-  // Show loading state while checking auth
-  if (loading) {
+  if (!mounted || loading) {
     return (
-      <div className="min-h-screen bg-soft-linen flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-olive-green mx-auto"></div>
-          <p className="mt-4 text-mocha-grey">Loading...</p>
-        </div>
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
       </div>
     );
   }
 
-  // Don't render children if auth checks fail
   if (requireAuth && !isAuthenticated()) return null;
   if (requireVerification && !isVerified()) return null;
   if (allowedRoles && allowedRoles.length > 0 && !allowedRoles.some(role => hasRole(role))) return null;

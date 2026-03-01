@@ -169,15 +169,15 @@ const DashboardInteractive = () => {
     };
   });
 
-  const wishlistProducts = (wishlistData?.wishlist || []).map((item: any) => ({
+  const wishlistProducts = (wishlistData?.data || []).map((item: any) => ({
     id: String(item.id),
-    name: item.product?.name || '',
-    price: item.product?.price || 0,
-    originalPrice: item.product?.original_price,
-    image: item.product?.product_images ? JSON.parse(item.product.product_images)[0] : '',
-    alt: item.product?.name || '',
-    inStock: item.product?.stock > 0,
-    category: item.product?.category || 'General',
+    name: item.name || '',
+    price: item.discount_price || item.price || 0,
+    originalPrice: item.price,
+    image: item.product_images ? (typeof item.product_images === 'string' && item.product_images.startsWith('[') ? JSON.parse(item.product_images)[0] : item.product_images) : '',
+    alt: item.name || '',
+    inStock: true,
+    category: 'General',
   }));
 
   const quickStats = {
