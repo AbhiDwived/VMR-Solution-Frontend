@@ -6,7 +6,7 @@ import { toast } from 'react-toastify';
 import AppImage from '@/components/ui/AppImage';
 import Icon from '@/components/ui/AppIcon';
 import { useBulkOrder } from '@/components/ui/modal/BulkOrderContext';
-import { useAddToWishlistMutation } from '@/store/api/wishlistApi';
+import { useAddToWishlistMutation, useRemoveFromWishlistMutation } from '@/store/api/wishlistApi';
 import { toggleWishlistItem } from '@/store/slices/wishlist';
 import type { RootState } from '@/store/store';
 
@@ -42,14 +42,22 @@ const ProductCard = ({
   const { openModal } = useBulkOrder();
   const dispatch = useDispatch();
   const [addToWishlist] = useAddToWishlistMutation();
+  const [removeFromWishlist] = useRemoveFromWishlistMutation();
   const wishlistItems = useSelector((state: RootState) => state.wishlist.items);
-  const isInWishlist = wishlistItems.some(item => item.id === id);
+  const wishlistItem = wishlistItems.find(item => item.productId === id);
+  const isInWishlist = !!wishlistItem;
 
   const handleWishlistToggle = async () => {
     try {
-      await addToWishlist({ product_id: id }).unwrap();
-      dispatch(toggleWishlistItem({ id, name, price, image }));
-      toast.success(isInWishlist ? 'Removed from wishlist' : 'Added to wishlist');
+      if (isInWishlist && wishlistItem) {
+        await removeFromWishlist(wishlistItem.id).unwrap();
+        dispatch(toggleWishlistItem({ id, productId: id, name, price, image }));
+        toast.success('Removed from wishlist');
+      } else {
+        await addToWishlist({ product_id: id }).unwrap();
+        dispatch(toggleWishlistItem({ id, productId: id, name, price, image }));
+        toast.success('Added to wishlist');
+      }
     } catch {
       toast.error('Failed to update wishlist');
     }

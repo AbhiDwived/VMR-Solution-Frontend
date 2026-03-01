@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Breadcrumb from '@/components/common/Breadcrumb';
 import AdminSidebar from '../components/AdminSidebar';
 import { useGetAllNotificationsQuery, useMarkAsReadMutation, useMarkAllAsReadMutation, useDeleteNotificationMutation, useGetNotificationStatsQuery, useCreateNotificationMutation, Notification } from '@/store/api/notificationApi';
@@ -17,6 +17,8 @@ export default function NotificationsPage() {
   const [filter, setFilter] = useState<NotificationFilter>({});
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [newNotification, setNewNotification] = useState<DraftNotification>({ type: 'system', title: '', message: '', priority: 'medium', link: '' });
+  const [page, setPage] = useState(1);
+  const pageSize = 20;
 
   const { data, isLoading, refetch } = useGetAllNotificationsQuery(filter);
   const { data: stats } = useGetNotificationStatsQuery();
@@ -50,6 +52,10 @@ export default function NotificationsPage() {
     refetch();
   };
 
+  useEffect(() => {
+    setPage(1);
+  }, [filter.type, filter.is_read, filter.priority]);
+
   const getPriorityColor = (priority: Notification['priority']) => {
     switch (priority) {
       case 'critical': return 'bg-red-100 text-red-800';
@@ -70,6 +76,13 @@ export default function NotificationsPage() {
       default: return '🔔';
     }
   };
+
+  const totalNotifications = data?.notifications.length || 0;
+  const totalPages = Math.max(1, Math.ceil(totalNotifications / pageSize));
+  const safePage = Math.min(page, totalPages);
+  const pageStart = (safePage - 1) * pageSize;
+  const pageEnd = Math.min(pageStart + pageSize, totalNotifications);
+  const paginatedNotifications = data?.notifications.slice(pageStart, pageEnd) || [];
 
   return (
     <div className="min-h-screen bg-background overflow-x-auto">
@@ -180,11 +193,11 @@ export default function NotificationsPage() {
             <div className="bg-white rounded-2xl shadow-sm border">
               {isLoading ? (
                 <div className="p-8 text-center">Loading...</div>
-              ) : data?.notifications.length === 0 ? (
+              ) : totalNotifications === 0 ? (
                 <div className="p-8 text-center text-gray-500">No notifications found</div>
               ) : (
                 <div className="divide-y">
-                  {data?.notifications.map((notification) => (
+                  {paginatedNotifications.map((notification) => (
                     <div key={notification.id} className={`p-4 hover:bg-gray-50 transition ${!notification.is_read ? 'bg-blue-50' : ''}`}>
                       <div className="flex items-start justify-between">
                         <div className="flex gap-3 flex-1">
@@ -218,6 +231,35 @@ export default function NotificationsPage() {
                 </div>
               )}
             </div>
+
+            {totalNotifications > 0 && (
+              <div className="flex items-center justify-between text-sm">
+                <div className="text-gray-600">
+                  Showing {pageStart + 1} to {pageEnd} of {totalNotifications}
+                </div>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    className="px-3 py-1 border rounded disabled:opacity-50"
+                    onClick={() => setPage((prev) => Math.max(1, prev - 1))}
+                    disabled={safePage === 1}
+                  >
+                    Prev
+                  </button>
+                  <span className="px-2 text-gray-700">
+                    Page {safePage} of {totalPages}
+                  </span>
+                  <button
+                    type="button"
+                    className="px-3 py-1 border rounded disabled:opacity-50"
+                    onClick={() => setPage((prev) => Math.min(totalPages, prev + 1))}
+                    disabled={safePage === totalPages}
+                  >
+                    Next
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </main>

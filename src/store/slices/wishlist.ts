@@ -3,6 +3,7 @@ import { wishlistApi } from '../api/wishlistApi'
 
 interface WishlistItem {
   id: string
+  productId: string
   name: string
   price: number
   image: string
@@ -31,7 +32,7 @@ const wishlistSlice = createSlice({
       state.items = state.items.filter(item => item.id !== action.payload)
     },
     toggleWishlistItem: (state, action: PayloadAction<WishlistItem>) => {
-      const index = state.items.findIndex(item => item.id === action.payload.id)
+      const index = state.items.findIndex(item => item.productId === action.payload.productId)
       if (index >= 0) {
         state.items.splice(index, 1)
       } else {
@@ -56,6 +57,7 @@ const wishlistSlice = createSlice({
             }
             return {
               id: item.id.toString(),
+              productId: item.product_id.toString(),
               name: item.name,
               price: item.discount_price || item.price,
               image: Array.isArray(images) ? images[0] || '' : '',

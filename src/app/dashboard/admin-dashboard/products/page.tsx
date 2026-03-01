@@ -13,6 +13,14 @@ export default function ProductsPage() {
   const { data: productsData, isLoading, error } = useGetAdminProductsQuery();
   const [deleteProduct] = useDeleteAdminProductMutation();
 
+  const formatProductId = (rawId: unknown) => {
+    const numericId = Number(rawId);
+    if (!Number.isFinite(numericId)) {
+      return rawId ? String(rawId) : '';
+    }
+    return `PRD-${numericId.toString().padStart(3, '0')}`;
+  };
+
   useEffect(() => {
     setMounted(true);
   }, []);
@@ -51,7 +59,7 @@ export default function ProductsPage() {
                 <table className="w-full text-sm min-w-[2500px]">
                   <thead className="bg-gray-50">
                     <tr>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase w-28">ID</th>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Image</th>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Description</th>
@@ -113,7 +121,9 @@ export default function ProductsPage() {
 
                       return (
                         <tr key={product.id} className="hover:bg-gray-50">
-                          <td className="px-4 py-3 font-mono text-xs">{product.id}</td>
+                          <td className="px-4 py-3 font-mono text-xs whitespace-nowrap min-w-[100px]">
+                            {formatProductId(product.id)}
+                          </td>
                           <td className="px-4 py-3">
                             <Image
                               src={images[0] || '/placeholder.jpg'}

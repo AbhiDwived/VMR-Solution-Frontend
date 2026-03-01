@@ -31,8 +31,8 @@ export default function WishlistPage() {
             {wishlistItems.map((item: any) => (
               <ProductCard
                 key={item.id}
-                id={item.id}
-                slug={item.id}
+                id={item.productId}
+                slug={item.productId}
                 name={item.name}
                 category=""
                 price={item.price}
