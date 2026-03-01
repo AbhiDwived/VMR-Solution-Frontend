@@ -134,7 +134,7 @@ const CartIndicator = () => {
                 <Icon name="ShoppingCartIcon" size={48} className="mx-auto mb-3 text-muted-foreground" />
                 <p className="text-sm text-muted-foreground">Your cart is empty</p>
                 <Link
-                  href="/product-catalog"
+                  href="/products"
                   onClick={() => setIsCartPreviewOpen(false)}
                   className="mt-4 inline-block rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-smooth hover:scale-[0.97]"
                 >

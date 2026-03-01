@@ -169,7 +169,7 @@ export default function OrderSummary({ summary, itemCount, onApplyPromo }: Order
 
       {/* Continue Shopping */}
       <Link
-        href="/product-catalog"
+        href="/products"
         className="mt-4 flex w-full items-center justify-center gap-2 rounded-md border border-border px-6 py-2 text-sm font-medium text-foreground transition-smooth hover:bg-muted"
       >
         <Icon name="ArrowLeftIcon" size={16} />

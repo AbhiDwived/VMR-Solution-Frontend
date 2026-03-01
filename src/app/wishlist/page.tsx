@@ -22,7 +22,7 @@ export default function WishlistPage() {
             <Icon name="HeartIcon" size={64} className="mx-auto text-muted-foreground mb-4" />
             <h2 className="text-xl font-semibold text-foreground mb-2">Your wishlist is empty</h2>
             <p className="text-muted-foreground mb-6">Add items you love to your wishlist</p>
-            <Link href="/product-catalog" className="inline-block bg-primary text-primary-foreground px-6 py-3 rounded-lg hover:opacity-90">
+            <Link href="/products" className="inline-block bg-primary text-primary-foreground px-6 py-3 rounded-lg hover:opacity-90">
               Browse Products
             </Link>
           </div>

@@ -43,8 +43,8 @@ const Footer = () => {
             <h4 className="font-semibold text-foreground mb-4">Quick Links</h4>
             <ul className="space-y-2 text-sm">
               <li><Link href="/" className="text-muted-foreground hover:text-primary transition-smooth">Home</Link></li>
-              <li><Link href="/product-catalog" className="text-muted-foreground hover:text-primary transition-smooth">Shop</Link></li>
-              <li><Link href="/product-catalog" className="text-muted-foreground hover:text-primary transition-smooth">Categories</Link></li>
+              <li><Link href="/products" className="text-muted-foreground hover:text-primary transition-smooth">Shop</Link></li>
+              <li><Link href="/products" className="text-muted-foreground hover:text-primary transition-smooth">Categories</Link></li>
               <li><Link href="#" className="text-muted-foreground hover:text-primary transition-smooth">About Us</Link></li>
               <li><Link href="#" className="text-muted-foreground hover:text-primary transition-smooth">Contact Us</Link></li>
               <li><Link href="#" className="text-muted-foreground hover:text-primary transition-smooth">Bulk Orders</Link></li>
@@ -55,11 +55,11 @@ const Footer = () => {
           <div>
             <h4 className="font-semibold text-foreground mb-4">Categories</h4>
             <ul className="space-y-2 text-sm">
-              <li><Link href="/product-catalog" className="text-muted-foreground hover:text-primary transition-smooth">Flower Pots</Link></li>
-              <li><Link href="/product-catalog" className="text-muted-foreground hover:text-primary transition-smooth">Plastic Mugs</Link></li>
-              <li><Link href="/product-catalog" className="text-muted-foreground hover:text-primary transition-smooth">Containers</Link></li>
-              <li><Link href="/product-catalog" className="text-muted-foreground hover:text-primary transition-smooth">Buckets</Link></li>
-              <li><Link href="/product-catalog" className="text-muted-foreground hover:text-primary transition-smooth">Dustbins</Link></li>
+              <li><Link href="/products" className="text-muted-foreground hover:text-primary transition-smooth">Flower Pots</Link></li>
+              <li><Link href="/products" className="text-muted-foreground hover:text-primary transition-smooth">Plastic Mugs</Link></li>
+              <li><Link href="/products" className="text-muted-foreground hover:text-primary transition-smooth">Containers</Link></li>
+              <li><Link href="/products" className="text-muted-foreground hover:text-primary transition-smooth">Buckets</Link></li>
+              <li><Link href="/products" className="text-muted-foreground hover:text-primary transition-smooth">Dustbins</Link></li>
             </ul>
           </div>
 

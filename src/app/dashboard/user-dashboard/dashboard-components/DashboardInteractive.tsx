@@ -421,7 +421,7 @@ const DashboardInteractive = () => {
                 Recommended for You
               </h3>
               <button
-                onClick={() => router.push('/product-catalog')}
+                onClick={() => router.push('/products')}
                 className="text-sm text-primary transition-smooth hover:text-primary/80"
               >
                 View All

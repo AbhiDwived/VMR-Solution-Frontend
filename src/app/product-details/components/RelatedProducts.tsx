@@ -27,7 +27,7 @@ const RelatedProducts = ({ products }: RelatedProductsProps) => {
           Related Products
         </h2>
         <Link
-          href="/product-catalog"
+          href="/products"
           className="flex items-center space-x-1 text-sm font-medium text-primary transition-smooth hover:underline"
         >
           <span>View All</span>

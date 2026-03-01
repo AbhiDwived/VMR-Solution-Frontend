@@ -38,7 +38,7 @@ const OrderTrackingInteractive = () => {
           <p className="text-lg font-medium text-foreground mb-2">No orders found</p>
           <p className="text-muted-foreground mb-6">You haven't placed any orders yet</p>
           <Link
-            href="/product-catalog"
+            href="/products"
             className="inline-flex items-center space-x-2 rounded-md bg-primary px-6 py-2 text-sm font-medium text-primary-foreground transition-smooth hover:scale-[0.98]"
           >
             <span>Start Shopping</span>

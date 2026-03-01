@@ -13,7 +13,7 @@ const Breadcrumb = () => {
   const pathname = usePathname();
 
   const routeMapping: Record<string, string> = {
-    'product-catalog': 'Products',
+    'products': 'Products',
     'product-details': 'Product Details',
     'shopping-cart': 'Shopping Cart',
     'checkout-process': 'Checkout',

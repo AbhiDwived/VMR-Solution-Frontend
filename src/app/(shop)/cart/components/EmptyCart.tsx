@@ -18,11 +18,11 @@ interface EmptyCartProps {
 
 export default function EmptyCart({ recentProducts }: EmptyCartProps) {
   const categories = [
-    { name: 'Flower Pots', icon: 'HomeIcon', path: '/product-catalog?category=flower-pots' },
-    { name: 'Mugs', icon: 'CupIcon', path: '/product-catalog?category=mugs' },
-    { name: 'Containers', icon: 'ArchiveBoxIcon', path: '/product-catalog?category=containers' },
-    { name: 'Buckets', icon: 'BeakerIcon', path: '/product-catalog?category=buckets' },
-    { name: 'Dustbins', icon: 'TrashIcon', path: '/product-catalog?category=dustbins' },
+    { name: 'Flower Pots', icon: 'HomeIcon', path: '/products?category=flower-pots' },
+    { name: 'Mugs', icon: 'CupIcon', path: '/products?category=mugs' },
+    { name: 'Containers', icon: 'ArchiveBoxIcon', path: '/products?category=containers' },
+    { name: 'Buckets', icon: 'BeakerIcon', path: '/products?category=buckets' },
+    { name: 'Dustbins', icon: 'TrashIcon', path: '/products?category=dustbins' },
   ];
 
   return (
@@ -42,7 +42,7 @@ export default function EmptyCart({ recentProducts }: EmptyCartProps) {
       </p>
 
       <Link
-        href="/product-catalog"
+        href="/products"
         className="inline-flex items-center gap-2 rounded-md bg-primary px-8 py-3 font-medium text-primary-foreground transition-smooth hover:scale-[0.97]"
       >
         <Icon name="ShoppingBagIcon" size={20} />

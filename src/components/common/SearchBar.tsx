@@ -32,7 +32,7 @@ const SearchBar = () => {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      router.push(`/product-catalog?search=${encodeURIComponent(searchQuery)}`);
+      router.push(`/products?search=${encodeURIComponent(searchQuery)}`);
       setShowSuggestions(false);
       setIsSearchExpanded(false);
     }
@@ -40,7 +40,7 @@ const SearchBar = () => {
 
   const handleSuggestionClick = (suggestionText: string) => {
     setSearchQuery(suggestionText);
-    router.push(`/product-catalog?search=${encodeURIComponent(suggestionText)}`);
+    router.push(`/products?search=${encodeURIComponent(suggestionText)}`);
     setShowSuggestions(false);
     setIsSearchExpanded(false);
   };

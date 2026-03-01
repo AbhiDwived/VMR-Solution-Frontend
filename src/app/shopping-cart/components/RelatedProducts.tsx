@@ -27,7 +27,7 @@ export default function RelatedProducts({ products }: RelatedProductsProps) {
           You May Also Like
         </h2>
         <Link
-          href="/product-catalog"
+          href="/products"
           className="flex items-center gap-1 text-sm font-medium text-primary transition-smooth hover:underline"
         >
           View All
