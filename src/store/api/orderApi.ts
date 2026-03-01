@@ -14,7 +14,7 @@ export const orderApi = createApi({
       return headers;
     },
   }),
-  tagTypes: ['Addresses', 'Orders'],
+  tagTypes: ['Addresses', 'Orders', 'Activity'],
   endpoints: (builder) => ({
     createOrder: builder.mutation({
       query: (orderData) => ({
@@ -22,11 +22,18 @@ export const orderApi = createApi({
         method: 'POST',
         body: orderData,
       }),
-      invalidatesTags: ['Orders'],
+      invalidatesTags: ['Orders', 'Activity'],
     }),
     getUserOrders: builder.query({
       query: () => '/orders/user',
       providesTags: ['Orders'],
+    }),
+    getUserActivity: builder.query({
+      query: () => '/orders/user/activity',
+      providesTags: ['Activity'],
+    }),
+    getRecommendedProducts: builder.query({
+      query: () => '/orders/user/recommended',
     }),
     getOrderById: builder.query({
       query: (orderId) => `/orders/${orderId}`,
@@ -57,6 +64,8 @@ export const orderApi = createApi({
 export const { 
   useCreateOrderMutation, 
   useGetUserOrdersQuery,
+  useGetUserActivityQuery,
+  useGetRecommendedProductsQuery,
   useGetOrderByIdQuery,
   useGetUserAddressesQuery, 
   useAddAddressMutation,

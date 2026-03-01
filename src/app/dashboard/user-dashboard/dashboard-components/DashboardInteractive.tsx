@@ -15,6 +15,9 @@ import AdminSidebar from '../../admin-dashboard/components/AdminSidebar';
 import AdminDashboardView from '../../admin-dashboard/components/AdminDashboardView';
 import { useAuth } from '@/features/auth/hooks/useAuth';
 import { useGetProfileQuery } from '@/store/api/authApi';
+import { useGetUserOrdersQuery, useGetUserActivityQuery, useGetRecommendedProductsQuery } from '@/store/api/orderApi';
+import { useGetWishlistQuery, useRemoveFromWishlistMutation } from '@/store/api/wishlistApi';
+import { useGetUserAddressesQuery } from '@/store/api/orderApi';
 
 interface Order {
   orderId: string;
@@ -89,6 +92,22 @@ const DashboardInteractive = () => {
     skip: !isAuthenticated(),
     refetchOnMountOrArgChange: true,
   });
+  const { data: ordersData, isLoading: ordersLoading } = useGetUserOrdersQuery(undefined, {
+    skip: !isAuthenticated(),
+  });
+  const { data: wishlistData, isLoading: wishlistLoading } = useGetWishlistQuery(undefined, {
+    skip: !isAuthenticated(),
+  });
+  const { data: addressesData, isLoading: addressesLoading } = useGetUserAddressesQuery(undefined, {
+    skip: !isAuthenticated(),
+  });
+  const { data: activityData, isLoading: activityLoading } = useGetUserActivityQuery(undefined, {
+    skip: !isAuthenticated(),
+  });
+  const { data: recommendedData, isLoading: recommendedLoading } = useGetRecommendedProductsQuery(undefined, {
+    skip: !isAuthenticated(),
+  });
+  const [removeFromWishlist] = useRemoveFromWishlistMutation();
 
   const [activeTab, setActiveTab] = useState<'orders' | 'wishlist' | 'addresses' | 'profile'>(
     'orders'
@@ -104,7 +123,7 @@ const DashboardInteractive = () => {
     }
   }, [mounted, user, isAdmin]);
 
-  if (!mounted || profileLoading)
+  if (!mounted || profileLoading || ordersLoading || wishlistLoading || addressesLoading || activityLoading || recommendedLoading)
     return (
       <div className="flex items-center justify-center p-20">
         <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary"></div>
@@ -128,206 +147,90 @@ const DashboardInteractive = () => {
     loyaltyPoints: 2450,
   };
 
-  const orders: Order[] = [
-    {
-      orderId: 'PM2026001234',
-      orderDate: '18/01/2026',
-      status: 'In Transit',
-      statusColor: 'bg-accent/10 text-accent',
-      totalAmount: 1847,
-      products: [
-        {
-          id: '1',
-          name: 'Premium Storage Container Set (5 Pieces)',
-          quantity: 1,
-          image: 'https://images.pexels.com/photos/4099471/pexels-photo-4099471.jpeg',
-          alt: 'Set of five transparent plastic storage containers with blue lids arranged on white surface',
-        },
-        {
-          id: '2',
-          name: 'Large Plastic Bucket - 20L',
-          quantity: 2,
-          image: 'https://images.unsplash.com/photo-1610557892470-55d9e80c0bce',
-          alt: 'Blue plastic bucket with metal handle on wooden floor',
-        },
-      ],
-      trackingNumber: 'TRK2026PM789456',
-    },
-    {
-      orderId: 'PM2026001189',
-      orderDate: '12/01/2026',
-      status: 'Delivered',
-      statusColor: 'bg-success/10 text-success',
-      totalAmount: 2345,
-      products: [
-        {
-          id: '3',
-          name: 'Decorative Flower Pots Set (3 Sizes)',
-          quantity: 1,
-          image: 'https://images.pixabay.com/photo/2016/11/29/12/13/pot-1869758_1280.jpg',
-          alt: 'Three terracotta-colored plastic flower pots of different sizes with drainage holes',
-        },
-      ],
-      trackingNumber: 'TRK2026PM654321',
-    },
-    {
-      orderId: 'PM2026001098',
-      orderDate: '05/01/2026',
-      status: 'Delivered',
-      statusColor: 'bg-success/10 text-success',
-      totalAmount: 1299,
-      products: [
-        {
-          id: '4',
-          name: 'Kitchen Organizer Bins (Set of 4)',
-          quantity: 1,
-          image: 'https://images.pexels.com/photos/6069113/pexels-photo-6069113.jpeg',
-          alt: 'Four white plastic organizer bins with handles arranged on kitchen counter',
-        },
-      ],
-      trackingNumber: 'TRK2026PM123789',
-    },
-  ];
+  const orders = (ordersData?.orders || []).map((order: any) => {
+    const images = order.product_images ? order.product_images.split('|||') : [];
+    const names = order.product_names ? order.product_names.split(', ') : [];
+    const slugs = order.product_slugs ? order.product_slugs.split(',') : [];
+    
+    return {
+      orderId: `ORD-${String(order.id).padStart(3, '0')}`,
+      orderDate: new Date(order.created_at).toLocaleDateString('en-GB'),
+      status: order.status === 'delivered' ? 'Delivered' : order.status === 'pending' ? 'Pending' : 'In Transit',
+      statusColor: order.status === 'delivered' ? 'bg-success/10 text-success' : order.status === 'pending' ? 'bg-warning/10 text-warning' : 'bg-accent/10 text-accent',
+      totalAmount: order.total,
+      products: names.map((name: string, idx: number) => ({
+        id: String(idx),
+        name,
+        quantity: 1,
+        image: images[idx] ? JSON.parse(images[idx])[0] : '',
+        alt: name,
+      })),
+      trackingNumber: `TRK2026PM${order.id}`,
+    };
+  });
 
-  const wishlistProducts: WishlistProduct[] = [
-    {
-      id: '5',
-      name: 'Premium Insulated Water Bottle - 1L',
-      price: 599,
-      originalPrice: 799,
-      image: 'https://images.unsplash.com/photo-1602143407151-7111542de6e8',
-      alt: 'Stainless steel insulated water bottle with blue plastic cap on wooden table',
-      inStock: true,
-      category: 'Drinkware',
-    },
-    {
-      id: '6',
-      name: 'Modular Kitchen Storage Containers (6 Pieces)',
-      price: 1299,
-      originalPrice: 1599,
-      image: 'https://images.pexels.com/photos/6069113/pexels-photo-6069113.jpeg',
-      alt: 'Six transparent plastic containers with colorful lids stacked on kitchen shelf',
-      inStock: true,
-      category: 'Kitchen Storage',
-    },
-    {
-      id: '7',
-      name: 'Large Garden Planter with Drainage',
-      price: 899,
-      image: 'https://images.pixabay.com/photo/2017/08/01/11/48/flower-pot-2564684_1280.jpg',
-      alt: 'Large brown plastic planter with drainage holes filled with green plants',
-      inStock: false,
-      category: 'Gardening',
-    },
-    {
-      id: '8',
-      name: 'Multi-Purpose Dustbin with Lid - 25L',
-      price: 749,
-      originalPrice: 999,
-      image: 'https://images.unsplash.com/photo-1610557892470-55d9e80c0bce',
-      alt: 'Gray plastic dustbin with pedal-operated lid in modern kitchen setting',
-      inStock: true,
-      category: 'Home Utility',
-    },
-  ];
+  const wishlistProducts = (wishlistData?.wishlist || []).map((item: any) => ({
+    id: String(item.id),
+    name: item.product?.name || '',
+    price: item.product?.price || 0,
+    originalPrice: item.product?.original_price,
+    image: item.product?.product_images ? JSON.parse(item.product.product_images)[0] : '',
+    alt: item.product?.name || '',
+    inStock: item.product?.stock > 0,
+    category: item.product?.category || 'General',
+  }));
 
   const quickStats = {
     totalOrders: orders.length,
-    activeOrders: orders.filter(o => o.status === 'In Transit').length,
+    activeOrders: orders.filter((o: any) => o.status === 'In Transit').length,
     wishlistItems: wishlistProducts.length,
   };
 
-  const addresses: Address[] = [
-    {
-      id: '1',
-      name: 'Home',
-      addressLine1: '123, Green Valley Apartments',
-      addressLine2: 'Sector 15, Rohini',
-      city: 'New Delhi',
-      state: 'Delhi',
-      pincode: '110085',
-      phone: '9876543210',
-      isDefault: true,
-    },
-    {
-      id: '2',
-      name: 'Office',
-      addressLine1: 'Plot No. 45, Industrial Area',
-      addressLine2: 'Phase 2, Udyog Vihar',
-      city: 'Gurugram',
-      state: 'Haryana',
-      pincode: '122016',
-      phone: '9876543211',
-      isDefault: false,
-    },
-  ];
+  const addresses = (addressesData?.addresses || []).map((addr: any) => ({
+    id: String(addr.id),
+    name: addr.name,
+    addressLine1: addr.address_line1,
+    addressLine2: addr.address_line2,
+    city: addr.city,
+    state: addr.state,
+    pincode: addr.pincode,
+    phone: addr.phone,
+    isDefault: Boolean(addr.is_default),
+  }));
 
-  const recommendedProducts: RecommendedProductType[] = [
-    {
-      id: '9',
-      name: 'Stackable Food Storage Containers',
-      price: 899,
-      originalPrice: 1199,
-      image: 'https://images.pexels.com/photos/4099471/pexels-photo-4099471.jpeg',
-      alt: 'Stack of transparent plastic food containers with airtight lids on kitchen counter',
-      rating: 4.5,
-      reviewCount: 234,
-    },
-    {
-      id: '10',
-      name: 'Colorful Plastic Mugs Set (6 Pieces)',
-      price: 449,
-      image: 'https://images.unsplash.com/photo-1514228742587-6b1558fcca3d',
-      alt: 'Six colorful plastic mugs in red, blue, green, yellow, orange, and purple arranged in circle',
-      rating: 4.2,
-      reviewCount: 156,
-    },
-    {
-      id: '11',
-      name: 'Heavy Duty Plastic Bucket - 25L',
-      price: 599,
-      originalPrice: 749,
-      image: 'https://images.pixabay.com/photo/2016/11/29/12/13/bucket-1869760_1280.jpg',
-      alt: 'Large red plastic bucket with reinforced rim and metal handle',
-      rating: 4.7,
-      reviewCount: 189,
-    },
-  ];
+  const recommendedProducts = (recommendedData?.products || []).map((product: any) => ({
+    id: String(product.id),
+    name: product.name,
+    price: product.price,
+    originalPrice: product.original_price,
+    image: product.product_images ? JSON.parse(product.product_images)[0] : '',
+    alt: product.name,
+    rating: 4.5,
+    reviewCount: 0,
+  }));
 
-  const recentActivities: Activity[] = [
-    {
-      id: '1',
-      icon: 'TruckIcon',
-      iconColor: 'bg-accent',
-      title: 'Order Shipped',
-      description: 'Your order #PM2026001234 has been shipped and is on the way',
-      timestamp: '2 hours ago',
-    },
-    {
-      id: '2',
-      icon: 'HeartIcon',
-      iconColor: 'bg-error',
-      title: 'Added to Wishlist',
-      description: 'Premium Insulated Water Bottle added to your wishlist',
-      timestamp: '1 day ago',
-    },
-    {
-      id: '3',
-      icon: 'CheckCircleIcon',
-      iconColor: 'bg-success',
-      title: 'Order Delivered',
-      description: 'Order #PM2026001189 has been successfully delivered',
-      timestamp: '6 days ago',
-    },
-    {
-      id: '4',
-      icon: 'StarIcon',
-      iconColor: 'bg-warning',
-      title: 'Review Submitted',
-      description: 'Thank you for reviewing Decorative Flower Pots Set',
-      timestamp: '1 week ago',
-    },
-  ];
+  const getTimeAgo = (timestamp: string) => {
+    const now = new Date();
+    const past = new Date(timestamp);
+    const diffMs = now.getTime() - past.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMs / 3600000);
+    const diffDays = Math.floor(diffMs / 86400000);
+    
+    if (diffMins < 60) return `${diffMins} ${diffMins === 1 ? 'minute' : 'minutes'} ago`;
+    if (diffHours < 24) return `${diffHours} ${diffHours === 1 ? 'hour' : 'hours'} ago`;
+    if (diffDays < 7) return `${diffDays} ${diffDays === 1 ? 'day' : 'days'} ago`;
+    return `${Math.floor(diffDays / 7)} ${Math.floor(diffDays / 7) === 1 ? 'week' : 'weeks'} ago`;
+  };
+
+  const recentActivities = (activityData?.activities || []).map((activity: any) => ({
+    id: String(activity.timestamp),
+    icon: activity.icon,
+    iconColor: activity.iconColor,
+    title: activity.title,
+    description: activity.description,
+    timestamp: getTimeAgo(activity.timestamp),
+  }));
 
   const profileData: ProfileData = {
     name: user?.fullName || 'User',
@@ -336,8 +239,12 @@ const DashboardInteractive = () => {
     dateOfBirth: '15/08/1985', // Keep as example if not in User model
   };
 
-  const handleRemoveFromWishlist = (_productId: string) => {
-    // Remove from wishlist logic
+  const handleRemoveFromWishlist = async (productId: string) => {
+    try {
+      await removeFromWishlist(productId).unwrap();
+    } catch (error) {
+      console.error('Failed to remove from wishlist:', error);
+    }
   };
 
   const handleAddToCart = (_productId: string) => {

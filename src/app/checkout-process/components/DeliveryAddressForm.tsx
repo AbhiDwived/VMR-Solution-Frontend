@@ -36,10 +36,22 @@ const DeliveryAddressForm = ({ onAddressSelect, selectedAddressId }: DeliveryAdd
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  const { data: addressesData, isLoading } = useGetUserAddressesQuery(undefined);
+  const { data: addressesData, isLoading, refetch } = useGetUserAddressesQuery(undefined);
   const [addAddress, { isLoading: isAdding }] = useAddAddressMutation();
   const [setDefaultAddress] = useSetDefaultAddressMutation();
-  const savedAddresses = addressesData?.addresses || [];
+  
+  const savedAddresses = (addressesData?.addresses || []).map((addr: any) => ({
+    id: String(addr.id),
+    name: addr.name,
+    phone: addr.phone,
+    addressLine1: addr.address_line1,
+    addressLine2: addr.address_line2,
+    city: addr.city,
+    state: addr.state,
+    pincode: addr.pincode,
+    isDefault: Boolean(addr.is_default),
+  }));
+  
   const defaultAddress = savedAddresses.find((addr: any) => addr.isDefault) || savedAddresses[0];
 
   useEffect(() => {
@@ -100,6 +112,7 @@ const DeliveryAddressForm = ({ onAddressSelect, selectedAddressId }: DeliveryAdd
     if (validateForm()) {
       try {
         await addAddress(formData).unwrap();
+        await refetch();
         toast.success('Address added successfully');
         setShowAddressForm(false);
         setFormData({

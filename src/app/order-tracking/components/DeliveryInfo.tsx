@@ -5,6 +5,9 @@ interface DeliveryInfoProps {
   partnerContact: string;
   expectedDelivery: string;
   deliveryAddress: string;
+  customerName?: string;
+  customerEmail?: string;
+  customerPhone?: string;
 }
 
 const DeliveryInfo = ({
@@ -12,6 +15,9 @@ const DeliveryInfo = ({
   partnerContact,
   expectedDelivery,
   deliveryAddress,
+  customerName,
+  customerEmail,
+  customerPhone,
 }: DeliveryInfoProps) => {
   return (
     <div className="rounded-lg bg-card p-6 shadow-elevation-2">
@@ -20,35 +26,41 @@ const DeliveryInfo = ({
       </h2>
 
       <div className="space-y-4">
-        <div className="flex items-start space-x-3">
-          <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-primary/10">
-            <Icon name="TruckIcon" size={20} className="text-primary" />
+        {customerName && (
+          <div className="flex items-start space-x-3">
+            <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-primary/10">
+              <Icon name="UserIcon" size={20} className="text-primary" />
+            </div>
+            <div className="flex-1">
+              <p className="text-sm font-medium text-foreground">Customer Name</p>
+              <p className="caption mt-1 text-muted-foreground">{customerName}</p>
+            </div>
           </div>
-          <div className="flex-1">
-            <p className="text-sm font-medium text-foreground">Delivery Partner</p>
-            <p className="caption mt-1 text-muted-foreground">{deliveryPartner}</p>
-          </div>
-        </div>
+        )}
 
-        <div className="flex items-start space-x-3">
-          <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-accent/10">
-            <Icon name="PhoneIcon" size={20} className="text-accent" />
+        {customerEmail && (
+          <div className="flex items-start space-x-3">
+            <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-accent/10">
+              <Icon name="EnvelopeIcon" size={20} className="text-accent" />
+            </div>
+            <div className="flex-1">
+              <p className="text-sm font-medium text-foreground">Email</p>
+              <p className="caption mt-1 text-muted-foreground">{customerEmail}</p>
+            </div>
           </div>
-          <div className="flex-1">
-            <p className="text-sm font-medium text-foreground">Contact Number</p>
-            <p className="caption mt-1 text-muted-foreground">{partnerContact}</p>
-          </div>
-        </div>
+        )}
 
-        <div className="flex items-start space-x-3">
-          <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-success/10">
-            <Icon name="CalendarIcon" size={20} className="text-success" />
+        {customerPhone && (
+          <div className="flex items-start space-x-3">
+            <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-success/10">
+              <Icon name="PhoneIcon" size={20} className="text-success" />
+            </div>
+            <div className="flex-1">
+              <p className="text-sm font-medium text-foreground">Phone Number</p>
+              <p className="caption mt-1 text-muted-foreground">{customerPhone}</p>
+            </div>
           </div>
-          <div className="flex-1">
-            <p className="text-sm font-medium text-foreground">Expected Delivery</p>
-            <p className="caption mt-1 text-muted-foreground">{expectedDelivery}</p>
-          </div>
-        </div>
+        )}
 
         <div className="flex items-start space-x-3">
           <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-secondary/10">

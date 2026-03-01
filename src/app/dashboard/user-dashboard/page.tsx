@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
 import DashboardInteractive from './dashboard-components/DashboardInteractive';
-import AuthGuard from '@/features/auth/components/AuthGuard';
 
 export const metadata: Metadata = {
   title: 'My Account - VMR Solution',
@@ -9,17 +8,5 @@ export const metadata: Metadata = {
 };
 
 export default function UserDashboardPage() {
-  return (
-    <AuthGuard
-      requireAuth={true}
-      requireVerification={false}
-      allowedRoles={['user']}
-    >
-      <div className="min-h-screen bg-background">
-        <main className="mx-auto max-w-full px-4 py-6 sm:px-6 md:px-8 md:py-8">
-          <DashboardInteractive />
-        </main>
-      </div>
-    </AuthGuard>
-  );
+  return <DashboardInteractive />;
 }
