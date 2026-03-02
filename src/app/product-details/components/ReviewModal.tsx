@@ -21,7 +21,7 @@ const ReviewModal = ({ isOpen, onClose, onSubmit }: ReviewModalProps) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!rating || !comment) return;
-    onSubmit({ userName: user?.full_name || user?.name || 'Guest User', rating, comment });
+    onSubmit({ userName: user?.fullName || 'Guest User', rating, comment });
     setRating(0);
     setComment('');
     onClose();
