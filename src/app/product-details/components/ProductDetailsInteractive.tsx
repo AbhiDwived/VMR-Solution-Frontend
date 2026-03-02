@@ -448,6 +448,7 @@ const ProductDetailsInteractive = () => {
         {/* Product Details Tabs */}
         <div className="rounded-xl border bg-white shadow-sm">
           <ProductTabs
+            productId={Number(product.id)}
             specifications={specifications}
             careInstructions={careInstructions}
             warrantyInfo={warrantyInfo}
