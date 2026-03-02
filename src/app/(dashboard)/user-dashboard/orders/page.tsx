@@ -5,7 +5,7 @@ import Link from 'next/link';
 import Icon from '@/components/ui/AppIcon';
 
 export default function OrdersPage() {
-  const { data: ordersData, isLoading, error } = useGetUserOrdersQuery();
+  const { data: ordersData, isLoading } = useGetUserOrdersQuery();
   const orders = ordersData?.orders || [];
 
   if (isLoading) {
