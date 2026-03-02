@@ -2,7 +2,7 @@ import { baseApi } from './baseApi'
 
 export const wishlistApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    getWishlist: builder.query({
+    getWishlist: builder.query<any, void>({
       query: () => '/protected/wishlist',
       providesTags: ['Wishlist'],
     }),

@@ -28,7 +28,7 @@ export const reviewsApi = createApi({
       query: (productId) => `/reviews/${productId}`,
       providesTags: ['Reviews'],
     }),
-    getUserReviews: builder.query({
+    getUserReviews: builder.query<any, void>({
       query: () => '/reviews/user',
       providesTags: ['Reviews'],
     }),
