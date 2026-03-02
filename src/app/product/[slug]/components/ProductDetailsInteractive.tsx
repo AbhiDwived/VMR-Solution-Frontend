@@ -77,7 +77,7 @@ const ProductDetailsInteractive = () => {
       const foundProduct = productData.data;
       if (foundProduct) {
         setProduct(foundProduct);
-        let images = [];
+        let images: any[] = [];
         if (Array.isArray(foundProduct.product_images)) {
           images = foundProduct.product_images;
         } else if (typeof foundProduct.product_images === 'string') {
@@ -96,7 +96,7 @@ const ProductDetailsInteractive = () => {
         setCurrentImages(productImages);
 
         // Create variants from database variants data
-        let dbVariants = [];
+        let dbVariants: any[] = [];
         if (Array.isArray(foundProduct.variants)) {
           dbVariants = foundProduct.variants;
         } else if (typeof foundProduct.variants === 'string') {
@@ -156,13 +156,15 @@ const ProductDetailsInteractive = () => {
     { label: 'Weight', value: product.weight ? `${product.weight}kg` : 'N/A' },
     { label: 'Warranty', value: product.warranty || 'N/A' },
     { label: 'Category', value: product.category || 'N/A' },
-    { label: 'Sizes', value: (() => {
-      try {
-        return JSON.parse(product.sizes || '[]').join(', ') || 'N/A';
-      } catch (e) {
-        return 'N/A';
-      }
-    })() },
+    {
+      label: 'Sizes', value: (() => {
+        try {
+          return JSON.parse(product.sizes || '[]').join(', ') || 'N/A';
+        } catch (e) {
+          return 'N/A';
+        }
+      })()
+    },
     { label: 'Care Instructions', value: product.care_instructions || 'N/A' },
     { label: 'Additional Info', value: product.additional_info || 'N/A' },
     { label: 'Stock Quantity', value: product.stock_quantity?.toString() || 'N/A' },
@@ -261,7 +263,7 @@ const ProductDetailsInteractive = () => {
       }
 
       // Get all variant images
-      let dbVariants = [];
+      let dbVariants: any[] = [];
       if (Array.isArray(product?.variants)) {
         dbVariants = product.variants;
       } else if (typeof product?.variants === 'string') {
@@ -288,7 +290,7 @@ const ProductDetailsInteractive = () => {
       });
 
       if (allImages.length === 0) {
-        let images = [];
+        let images: any[] = [];
         if (Array.isArray(product?.product_images)) {
           images = product.product_images;
         } else if (typeof product?.product_images === 'string') {
@@ -319,22 +321,22 @@ const ProductDetailsInteractive = () => {
     setSelectedVariant(variant);
 
     // Find variant-specific images from the product's variants data
-    let productVariants = [];
+    let variantData: any[] = [];
     if (Array.isArray(product.variants)) {
-      productVariants = product.variants;
+      variantData = product.variants;
     } else if (typeof product.variants === 'string') {
       try {
-        productVariants = JSON.parse(product.variants);
+        variantData = JSON.parse(product.variants);
       } catch (e) {
         console.warn('Failed to parse variants for variant change:', e);
-        productVariants = [];
+        variantData = [];
       }
     }
-    const matchingVariant = productVariants.find((v: any) =>
+    const matchingVariant = variantData.find((v: any) =>
       v.color?.code === variant.colorHex && v.size === variant.size
     );
 
-    if (matchingVariant?.images?.length > 0) {
+    if (matchingVariant && matchingVariant.images && matchingVariant.images.length > 0) {
       // Use variant-specific images
       const variantImages = matchingVariant.images.map((url: string, index: number) => ({
         id: `variant-${index + 1}`,
@@ -345,7 +347,7 @@ const ProductDetailsInteractive = () => {
       setCurrentImages(variantImages);
     } else {
       // Fallback to default product images
-      let images = [];
+      let images: any[] = [];
       if (Array.isArray(product.product_images)) {
         images = product.product_images;
       } else if (typeof product.product_images === 'string') {
@@ -370,14 +372,14 @@ const ProductDetailsInteractive = () => {
       toast.error('Please select a product variant');
       return;
     }
-    
+
     try {
       await addToCartApi({
         product_id: product.id,
         variant_id: selectedVariant.id,
         quantity,
       }).unwrap();
-      
+
       dispatch(addItem({
         id: product.id.toString(),
         name: product.name,
@@ -386,7 +388,7 @@ const ProductDetailsInteractive = () => {
         quantity,
         variant: `${selectedVariant.color} - ${selectedVariant.size}`,
       }));
-      
+
       toast.success(`Added ${quantity} item(s) to cart!`);
     } catch (error) {
       dispatch(addItem({
@@ -406,7 +408,7 @@ const ProductDetailsInteractive = () => {
       toast.error('Please select a product variant');
       return;
     }
-    
+
     try {
       await addToCartApi({
         product_id: product.id,
@@ -416,7 +418,7 @@ const ProductDetailsInteractive = () => {
     } catch (error) {
       // Continue even if API fails
     }
-    
+
     dispatch(addItem({
       id: product.id.toString(),
       name: product.name,
@@ -425,7 +427,7 @@ const ProductDetailsInteractive = () => {
       quantity,
       variant: `${selectedVariant.color} - ${selectedVariant.size}`,
     }));
-    
+
     router.push('/checkout-process');
   };
 
