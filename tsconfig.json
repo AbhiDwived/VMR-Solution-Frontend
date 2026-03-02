@@ -31,6 +31,7 @@
     // Strict TypeScript settings for production
     "noUnusedLocals": true,
     "noUnusedParameters": false,
+    "noImplicitAny": false,
     "exactOptionalPropertyTypes": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,

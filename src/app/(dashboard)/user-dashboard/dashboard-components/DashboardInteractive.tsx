@@ -15,69 +15,8 @@ import AdminSidebar from '../../admin-dashboard/components/AdminSidebar';
 import AdminDashboardView from '../../admin-dashboard/components/AdminDashboardView';
 import { useAuth } from '@/features/auth/hooks/useAuth';
 import { useGetProfileQuery } from '@/store/api/authApi';
-import { useGetUserOrdersQuery, useGetUserActivityQuery, useGetRecommendedProductsQuery } from '@/store/api/orderApi';
+import { useGetUserOrdersQuery, useGetUserActivityQuery, useGetRecommendedProductsQuery, useGetUserAddressesQuery } from '@/store/api/orderApi';
 import { useGetWishlistQuery, useRemoveFromWishlistMutation } from '@/store/api/wishlistApi';
-import { useGetUserAddressesQuery } from '@/store/api/orderApi';
-
-interface Order {
-  orderId: string;
-  orderDate: string;
-  status: string;
-  statusColor: string;
-  totalAmount: number;
-  products: Array<{
-    id: string;
-    name: string;
-    quantity: number;
-    image: string;
-    alt: string;
-  }>;
-  trackingNumber: string;
-}
-
-interface WishlistProduct {
-  id: string;
-  name: string;
-  price: number;
-  originalPrice?: number;
-  image: string;
-  alt: string;
-  inStock: boolean;
-  category: string;
-}
-
-interface Address {
-  id: string;
-  name: string;
-  addressLine1: string;
-  addressLine2: string;
-  city: string;
-  state: string;
-  pincode: string;
-  phone: string;
-  isDefault: boolean;
-}
-
-interface RecommendedProductType {
-  id: string;
-  name: string;
-  price: number;
-  originalPrice?: number;
-  image: string;
-  alt: string;
-  rating: number;
-  reviewCount: number;
-}
-
-interface Activity {
-  id: string;
-  icon: string;
-  iconColor: string;
-  title: string;
-  description: string;
-  timestamp: string;
-}
-
 interface ProfileData {
   name: string;
   email: string;
@@ -150,7 +89,6 @@ const DashboardInteractive = () => {
   const orders = (ordersData?.orders || []).map((order: any) => {
     const images = order.product_images ? order.product_images.split('|||') : [];
     const names = order.product_names ? order.product_names.split(', ') : [];
-    const slugs = order.product_slugs ? order.product_slugs.split(',') : [];
     
     return {
       orderId: `ORD-${String(order.id).padStart(3, '0')}`,
