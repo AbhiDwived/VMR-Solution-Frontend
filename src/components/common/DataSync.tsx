@@ -11,14 +11,14 @@ import { syncWishlist } from '@/store/slices/wishlist'
 export default function DataSync() {
   const dispatch = useDispatch()
   const { isAuthenticated } = useSelector((state: RootState) => state.auth)
-  
+
   const { data: cartData } = useGetCartQuery(undefined, { skip: !isAuthenticated })
   const { data: wishlistData } = useGetWishlistQuery(undefined, { skip: !isAuthenticated })
 
   useEffect(() => {
     if (cartData?.success && cartData.data) {
       const items = cartData.data.map((item: any) => {
-        let images = []
+        let images: any[] = []
         try {
           images = typeof item.product_images === 'string' ? JSON.parse(item.product_images) : item.product_images
         } catch (e) {
@@ -40,7 +40,7 @@ export default function DataSync() {
   useEffect(() => {
     if (wishlistData?.success && wishlistData.data) {
       const items = wishlistData.data.map((item: any) => {
-        let images = []
+        let images: any[] = []
         try {
           images = typeof item.product_images === 'string' ? JSON.parse(item.product_images) : item.product_images
         } catch (e) {

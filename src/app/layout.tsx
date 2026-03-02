@@ -9,8 +9,16 @@ import '../styles/index.css';
 import '../styles/toastify.css';
 import 'react-toastify/dist/ReactToastify.css';
 
-const Header = React.lazy(() => import('@/components/common/Header'));
-const Footer = React.lazy(() => import('@/components/common/Footer'));
+import dynamic from 'next/dynamic';
+
+const Header = dynamic(() => import('@/components/common/Header'), {
+  ssr: true,
+  loading: () => <div className="h-16 bg-card border-b" />,
+});
+const Footer = dynamic(() => import('@/components/common/Footer'), {
+  ssr: true,
+  loading: () => <div className="h-32 bg-muted" />,
+});
 
 export const viewport: Viewport = {
   width: 'device-width',
@@ -36,13 +44,9 @@ export default function RootLayout({
         <StoreProvider>
           <DataSync />
           <BulkOrderProvider>
-            <React.Suspense fallback={<div className="h-16 bg-card border-b" />}>
-              <Header />
-            </React.Suspense>
+            <Header />
             {children}
-            <React.Suspense fallback={<div className="h-32 bg-muted" />}>
-              <Footer />
-            </React.Suspense>
+            <Footer />
             <BulkOrderModal />
             <ToastContainer position="top-right" autoClose={3000} />
           </BulkOrderProvider>
