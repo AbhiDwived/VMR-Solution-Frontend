@@ -8,9 +8,6 @@ export default function OrdersPage() {
   const { data: ordersData, isLoading, error } = useGetUserOrdersQuery();
   const orders = ordersData?.orders || [];
 
-  console.log('Orders data:', ordersData);
-  console.log('Error:', error);
-
   if (isLoading) {
     return (
       <div>

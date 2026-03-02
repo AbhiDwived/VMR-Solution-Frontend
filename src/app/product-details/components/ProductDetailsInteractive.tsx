@@ -459,7 +459,7 @@ const ProductDetailsInteractive = () => {
 
         {/* Related Products */}
         <div>
-          <RelatedProducts products={relatedProducts} />
+          <RelatedProducts slug={product.slug} />
         </div>
       </div>
     </div>
