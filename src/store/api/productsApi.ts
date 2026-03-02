@@ -38,6 +38,10 @@ export const productsApi = baseApi.injectEndpoints({
       query: (slug) => `/product/slug/${slug}`,
       providesTags: (_result, _error, slug) => [{ type: 'Product', id: slug }],
     }),
+    getRelatedProducts: builder.query<any, string>({
+      query: (slug) => `/product/slug/${slug}/related`,
+      providesTags: ['Product'],
+    }),
     getCategories: builder.query<string[], void>({
       query: () => '/categories',
       providesTags: ['Product'],
@@ -100,6 +104,7 @@ export const {
   useGetProductsQuery,
   useGetProductQuery,
   useGetProductBySlugQuery,
+  useGetRelatedProductsQuery,
   useGetCategoriesQuery,
   useAddAdminProductMutation,
   useGetAdminProductsQuery,

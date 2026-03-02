@@ -493,7 +493,7 @@ const ProductDetailsInteractive = () => {
       />
 
       {/* Related Products */}
-      <RelatedProducts products={relatedProducts} />
+      <RelatedProducts slug={slug} />
     </div>
   );
 };

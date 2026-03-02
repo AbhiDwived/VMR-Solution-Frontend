@@ -3,23 +3,18 @@
 import Link from 'next/link';
 import AppImage from '@/components/ui/AppImage';
 import Icon from '@/components/ui/AppIcon';
-
-interface RelatedProduct {
-  id: string;
-  name: string;
-  image: string;
-  alt: string;
-  price: number;
-  originalPrice?: number;
-  rating: number;
-  category: string;
-}
+import { useGetRelatedProductsQuery } from '@/store/api/productsApi';
 
 interface RelatedProductsProps {
-  products: RelatedProduct[];
+  slug: string;
 }
 
-const RelatedProducts = ({ products }: RelatedProductsProps) => {
+const RelatedProducts = ({ slug }: RelatedProductsProps) => {
+  const { data, isLoading } = useGetRelatedProductsQuery(slug);
+
+  if (isLoading) return <div className="text-center py-8">Loading...</div>;
+  if (!data?.data || data.data.length === 0) return null;
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -36,21 +31,21 @@ const RelatedProducts = ({ products }: RelatedProductsProps) => {
       </div>
 
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-        {products.map((product) => {
-          const discountPercentage = product.originalPrice
-            ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
+        {data.data.map((product: any) => {
+          const discountPercentage = product.price && product.discount_price
+            ? Math.round(((product.price - product.discount_price) / product.price) * 100)
             : 0;
 
           return (
             <Link
               key={product.id}
-              href="/product-details"
+              href={`/product/${product.slug}`}
               className="group rounded-lg border border-border bg-card transition-smooth hover:shadow-elevation-2"
             >
               <div className="relative aspect-square overflow-hidden rounded-t-lg bg-muted">
                 <AppImage
-                  src={product.image}
-                  alt={product.alt}
+                  src={product.product_images?.[0] || ''}
+                  alt={product.name}
                   className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
                 />
                 {discountPercentage > 0 && (
@@ -66,31 +61,13 @@ const RelatedProducts = ({ products }: RelatedProductsProps) => {
                   {product.name}
                 </h3>
 
-                <div className="mb-2 flex items-center space-x-1">
-                  {[...Array(5)].map((_, index) => (
-                    <Icon
-                      key={index}
-                      name="StarIcon"
-                      size={14}
-                      variant={index < Math.floor(product.rating) ? 'solid' : 'outline'}
-                      className={
-                        index < Math.floor(product.rating)
-                          ? 'text-accent' :'text-muted-foreground'
-                      }
-                    />
-                  ))}
-                  <span className="caption text-muted-foreground">
-                    ({product.rating.toFixed(1)})
-                  </span>
-                </div>
-
                 <div className="flex items-baseline space-x-2">
                   <span className="data-text font-bold text-primary">
-                    ₹{product.price.toLocaleString('en-IN')}
+                    ₹{Number(product.discount_price || product.price).toLocaleString('en-IN')}
                   </span>
-                  {product.originalPrice && (
+                  {product.price && product.discount_price && product.price !== product.discount_price && (
                     <span className="caption text-muted-foreground line-through">
-                      ₹{product.originalPrice.toLocaleString('en-IN')}
+                      ₹{Number(product.price).toLocaleString('en-IN')}
                     </span>
                   )}
                 </div>
