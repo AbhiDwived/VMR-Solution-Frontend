@@ -15,35 +15,35 @@ const UserSidebar = () => {
     {
       groupName: 'MY ORDERS',
       items: [
-        { title: 'All Orders', icon: 'ShoppingBagIcon', href: '/dashboard/user-dashboard/orders' },
+        { title: 'All Orders', icon: 'ShoppingBagIcon', href: '/user-dashboard/orders' },
         {
           title: 'Bulk Inquiries',
           icon: 'ChatBubbleLeftRightIcon',
-          href: '/dashboard/user-dashboard/bulk-inquiries',
+          href: '/user-dashboard/bulk-inquiries',
         },
       ],
     },
     {
       groupName: 'ACCOUNT SETTINGS',
       items: [
-        { title: 'Profile Information', icon: 'UserIcon', href: '/dashboard/user-dashboard/profile' },
-        { title: 'GST Information', icon: 'DocumentTextIcon', href: '/dashboard/user-dashboard/gst-info' },
-        { title: 'Manage Addresses', icon: 'MapPinIcon', href: '/dashboard/user-dashboard/addresses' },
+        { title: 'Profile Information', icon: 'UserIcon', href: '/user-dashboard/profile' },
+        { title: 'GST Information', icon: 'DocumentTextIcon', href: '/user-dashboard/gst-info' },
+        { title: 'Manage Addresses', icon: 'MapPinIcon', href: '/user-dashboard/addresses' },
       ],
     },
     {
       groupName: 'PAYMENTS',
       items: [
-        { title: 'Saved Cards', icon: 'CreditCardIcon', href: '/dashboard/user-dashboard/saved-cards' },
+        { title: 'Saved Cards', icon: 'CreditCardIcon', href: '/user-dashboard/saved-cards' },
       ],
     },
     {
       groupName: 'MY STUFF',
       items: [
-        { title: 'My Coupons', icon: 'TicketIcon', href: '/dashboard/user-dashboard/coupons' },
-        { title: 'My Reviews & Ratings', icon: 'StarIcon', href: '/dashboard/user-dashboard/reviews' },
-        { title: 'All Notifications', icon: 'BellIcon', href: '/dashboard/user-dashboard/notifications', badge: unreadData?.count },
-        { title: 'My Wishlist', icon: 'HeartIcon', href: '/dashboard/user-dashboard/wishlist' },
+        { title: 'My Coupons', icon: 'TicketIcon', href: '/user-dashboard/coupons' },
+        { title: 'My Reviews & Ratings', icon: 'StarIcon', href: '/user-dashboard/reviews' },
+        { title: 'All Notifications', icon: 'BellIcon', href: '/user-dashboard/notifications', badge: unreadData?.count },
+        { title: 'My Wishlist', icon: 'HeartIcon', href: '/user-dashboard/wishlist' },
       ],
     },
   ];

@@ -13,37 +13,37 @@ const AdminSidebar = () => {
     {
       groupName: 'CUSTOMERS',
       items: [
-        { title: 'Users', icon: 'UsersIcon', href: '/dashboard/admin-dashboard/users' },
-        { title: 'Inquiries', icon: 'ChatBubbleLeftRightIcon', href: '/dashboard/admin-dashboard/inquiries' },
-        { title: 'Contact Us', icon: 'EnvelopeIcon', href: '/dashboard/admin-dashboard/contact' },
-        { title: 'Notifications', icon: 'BellIcon', href: '/dashboard/admin-dashboard/notifications' },
+        { title: 'Users', icon: 'UsersIcon', href: '/admin-dashboard/users' },
+        { title: 'Inquiries', icon: 'ChatBubbleLeftRightIcon', href: '/admin-dashboard/inquiries' },
+        { title: 'Contact Us', icon: 'EnvelopeIcon', href: '/admin-dashboard/contact' },
+        { title: 'Notifications', icon: 'BellIcon', href: '/admin-dashboard/notifications' },
       ],
     },
     {
       groupName: 'PRODUCTS',
       items: [
-        { title: 'Add Product', icon: 'PlusCircleIcon', href: '/dashboard/admin-dashboard/addProduct' },
-        { title: 'Products', icon: 'ArchiveBoxIcon', href: '/dashboard/admin-dashboard/products' },
-        { title: 'Inventory', icon: 'RectangleStackIcon', href: '/dashboard/admin-dashboard/inventory' },
-        { title: 'Categories', icon: 'TableCellsIcon', href: '/dashboard/admin-dashboard/categories' },
-        { title: 'Brands', icon: 'TagIcon', href: '/dashboard/admin-dashboard/brands' },
+        { title: 'Add Product', icon: 'PlusCircleIcon', href: '/admin-dashboard/addProduct' },
+        { title: 'Products', icon: 'ArchiveBoxIcon', href: '/admin-dashboard/products' },
+        { title: 'Inventory', icon: 'RectangleStackIcon', href: '/admin-dashboard/inventory' },
+        { title: 'Categories', icon: 'TableCellsIcon', href: '/admin-dashboard/categories' },
+        { title: 'Brands', icon: 'TagIcon', href: '/admin-dashboard/brands' },
       ],
     },
      {
       groupName: 'CONTENT',
       items: [
-        { title: 'Blog', icon: 'DocumentTextIcon', href: '/dashboard/admin-dashboard/blog' },
-        { title: 'Content', icon: 'NewspaperIcon', href: '/dashboard/admin-dashboard/content' },
+        { title: 'Blog', icon: 'DocumentTextIcon', href: '/admin-dashboard/blog' },
+        { title: 'Content', icon: 'NewspaperIcon', href: '/admin-dashboard/content' },
       ],
     },
     {
       groupName: 'ORDERS & SALES',
       items: [
-        { title: 'Orders', icon: 'ShoppingBagIcon', href: '/dashboard/admin-dashboard/orders' },
-        { title: 'Revenue', icon: 'CurrencyDollarIcon', href: '/dashboard/admin-dashboard/revenue' },
-        { title: 'Return', icon: 'ArrowUturnLeftIcon', href: '/dashboard/admin-dashboard/return' },
-        { title: 'Coupons', icon: 'TicketIcon', href: '/dashboard/admin-dashboard/coupons' },
-        { title: 'Subscribe', icon: 'CreditCardIcon', href: '/dashboard/admin-dashboard/subscription' },
+        { title: 'Orders', icon: 'ShoppingBagIcon', href: '/admin-dashboard/orders' },
+        { title: 'Revenue', icon: 'CurrencyDollarIcon', href: '/admin-dashboard/revenue' },
+        { title: 'Return', icon: 'ArrowUturnLeftIcon', href: '/admin-dashboard/return' },
+        { title: 'Coupons', icon: 'TicketIcon', href: '/admin-dashboard/coupons' },
+        { title: 'Subscribe', icon: 'CreditCardIcon', href: '/admin-dashboard/subscription' },
       ],
     },
    

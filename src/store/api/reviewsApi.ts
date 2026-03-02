@@ -28,7 +28,11 @@ export const reviewsApi = createApi({
       query: (productId) => `/reviews/${productId}`,
       providesTags: ['Reviews'],
     }),
+    getUserReviews: builder.query({
+      query: () => '/reviews/user',
+      providesTags: ['Reviews'],
+    }),
   }),
 });
 
-export const { useCreateReviewMutation, useGetProductReviewsQuery } = reviewsApi;
+export const { useCreateReviewMutation, useGetProductReviewsQuery, useGetUserReviewsQuery } = reviewsApi;

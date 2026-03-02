@@ -3,7 +3,7 @@ export const ROUTES = {
   PRODUCTS: '/products',
   CART: '/shopping-cart',
   CHECKOUT: '/checkout-process',
-  DASHBOARD: '/dashboard/user-dashboard',
+  DASHBOARD: '/user-dashboard',
   ORDERS: '/order-tracking'
 } as const
 

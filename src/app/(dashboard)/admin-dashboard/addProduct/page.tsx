@@ -374,7 +374,7 @@ const AddProduct = () => {
         await updateAdminProduct({ id: editId, data: finalData }).unwrap();
         toast.success("✅ Product updated successfully!");
         setTimeout(() => {
-          router.push('/dashboard/admin-dashboard/products');
+          router.push('/admin-dashboard/products');
         }, 2000);
       } else {
         await addAdminProduct(finalData).unwrap();
