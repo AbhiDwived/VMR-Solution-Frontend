@@ -24,22 +24,22 @@ export const orderApi = createApi({
       }),
       invalidatesTags: ['Orders', 'Activity'],
     }),
-    getUserOrders: builder.query({
+    getUserOrders: builder.query<any, void>({
       query: () => '/orders/user',
       providesTags: ['Orders'],
     }),
-    getUserActivity: builder.query({
+    getUserActivity: builder.query<any, void>({
       query: () => '/orders/user/activity',
       providesTags: ['Activity'],
     }),
-    getRecommendedProducts: builder.query({
+    getRecommendedProducts: builder.query<any, void>({
       query: () => '/orders/user/recommended',
     }),
     getOrderById: builder.query({
       query: (orderId) => `/orders/${orderId}`,
       providesTags: (_result, _error, orderId) => [{ type: 'Orders', id: orderId }],
     }),
-    getUserAddresses: builder.query({
+    getUserAddresses: builder.query<any, void>({
       query: () => '/orders/addresses',
       providesTags: ['Addresses'],
     }),
