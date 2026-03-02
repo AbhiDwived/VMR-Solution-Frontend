@@ -7,6 +7,7 @@ import wishlistSlice from './slices/wishlist'
 import { baseApi } from './api/baseApi'
 import { blogApi } from './api/blogApi'
 import { orderApi } from './api/orderApi'
+import { reviewsApi } from './api/reviewsApi'
 
 export const store = configureStore({
   reducer: {
@@ -17,13 +18,14 @@ export const store = configureStore({
     [baseApi.reducerPath]: baseApi.reducer,
     [blogApi.reducerPath]: blogApi.reducer,
     [orderApi.reducerPath]: orderApi.reducer,
+    [reviewsApi.reducerPath]: reviewsApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {
         ignoredActions: ['persist/PERSIST', 'persist/REHYDRATE'],
       },
-    }).concat(baseApi.middleware, blogApi.middleware, orderApi.middleware),
+    }).concat(baseApi.middleware, blogApi.middleware, orderApi.middleware, reviewsApi.middleware),
 })
 
 setupListeners(store.dispatch)

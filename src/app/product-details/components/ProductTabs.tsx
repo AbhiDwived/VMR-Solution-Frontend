@@ -2,6 +2,9 @@
 
 import { useState } from 'react';
 import Icon from '@/components/ui/AppIcon';
+import ReviewModal from './ReviewModal';
+import { useCreateReviewMutation, useGetProductReviewsQuery } from '@/store/api/reviewsApi';
+import { toast } from 'react-toastify';
 
 interface Specification {
   label: string;
@@ -27,6 +30,7 @@ interface RelatedProduct {
 }
 
 interface ProductTabsProps {
+  productId: number;
   specifications: Specification[];
   careInstructions: string[];
   warrantyInfo: string;
@@ -37,6 +41,7 @@ interface ProductTabsProps {
 type TabType = 'specifications' | 'care' | 'warranty' | 'reviews';
 
 const ProductTabs = ({
+  productId,
   specifications,
   careInstructions,
   warrantyInfo,
@@ -44,12 +49,39 @@ const ProductTabs = ({
   relatedProducts,
 }: ProductTabsProps) => {
   const [activeTab, setActiveTab] = useState<TabType>('specifications');
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [createReview] = useCreateReviewMutation();
+  const { data: reviewsData, refetch } = useGetProductReviewsQuery(productId);
+
+  const dynamicReviews = reviewsData?.data?.map((r: any) => ({
+    id: r.id.toString(),
+    userName: r.user_name || 'Guest User',
+    rating: r.rating,
+    date: new Date(r.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }),
+    comment: r.comment,
+    verified: !!r.user_id,
+  })) || [];
+
+  const handleAddReview = async (newReview: { userName: string; rating: number; comment: string }) => {
+    try {
+      await createReview({
+        product_id: productId,
+        rating: newReview.rating,
+        comment: newReview.comment,
+      }).unwrap();
+      toast.success('Review submitted successfully!');
+      refetch();
+    } catch (error) {
+      console.error('Failed to submit review:', error);
+      toast.error('Failed to submit review');
+    }
+  };
 
   const tabs = [
     { id: 'specifications' as TabType, label: 'Specifications', icon: 'DocumentTextIcon' },
     { id: 'care' as TabType, label: 'Care Instructions', icon: 'SparklesIcon' },
     { id: 'warranty' as TabType, label: 'Warranty', icon: 'ShieldCheckIcon' },
-    { id: 'reviews' as TabType, label: `Reviews (${reviews.length})`, icon: 'StarIcon' },
+    { id: 'reviews' as TabType, label: `Reviews (${dynamicReviews.length})`, icon: 'StarIcon' },
   ];
 
   return (
@@ -153,14 +185,17 @@ const ProductTabs = ({
               <h3 className="text-2xl font-bold text-gray-900">
                 Customer Reviews
               </h3>
-              <button className="flex items-center space-x-2 rounded-lg bg-blue-600 px-6 py-3 text-sm font-semibold text-white transition-all hover:bg-blue-700 hover:shadow-lg">
+              <button
+                onClick={() => setIsModalOpen(true)}
+                className="flex items-center space-x-2 rounded-lg bg-blue-600 px-6 py-3 text-sm font-semibold text-white transition-all hover:bg-blue-700 hover:shadow-lg"
+              >
                 <Icon name="PencilIcon" size={16} />
                 <span>Write Review</span>
               </button>
             </div>
 
             <div className="space-y-6">
-              {reviews.map((review) => (
+              {dynamicReviews.map((review) => (
                 <div key={review.id} className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm hover:shadow-md transition-shadow">
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex items-start space-x-4">
@@ -199,11 +234,14 @@ const ProductTabs = ({
           </div>
         )}
       </div>
+
+      <ReviewModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSubmit={handleAddReview}
+      />
     </div>
   );
 };
 
 export default ProductTabs;
-
-
-

@@ -485,6 +485,7 @@ const ProductDetailsInteractive = () => {
 
       {/* Product Details Tabs */}
       <ProductTabs
+        productId={product.id}
         specifications={specifications}
         careInstructions={careInstructions}
         warrantyInfo={warrantyInfo}
