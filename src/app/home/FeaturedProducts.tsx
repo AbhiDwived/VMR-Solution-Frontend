@@ -24,12 +24,13 @@ const FeaturedProducts = () => {
 
   // Get featured products from API data
   const featuredProducts: FeaturedProduct[] = productsData?.data?.slice(0, 36).map((product: any) => {
-    let productImages = [];
+    let productImages: unknown[] = [];
     if (Array.isArray(product.product_images)) {
       productImages = product.product_images;
     } else if (typeof product.product_images === 'string') {
       try {
-        productImages = JSON.parse(product.product_images || '[]');
+        const parsedImages = JSON.parse(product.product_images || '[]');
+        productImages = Array.isArray(parsedImages) ? parsedImages : [];
       } catch (error) {
         console.warn('Failed to parse product images:', error);
         productImages = [];
@@ -45,15 +46,17 @@ const FeaturedProducts = () => {
       originalPrice: Number(product.price),
       image: (() => {
         const images = productImages;
-        if (images && images.length > 0) {
+        if (images.length > 0) {
           const img = images[0];
-          // Handle both relative and absolute paths
-          if (img.startsWith('http')) {
+          if (typeof img === 'string') {
+            // Handle both relative and absolute paths
+            if (img.startsWith('http')) {
+              return img;
+            } else if (img.startsWith('/assets/')) {
+              return img; // Next.js will serve from public directory
+            }
             return img;
-          } else if (img.startsWith('/assets/')) {
-            return img; // Next.js will serve from public directory
           }
-          return img;
         }
         return '/placeholder.jpg';
       })(),

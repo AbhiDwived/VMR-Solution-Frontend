@@ -26,12 +26,13 @@ const TrendingProducts = () => {
     ?.filter((p: any) => p.is_featured === 1 || p.is_featured === true)
     .slice(0, 6)
     .map((product: any, index: number) => {
-      let productImages = [];
+      let productImages: unknown[] = [];
       if (Array.isArray(product.product_images)) {
         productImages = product.product_images;
       } else if (typeof product.product_images === 'string') {
         try {
-          productImages = JSON.parse(product.product_images || '[]');
+          const parsedImages = JSON.parse(product.product_images || '[]');
+          productImages = Array.isArray(parsedImages) ? parsedImages : [];
         } catch {
           productImages = [];
         }
@@ -46,14 +47,16 @@ const TrendingProducts = () => {
         originalPrice: Number(product.price) > 50 ? Math.floor(Number(product.price) * 1.4) : 0,
         image: (() => {
           const images = productImages;
-          if (images && images.length > 0) {
+          if (images.length > 0) {
             const img = images[0];
-            if (img.startsWith('http')) {
-              return img;
-            } else if (img.startsWith('/assets/')) {
+            if (typeof img === 'string') {
+              if (img.startsWith('http')) {
+                return img;
+              } else if (img.startsWith('/assets/')) {
+                return img;
+              }
               return img;
             }
-            return img;
           }
           return '/placeholder.jpg';
         })(),
