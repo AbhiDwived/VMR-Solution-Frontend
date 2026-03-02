@@ -7,12 +7,13 @@ import Icon from '@/components/ui/AppIcon';
 interface ReviewModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (_review: { userName: string; rating: number; comment: string }) => void;
+  onSubmit: (_review: { userName: string; rating: number; title: string; comment: string }) => void;
 }
 
 const ReviewModal = ({ isOpen, onClose, onSubmit }: ReviewModalProps) => {
   const user = useSelector((state: any) => state.auth.user);
   const [rating, setRating] = useState(0);
+  const [title, setTitle] = useState('');
   const [comment, setComment] = useState('');
   const [hoveredRating, setHoveredRating] = useState(0);
 
@@ -21,8 +22,9 @@ const ReviewModal = ({ isOpen, onClose, onSubmit }: ReviewModalProps) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!rating || !comment) return;
-    onSubmit({ userName: user?.fullName || 'Guest User', rating, comment });
+    onSubmit({ userName: user?.fullName || 'Guest User', rating, title, comment });
     setRating(0);
+    setTitle('');
     setComment('');
     onClose();
   };
@@ -64,6 +66,19 @@ const ReviewModal = ({ isOpen, onClose, onSubmit }: ReviewModalProps) => {
                   </button>
                 ))}
               </div>
+            </div>
+
+            <div>
+              <label className="mb-2 block text-sm font-semibold text-gray-700">
+                Title (Optional)
+              </label>
+              <input
+                type="text"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="Summarize your review"
+                className="w-full rounded-lg border border-gray-300 px-4 py-2.5 focus:border-blue-500 focus:outline-none"
+              />
             </div>
 
             <div>

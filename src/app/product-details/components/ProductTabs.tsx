@@ -62,11 +62,12 @@ const ProductTabs = ({
     verified: !!r.user_id,
   })) || [];
 
-  const handleAddReview = async (newReview: { userName: string; rating: number; comment: string }) => {
+  const handleAddReview = async (newReview: { userName: string; rating: number; title: string; comment: string }) => {
     try {
       await createReview({
         product_id: productId,
         rating: newReview.rating,
+        title: newReview.title,
         comment: newReview.comment,
       }).unwrap();
       toast.success('Review submitted successfully!');
