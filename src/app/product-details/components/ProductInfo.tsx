@@ -118,6 +118,7 @@ const ProductInfo = ({
     
     const wishlistItem = {
       id: selectedVariant.id,
+      productId: selectedVariant.id,
       name: productName,
       price: selectedVariant.price,
       image: currentImage,
