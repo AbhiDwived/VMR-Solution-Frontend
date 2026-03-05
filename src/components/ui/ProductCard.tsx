@@ -16,13 +16,13 @@ interface ProductCardProps {
   name: string;
   category: string;
   price: number;
-  originalPrice?: number;
+  originalPrice?: number | undefined;
   image: string;
   alt: string;
   rating: number;
-  discount?: number;
-  showThumbnails?: boolean;
-  animationDelay?: number;
+  discount?: number | undefined;
+  showThumbnails?: boolean | undefined;
+  animationDelay?: number | undefined;
 }
 
 const ProductCard = ({

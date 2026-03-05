@@ -11,7 +11,7 @@ interface TrendingProduct {
   name: string;
   category: string;
   price: number;
-  originalPrice?: number;
+  originalPrice?: number | undefined;
   image: string;
   alt: string;
   rating: number;

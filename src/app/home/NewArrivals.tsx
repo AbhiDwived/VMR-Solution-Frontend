@@ -10,8 +10,8 @@ interface NewProduct {
   name: string;
   category: string;
   price: number;
-  originalPrice?: number;
-  discount?: number;
+  originalPrice?: number | undefined;
+  discount?: number | undefined;
   image: string;
   alt: string;
   launchDate: string;
@@ -45,12 +45,13 @@ const NewArrivals = () => {
         originalPrice,
         discount,
         image: (() => {
-          let productImages = [];
+          let productImages: string[] = [];
           if (Array.isArray(product.product_images)) {
             productImages = product.product_images;
           } else if (typeof product.product_images === 'string') {
             try {
-              productImages = JSON.parse(product.product_images || '[]');
+              const parsed = JSON.parse(product.product_images || '[]');
+              productImages = Array.isArray(parsed) ? parsed : [];
             } catch {
               productImages = [];
             }

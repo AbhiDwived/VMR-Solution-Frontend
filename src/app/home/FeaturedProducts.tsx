@@ -39,7 +39,7 @@ const FeaturedProducts = () => {
 
     return {
       id: product.id.toString(),
-      slug: product.slug,
+      slug: product.slug || product.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''),
       name: product.name,
       category: product.category,
       price: Number(product.discount_price) || Number(product.price),
