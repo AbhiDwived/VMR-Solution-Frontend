@@ -1,15 +1,6 @@
+import { CartItem } from '@/store/slices/cart';
 import Icon from '@/components/ui/AppIcon';
 import AppImage from '@/components/ui/AppImage';
-
-interface CartItem {
-  id: string;
-  name: string;
-  variant?: string;
-  quantity: number;
-  price: number;
-  image: string;
-  alt?: string;
-}
 
 interface OrderReviewSectionProps {
   cartItems: CartItem[];
@@ -34,7 +25,7 @@ const OrderReviewSection = ({ cartItems, subtotal, gst, deliveryCharges, discoun
             <div className="h-16 w-16 flex-shrink-0 overflow-hidden rounded-md bg-muted">
               <AppImage
                 src={item.image}
-                alt={item.alt || item.name}
+                alt={item.name}
                 className="h-full w-full object-cover"
               />
             </div>

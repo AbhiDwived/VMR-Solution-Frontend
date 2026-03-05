@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { cartApi } from '../api/cartApi'
 
-interface CartItem {
+export interface CartItem {
   id: string // Logical ID: variant_id || product_id
   recordId?: number // Database ID from cart table
   productId: string
