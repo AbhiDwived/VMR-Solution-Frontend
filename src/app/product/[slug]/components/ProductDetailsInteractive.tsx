@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { useDispatch } from 'react-redux';
-import { addItem } from '@/store/slices/cart';
+import { addItem, setItem } from '@/store/slices/cart';
 import { useAddToCartMutation } from '@/store/api/cartApi';
 import { toast } from 'react-toastify';
 import { useGetProductBySlugQuery } from '@/store/api/productsApi';
@@ -63,6 +63,7 @@ const ProductDetailsInteractive = () => {
   const slug = params.slug as string;
   const { data: productData, isLoading } = useGetProductBySlugQuery(slug);
   const [addToCartApi] = useAddToCartMutation();
+  const [isAdding, setIsAdding] = useState(false);
   const [isHydrated, setIsHydrated] = useState(false);
   const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(null);
   const [currentImages, setCurrentImages] = useState<ProductImage[]>([]);
@@ -368,65 +369,95 @@ const ProductDetailsInteractive = () => {
   };
 
   const handleAddToCart = async (quantity: number) => {
-    if (!product || !selectedVariant) {
+    if (!product || !selectedVariant || isAdding) {
       toast.error('Please select a product variant');
       return;
     }
 
+    setIsAdding(true);
     try {
       await addToCartApi({
         product_id: product.id,
-        variant_id: selectedVariant.id,
+        variant_id: selectedVariant.id !== 'default' ? selectedVariant.id : null,
         quantity,
       }).unwrap();
 
+      const variantLabel = selectedVariant.id !== 'default'
+        ? `${selectedVariant.color || ''} - ${selectedVariant.size || ''}`
+        : undefined;
+
       dispatch(addItem({
-        id: product.id.toString(),
+        id: selectedVariant.id !== 'default' ? selectedVariant.id : product.id.toString(),
+        productId: product.id.toString(),
+        variantId: selectedVariant.id !== 'default' ? selectedVariant.id : undefined,
         name: product.name,
         price: selectedVariant.price,
         image: currentImages[0]?.url || '',
         quantity,
-        variant: `${selectedVariant.color} - ${selectedVariant.size}`,
+        variant: variantLabel,
       }));
 
       toast.success(`Added ${quantity} item(s) to cart!`);
     } catch (error) {
-      dispatch(addItem({
-        id: product.id.toString(),
-        name: product.name,
-        price: selectedVariant.price,
-        image: currentImages[0]?.url || '',
-        quantity,
-        variant: `${selectedVariant.color} - ${selectedVariant.size}`,
-      }));
-      toast.success(`Added ${quantity} item(s) to cart!`);
+      console.error('Add to cart failed:', error);
+      toast.error('Order failed to sync with server, but saved locally.');
+      // Optionally still add locally as fallback
+    } finally {
+      setIsAdding(false);
     }
   };
 
   const handleBuyNow = async (quantity: number) => {
-    if (!product || !selectedVariant) {
+    if (!product || !selectedVariant || isAdding) {
       toast.error('Please select a product variant');
       return;
     }
 
+    const itemId = selectedVariant.id !== 'default' ? selectedVariant.id : product.id.toString();
+
+    setIsAdding(true);
     try {
       await addToCartApi({
         product_id: product.id,
-        variant_id: selectedVariant.id,
+        variant_id: selectedVariant.id !== 'default' ? selectedVariant.id : null,
         quantity,
+        replaceQuantity: true // This tells the backend to SET instead of ADD
       }).unwrap();
-    } catch (error) {
-      // Continue even if API fails
-    }
 
-    dispatch(addItem({
-      id: product.id.toString(),
-      name: product.name,
-      price: selectedVariant.price,
-      image: currentImages[0]?.url || '',
-      quantity,
-      variant: `${selectedVariant.color} - ${selectedVariant.size}`,
-    }));
+      const variantLabel = selectedVariant.id !== 'default'
+        ? `${selectedVariant.color || ''} - ${selectedVariant.size || ''}`
+        : undefined;
+
+      dispatch(setItem({
+        id: itemId,
+        productId: product.id.toString(),
+        variantId: selectedVariant.id !== 'default' ? selectedVariant.id : undefined,
+        name: product.name,
+        price: selectedVariant.price,
+        image: currentImages[0]?.url || '',
+        quantity,
+        variant: variantLabel,
+      }));
+    } catch (error) {
+      console.error('Buy Now failed to sync:', error);
+      // Fallback: still set locally and redirect
+      const variantLabel = selectedVariant.id !== 'default'
+        ? `${selectedVariant.color || ''} - ${selectedVariant.size || ''}`
+        : undefined;
+
+      dispatch(setItem({
+        id: itemId,
+        productId: product.id.toString(),
+        variantId: selectedVariant.id !== 'default' ? selectedVariant.id : undefined,
+        name: product.name,
+        price: selectedVariant.price,
+        image: currentImages[0]?.url || '',
+        quantity,
+        variant: variantLabel,
+      }));
+    } finally {
+      setIsAdding(false);
+    }
 
     router.push('/checkout-process');
   };
@@ -482,6 +513,7 @@ const ProductDetailsInteractive = () => {
           onVariantChange={handleVariantChange}
           onAddToCart={handleAddToCart}
           onBuyNow={handleBuyNow}
+          packingStandard={product.packing_standard}
         />
       </div>
 

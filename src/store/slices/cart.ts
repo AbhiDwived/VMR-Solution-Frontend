@@ -2,12 +2,15 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { cartApi } from '../api/cartApi'
 
 interface CartItem {
-  id: string
+  id: string // Logical ID: variant_id || product_id
+  recordId?: number // Database ID from cart table
+  productId: string
+  variantId?: string | undefined
   name: string
   price: number
   image: string
   quantity: number
-  variant?: string
+  variant?: string | undefined // e.g., "Red - L"
 }
 
 interface CartState {
@@ -29,11 +32,20 @@ const cartSlice = createSlice({
   initialState,
   reducers: {
     addItem: (state, action: PayloadAction<CartItem>) => {
-      const existingItem = state.items.find(item => item.id === action.payload.id)
+      const existingItem = state.items.find(item => item.id === action.payload.id.toString())
       if (existingItem) {
         existingItem.quantity += action.payload.quantity
       } else {
-        state.items.push(action.payload)
+        state.items.push({ ...action.payload, id: action.payload.id.toString() })
+      }
+      cartSlice.caseReducers.calculateTotals(state)
+    },
+    setItem: (state, action: PayloadAction<CartItem>) => {
+      const existingItem = state.items.find(item => item.id === action.payload.id.toString())
+      if (existingItem) {
+        existingItem.quantity = action.payload.quantity
+      } else {
+        state.items.push({ ...action.payload, id: action.payload.id.toString() })
       }
       cartSlice.caseReducers.calculateTotals(state)
     },
@@ -77,15 +89,33 @@ const cartSlice = createSlice({
             } catch (e) {
               images = []
             }
+            let variants: any[] = []
+            try {
+              variants = typeof item.variants === 'string' ? JSON.parse(item.variants) : (item.variants || [])
+            } catch (e) {
+              console.warn('Failed to parse variants for item:', item.id, e)
+              variants = []
+            }
+
+            const currentVariant = Array.isArray(variants)
+              ? variants.find((v: any) => (v.variantId || v.id) === item.variant_id)
+              : null;
+
+            const variantLabel = currentVariant
+              ? `${currentVariant.color?.name || currentVariant.color || ''} - ${currentVariant.size || ''}`
+              : (item.variant_id && item.variant_id !== 'default' ? item.variant_id : undefined);
+
             const mapped = {
-              id: item.id.toString(),
+              id: (item.variant_id && item.variant_id !== 'default' ? item.variant_id : item.product_id.toString()).toString(),
+              recordId: item.id,
+              productId: item.product_id.toString(),
+              variantId: item.variant_id && item.variant_id !== 'default' ? item.variant_id : undefined,
               name: item.name,
               price: item.discount_price || item.price,
               image: Array.isArray(images) ? images[0] || '' : '',
               quantity: item.quantity,
-              variant: item.variant_id,
+              variant: variantLabel,
             };
-            console.log('🔄 Mapped item:', { original: item.id, mapped: mapped.id });
             return mapped;
           })
           cartSlice.caseReducers.calculateTotals(state)
@@ -95,7 +125,7 @@ const cartSlice = createSlice({
   },
 })
 
-export const { addItem, removeItem, updateQuantity, toggleCart, syncCart } = cartSlice.actions
+export const { addItem, setItem, removeItem, updateQuantity, toggleCart, syncCart } = cartSlice.actions
 export default cartSlice.reducer
 
 

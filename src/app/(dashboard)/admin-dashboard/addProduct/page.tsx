@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import { useAuth } from '@/features/auth/hooks/useAuth';
-import { useAddAdminProductMutation, useUpdateAdminProductMutation, useGetAdminProductsQuery } from '@/store/api/productsApi';
+import { useAddAdminProductMutation, useUpdateAdminProductMutation, useGetAdminProductsQuery, useGetCategoriesQuery, useGetBrandsQuery } from '@/store/api/productsApi';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { HexColorPicker } from "react-colorful";
 import AdminSidebar from '../components/AdminSidebar';
@@ -47,6 +47,7 @@ interface ProductData {
   stockQuantity: number;
   category: string;
   brand: string;
+  packingStandard: string;
   type: "own" | "affiliate";
 }
 
@@ -63,6 +64,8 @@ const AddProduct = () => {
   const [addAdminProduct] = useAddAdminProductMutation();
   const [updateAdminProduct] = useUpdateAdminProductMutation();
   const { data: adminProductsData } = useGetAdminProductsQuery();
+  const { data: categoriesData } = useGetCategoriesQuery();
+  const { data: brandsData } = useGetBrandsQuery();
   const searchParams = useSearchParams();
   const router = useRouter();
   const editId = searchParams.get('edit');
@@ -83,6 +86,7 @@ const AddProduct = () => {
     stockQuantity: 0,
     category: "",
     brand: "",
+    packingStandard: "",
     type: "own",
   });
 
@@ -101,6 +105,8 @@ const AddProduct = () => {
   const [isNewArrival, setIsNewArrival] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("");
   const [customCategory, setCustomCategory] = useState("");
+  const [selectedBrand, setSelectedBrand] = useState("");
+  const [customBrand, setCustomBrand] = useState("");
   const [currentColor, setCurrentColor] = useState("#ff0000");
   const { user } = useAuth();
 
@@ -113,14 +119,14 @@ const AddProduct = () => {
   useEffect(() => {
     if (editId && adminProductsData?.data) {
       const product = adminProductsData.data.find((p: any) => p.id === editId || p.id.toString() === editId);
-      
+
       if (product) {
         console.log('Loading product for edit:', product);
         console.log('product.product_images:', product.product_images);
         console.log('product.productImages:', product.productImages);
         console.log('Raw product_images type:', typeof product.product_images);
         console.log('Raw product_images value:', JSON.stringify(product.product_images));
-        
+
         setProductData({
           name: product.name || "",
           slug: product.slug || "",
@@ -137,12 +143,13 @@ const AddProduct = () => {
           stockQuantity: Number(product.stock_quantity) || 0,
           category: product.category || "",
           brand: product.brand || "",
+          packingStandard: product.packing_standard || "",
           type: product.type || "own",
         });
 
         try {
-          const parsedSpecs = typeof product.specifications === 'string' 
-            ? JSON.parse(product.specifications) 
+          const parsedSpecs = typeof product.specifications === 'string'
+            ? JSON.parse(product.specifications)
             : product.specifications || [];
           setSpecifications(Array.isArray(parsedSpecs) ? parsedSpecs : []);
 
@@ -178,11 +185,11 @@ const AddProduct = () => {
           setColors(productColors);
           setSizes(productSizes);
           setFeatures(productFeatures);
-          
+
           const formattedVariants = productVariants
             .filter((v: any) => v.images && Array.isArray(v.images) && v.images.length > 0)
-            .filter((v: any, index: number, self: any[]) => 
-              index === self.findIndex((t: any) => 
+            .filter((v: any, index: number, self: any[]) =>
+              index === self.findIndex((t: any) =>
                 (t.variantId === v.variantId || t.id === v.id) &&
                 (t.color?.code || t.color) === (v.color?.code || v.color) &&
                 t.size === v.size
@@ -210,13 +217,21 @@ const AddProduct = () => {
         setIsNewArrival(!!product.is_new_arrival);
 
         // Handle categories
-        const categories = ["Electronics", "Clothing", "Books", "Home & Kitchen", "Beauty & Personal Care", "Sports & Outdoors", "Toys & Games", "Automotive", "Health & Wellness", "Office Supplies", "Jewelry & Accessories", "Garden & Outdoor", "Baby Products", "Groceries & Gourmet Food", "Pet Supplies", "Music & Instruments", "Movies & TV Shows", "Tools & Hardware", "Computers & Accessories", "Mobile Phones & Accessories", "Footwear", "Handbags & Wallets", "Art & Craft Supplies", "Luggage & Travel Gear", "Collectibles & Memorabilia", "Kitchen Appliances", "Furniture", "Software & Apps", "Industrial & Scientific"];
+        const fetchedCategories = categoriesData?.categories?.map((c: any) => c.name) || [];
 
-        if (categories.includes(product.category)) {
+        if (fetchedCategories.includes(product.category)) {
           setSelectedCategory(product.category);
         } else {
           setSelectedCategory("Others");
           setCustomCategory(product.category);
+        }
+
+        const fetchedBrands = brandsData?.brands?.map((b: any) => b.name) || [];
+        if (fetchedBrands.includes(product.brand)) {
+          setSelectedBrand(product.brand);
+        } else {
+          setSelectedBrand("Others");
+          setCustomBrand(product.brand);
         }
       }
     }
@@ -317,6 +332,7 @@ const AddProduct = () => {
       stockQuantity: 0,
       category: "",
       brand: "",
+      packingStandard: "",
       type: "own",
     });
     setSpecifications([{ key: "", value: "" }]);
@@ -328,6 +344,10 @@ const AddProduct = () => {
     setIsFeatured(false);
     setIsNewArrival(false);
     setSlugCounter(1);
+    setSelectedCategory("");
+    setCustomCategory("");
+    setSelectedBrand("");
+    setCustomBrand("");
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -336,8 +356,16 @@ const AddProduct = () => {
     const finalCategory =
       selectedCategory === "Others" ? customCategory.trim() : selectedCategory;
 
+    const finalBrand =
+      selectedBrand === "Others" ? customBrand.trim() : selectedBrand;
+
     if (!finalCategory) {
       toast.error("❌ Please select or enter a category.");
+      return;
+    }
+
+    if (!finalBrand) {
+      toast.error("❌ Please select or enter a brand.");
       return;
     }
 
@@ -348,6 +376,7 @@ const AddProduct = () => {
     const finalData = {
       ...productData,
       category: finalCategory,
+      brand: finalBrand,
       type: "own",
       productImages,
       specifications,
@@ -380,16 +409,17 @@ const AddProduct = () => {
         await addAdminProduct(finalData).unwrap();
         toast.success("✅ Product added successfully!");
         resetForm();
+        setTimeout(() => {
+          router.push('/admin-dashboard/products');
+        }, 2000);
       }
-      setSelectedCategory("");
-      setCustomCategory("");
     } catch (err: any) {
       if (err.status === 400 && err.data?.message?.includes('slug')) {
         setSlugCounter(prev => prev + 1);
         toast.error("Slug exists, trying with different number...");
         return;
       }
-      
+
       if (err.status === 400) {
         toast.error(
           `❌ ${err.data?.message || "Validation error."}`
@@ -652,7 +682,7 @@ const AddProduct = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* // Color Selection */}
+            {/* // Color Selection */}
             <div className="space-y-3">
               <label className="text-sm font-medium text-gray-700">Color</label>
               <div className="flex flex-wrap gap-2 p-2 border border-gray-300 rounded-lg bg-white min-h-[50px]">
@@ -781,205 +811,210 @@ const AddProduct = () => {
                   </div>
                 )}
                 <form onSubmit={handleSubmit} className="space-y-10">
-                <div className="text-center">
-                  <h1 className="text-3xl font-bold text-espresso">{editId ? 'Edit Product' : 'Add Product'}</h1>
-                  <p className="text-mocha-grey mt-1">Manage your product details, inventory, and media assets.</p>
-                </div>
-
-                {/* Section 1: Basic Information */}
-                <div className="space-y-6">
-                  <h2 className="text-xl font-bold text-espresso py-2">Basic Information</h2>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {renderInputField("Product Name", "name", "text", Tag, "#6B3F26", true)}
-                    {renderInputField("Slug", "slug", "text", Sliders, "#6B3F26", true)}
+                  <div className="text-center">
+                    <h1 className="text-3xl font-bold text-espresso">{editId ? 'Edit Product' : 'Add Product'}</h1>
+                    <p className="text-mocha-grey mt-1">Manage your product details, inventory, and media assets.</p>
                   </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {renderInputField("Description", "description", "text", FileText, "#6B3F26", true)}
-                    {renderInputField("Long Description", "longDescription", "text", FileText, "#6B3F26")}
-                  </div>
-                </div>
 
-                {/* Section 2: Physical Attributes & Category */}
-                <div className="space-y-6">
-                  <h2 className="text-xl font-bold text-espresso py-2">Physical Details & Categorization</h2>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div className="flex flex-col gap-1">
-                      <label className="font-semibold text-gray-800 mb-1 flex items-center gap-1">
-                        Category<span className="text-red-500">*</span>
-                      </label>
-                      <select
-                        className="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200"
-                        value={selectedCategory}
-                        onChange={(e) => setSelectedCategory(e.target.value)}
-                      >
-                        <option value="">Select a category</option>
-                        <option value="Electronics">Electronics</option>
-                        <option value="Clothing">Clothing</option>
-                        <option value="Books">Books</option>
-                        <option value="Home & Kitchen">Home & Kitchen</option>
-                        <option value="Beauty & Personal Care">Beauty & Personal Care</option>
-                        <option value="Sports & Outdoors">Sports & Outdoors</option>
-                        <option value="Toys & Games">Toys & Games</option>
-                        <option value="Automotive">Automotive</option>
-                        <option value="Health & Wellness">Health & Wellness</option>
-                        <option value="Office Supplies">Office Supplies</option>
-                        <option value="Jewelry & Accessories">Jewelry & Accessories</option>
-                        <option value="Garden & Outdoor">Garden & Outdoor</option>
-                        <option value="Baby Products">Baby Products</option>
-                        <option value="Groceries & Gourmet Food">Groceries & Gourmet Food</option>
-                        <option value="Pet Supplies">Pet Supplies</option>
-                        <option value="Music & Instruments">Music & Instruments</option>
-                        <option value="Movies & TV Shows">Movies & TV Shows</option>
-                        <option value="Tools & Hardware">Tools & Hardware</option>
-                        <option value="Computers & Accessories">Computers & Accessories</option>
-                        <option value="Mobile Phones & Accessories">Mobile Phones & Accessories</option>
-                        <option value="Footwear">Footwear</option>
-                        <option value="Handbags & Wallets">Handbags & Wallets</option>
-                        <option value="Art & Craft Supplies">Art & Craft Supplies</option>
-                        <option value="Luggage & Travel Gear">Luggage & Travel Gear</option>
-                        <option value="Collectibles & Memorabilia">Collectibles & Memorabilia</option>
-                        <option value="Kitchen Appliances">Kitchen Appliances</option>
-                        <option value="Furniture">Furniture</option>
-                        <option value="Software & Apps">Software & Apps</option>
-                        <option value="Industrial & Scientific">Industrial & Scientific</option>
-                        <option value="Others">Others</option>
-                      </select>
-                      {selectedCategory === "Others" && (
-                        <input
-                          type="text"
-                          className="mt-2 w-full border border-gray-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200"
-                          placeholder="Enter custom category"
-                          value={customCategory}
-                          onChange={(e) => setCustomCategory(e.target.value)}
-                        />
-                      )}
+                  {/* Section 1: Basic Information */}
+                  <div className="space-y-6">
+                    <h2 className="text-xl font-bold text-espresso py-2">Basic Information</h2>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      {renderInputField("Product Name", "name", "text", Tag, "#6B3F26", true)}
+                      {renderInputField("Slug", "slug", "text", Sliders, "#6B3F26", true)}
                     </div>
-                    {renderInputField("Brand", "brand", "text", Tag, "#6B3F26")}
-                    {renderInputField("Weight (kg)", "weight", "number", Weight, "#6B3F26")}
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    {renderInputField("Materials", "materials", "text", Box, "#6B3F26")}
-                    {renderInputField("Warranty", "warranty", "text", Shield, "#6B3F26")}
-                    {renderInputField("Care Instructions", "careInstructions", "text", Info, "#6B3F26")}
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {renderInputField("Additional Info", "additionalInfo", "text", Info, "#6B3F26")}
-                  </div>
-                  {renderKeyValueField("Specifications", specifications, setSpecifications)}
-                </div>
-
-                {/* Section 3: Pricing & Inventory */}
-                <div className="space-y-6">
-                  <h2 className="text-xl font-bold text-espresso py-2">Pricing & Inventory</h2>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    {renderInputField("Regular Price", "price", "number", DollarSign, "#6B3F26", true)}
-                    {renderInputField("Discount Price", "discountPrice", "number", DollarSign, "#6B3F26", true)}
-                    {renderInputField("Stock Quantity", "stockQuantity", "number", Archive, "#6B3F26", true)}
-                  </div>
-                </div>
-
-                {/* Section 4: Media & Attributes */}
-                <div className="space-y-8">
-                  <h2 className="text-xl font-bold text-espresso py-2">Media & Attributes</h2>
-
-                  <div className="bg-gray-50/50 p-6 rounded-2xl border border-dashed border-gray-300">
-                    {renderArrayField("Product Images", productImages, setProductImages, true)}
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                    <div className="space-y-8">
-                      {renderArrayField("Sizes", sizes, setSizes)}
-                      <div className="pt-4">
-                        {renderVariantImageUploader()}
-                      </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      {renderInputField("Description", "description", "text", FileText, "#6B3F26", true)}
+                      {renderInputField("Long Description", "longDescription", "text", FileText, "#6B3F26")}
                     </div>
+                  </div>
 
-                    <div className="space-y-6">
-                      <div className="bg-white p-4 rounded-2xl border border-gray-200 shadow-sm">
-                        <label className="block text-sm font-bold text-gray-800 mb-3">
-                          Product Colors
+                  {/* Section 2: Physical Attributes & Category */}
+                  <div className="space-y-6">
+                    <h2 className="text-xl font-bold text-espresso py-2">Physical Details & Categorization</h2>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                      <div className="flex flex-col gap-1">
+                        <label className="font-semibold text-gray-800 mb-1 flex items-center gap-1">
+                          Category<span className="text-red-500">*</span>
                         </label>
-                        <div className="flex flex-col gap-4">
-                          <HexColorPicker
-                            color={currentColor}
-                            onChange={setCurrentColor}
-                            className="w-full !h-36 rounded-lg shadow-sm"
+                        <select
+                          className="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200"
+                          value={selectedCategory}
+                          onChange={(e) => setSelectedCategory(e.target.value)}
+                        >
+                          <option value="">Select a category</option>
+                          {categoriesData?.categories?.map((cat: any) => (
+                            <option key={cat.id} value={cat.name}>
+                              {cat.name}
+                            </option>
+                          ))}
+                          <option value="Others">Others</option>
+                        </select>
+                        {selectedCategory === "Others" && (
+                          <input
+                            type="text"
+                            className="mt-2 w-full border border-gray-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200"
+                            placeholder="Enter custom category"
+                            value={customCategory}
+                            onChange={(e) => setCustomCategory(e.target.value)}
                           />
-                          <div className="flex items-center gap-2">
-                            <div
-                              className="w-8 h-8 rounded-full border shadow-sm"
-                              style={{ backgroundColor: currentColor }}
-                            />
-                            <input
-                              type="text"
-                              value={currentColor}
-                              onChange={(e) => setCurrentColor(e.target.value)}
-                              className="border border-gray-200 rounded-lg px-3 py-1.5 text-xs w-24 focus:outline-none focus:ring-2 focus:ring-primary"
-                            />
-                            <button
-                              type="button"
-                              onClick={addColor}
-                              className="bg-primary hover:bg-primary/90 text-white px-4 py-1.5 rounded-lg text-xs font-bold transition-all"
-                            >
-                              Add Color
-                            </button>
-                          </div>
-                          {colors.length > 0 && (
-                            <div className="flex flex-wrap gap-2 p-2 bg-gray-50 rounded-lg">
-                              {colors.map((color) => (
-                                <div
-                                  key={color}
-                                  onClick={() => removeColor(color)}
-                                  className="w-6 h-6 rounded-full border-2 border-white shadow-sm cursor-pointer hover:scale-110 transition-transform"
-                                  style={{ backgroundColor: color }}
-                                  title={`Remove ${color}`}
-                                />
-                              ))}
-                            </div>
-                          )}
+                        )}
+                      </div>
+                      <div className="flex flex-col gap-1">
+                        <label className="font-semibold text-gray-800 mb-1 flex items-center gap-1">
+                          Brand<span className="text-red-500">*</span>
+                        </label>
+                        <select
+                          className="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200"
+                          value={selectedBrand}
+                          onChange={(e) => setSelectedBrand(e.target.value)}
+                          required
+                        >
+                          <option value="">Select a brand</option>
+                          {brandsData?.brands?.map((brand: any) => (
+                            <option key={brand.id} value={brand.name}>
+                              {brand.name}
+                            </option>
+                          ))}
+                          <option value="Others">Others</option>
+                        </select>
+                        {selectedBrand === "Others" && (
+                          <input
+                            type="text"
+                            className="mt-2 w-full border border-gray-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200"
+                            placeholder="Enter custom brand"
+                            value={customBrand}
+                            onChange={(e) => setCustomBrand(e.target.value)}
+                            required
+                          />
+                        )}
+                      </div>
+                      {renderInputField("Packing Standard", "packingStandard", "text", Box, "#6B3F26")}
+                      {renderInputField("Weight (kg)", "weight", "number", Weight, "#6B3F26")}
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                      {renderInputField("Materials", "materials", "text", Box, "#6B3F26")}
+                      {renderInputField("Warranty", "warranty", "text", Shield, "#6B3F26")}
+                      {renderInputField("Care Instructions", "careInstructions", "text", Info, "#6B3F26")}
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      {renderInputField("Additional Info", "additionalInfo", "text", Info, "#6B3F26")}
+                    </div>
+                    {renderKeyValueField("Specifications", specifications, setSpecifications)}
+                  </div>
+
+                  {/* Section 3: Pricing & Inventory */}
+                  <div className="space-y-6">
+                    <h2 className="text-xl font-bold text-espresso py-2">Pricing & Inventory</h2>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                      {renderInputField("Regular Price", "price", "number", DollarSign, "#6B3F26", true)}
+                      {renderInputField("Discount Price", "discountPrice", "number", DollarSign, "#6B3F26", true)}
+                      {renderInputField("Stock Quantity", "stockQuantity", "number", Archive, "#6B3F26", true)}
+                    </div>
+                  </div>
+
+                  {/* Section 4: Media & Attributes */}
+                  <div className="space-y-8">
+                    <h2 className="text-xl font-bold text-espresso py-2">Media & Attributes</h2>
+
+                    <div className="bg-gray-50/50 p-6 rounded-2xl border border-dashed border-gray-300">
+                      {renderArrayField("Product Images", productImages, setProductImages, true)}
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                      <div className="space-y-8">
+                        {renderArrayField("Sizes", sizes, setSizes)}
+                        <div className="pt-4">
+                          {renderVariantImageUploader()}
                         </div>
                       </div>
 
-                      <div className="flex gap-6 p-4 bg-gray-50 rounded-2xl border border-gray-200">
-                        <label className="flex items-center gap-3 text-gray-700 font-bold cursor-pointer">
-                          <input
-                            type="checkbox"
-                            className="w-5 h-5 rounded border-gray-300 text-primary focus:ring-primary"
-                            checked={isFeatured}
-                            onChange={(e) => setIsFeatured(e.target.checked)}
-                          />
-                          Featured Product
-                        </label>
-                        <label className="flex items-center gap-3 text-gray-700 font-bold cursor-pointer">
-                          <input
-                            type="checkbox"
-                            className="w-5 h-5 rounded border-gray-300 text-primary focus:ring-primary"
-                            checked={isNewArrival}
-                            onChange={(e) => setIsNewArrival(e.target.checked)}
-                          />
-                          New Arrival
-                        </label>
+                      <div className="space-y-6">
+                        <div className="bg-white p-4 rounded-2xl border border-gray-200 shadow-sm">
+                          <label className="block text-sm font-bold text-gray-800 mb-3">
+                            Product Colors
+                          </label>
+                          <div className="flex flex-col gap-4">
+                            <HexColorPicker
+                              color={currentColor}
+                              onChange={setCurrentColor}
+                              className="w-full !h-36 rounded-lg shadow-sm"
+                            />
+                            <div className="flex items-center gap-2">
+                              <div
+                                className="w-8 h-8 rounded-full border shadow-sm"
+                                style={{ backgroundColor: currentColor }}
+                              />
+                              <input
+                                type="text"
+                                value={currentColor}
+                                onChange={(e) => setCurrentColor(e.target.value)}
+                                className="border border-gray-200 rounded-lg px-3 py-1.5 text-xs w-24 focus:outline-none focus:ring-2 focus:ring-primary"
+                              />
+                              <button
+                                type="button"
+                                onClick={addColor}
+                                className="bg-primary hover:bg-primary/90 text-white px-4 py-1.5 rounded-lg text-xs font-bold transition-all"
+                              >
+                                Add Color
+                              </button>
+                            </div>
+                            {colors.length > 0 && (
+                              <div className="flex flex-wrap gap-2 p-2 bg-gray-50 rounded-lg">
+                                {colors.map((color) => (
+                                  <div
+                                    key={color}
+                                    onClick={() => removeColor(color)}
+                                    className="w-6 h-6 rounded-full border-2 border-white shadow-sm cursor-pointer hover:scale-110 transition-transform"
+                                    style={{ backgroundColor: color }}
+                                    title={`Remove ${color}`}
+                                  />
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="flex gap-6 p-4 bg-gray-50 rounded-2xl border border-gray-200">
+                          <label className="flex items-center gap-3 text-gray-700 font-bold cursor-pointer">
+                            <input
+                              type="checkbox"
+                              className="w-5 h-5 rounded border-gray-300 text-primary focus:ring-primary"
+                              checked={isFeatured}
+                              onChange={(e) => setIsFeatured(e.target.checked)}
+                            />
+                            Featured Product
+                          </label>
+                          <label className="flex items-center gap-3 text-gray-700 font-bold cursor-pointer">
+                            <input
+                              type="checkbox"
+                              className="w-5 h-5 rounded border-gray-300 text-primary focus:ring-primary"
+                              checked={isNewArrival}
+                              onChange={(e) => setIsNewArrival(e.target.checked)}
+                            />
+                            New Arrival
+                          </label>
+                        </div>
                       </div>
                     </div>
+
+
                   </div>
 
+                  <div className="space-y-6">
+                    <h2 className="text-xl font-bold text-espresso py-2">Additional Features</h2>
+                    {renderArrayField("Features", features, setFeatures)}
+                  </div>
 
-                </div>
-
-                <div className="space-y-6">
-                  <h2 className="text-xl font-bold text-espresso py-2">Additional Features</h2>
-                  {renderArrayField("Features", features, setFeatures)}
-                </div>
-
-                <div className="pt-6">
-                  <button
-                    type="submit"
-                    className="bg-primary text-white px-10 py-5 rounded-2xl hover:bg-primary/90 w-full text-xl font-black shadow-lg shadow-primary/20 transition-all hover:-translate-y-1 active:scale-[0.98]"
-                  >
-                    {editId ? 'UPDATE PRODUCT' : 'CREATE PRODUCT'}
-                  </button>
-                </div>
-              </form>
+                  <div className="pt-6">
+                    <button
+                      type="submit"
+                      className="bg-primary text-white px-10 py-5 rounded-2xl hover:bg-primary/90 w-full text-xl font-black shadow-lg shadow-primary/20 transition-all hover:-translate-y-1 active:scale-[0.98]"
+                    >
+                      {editId ? 'UPDATE PRODUCT' : 'CREATE PRODUCT'}
+                    </button>
+                  </div>
+                </form>
               </div>
             </div>
           </div>

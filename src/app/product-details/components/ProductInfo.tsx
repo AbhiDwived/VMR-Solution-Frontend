@@ -31,6 +31,7 @@ interface ProductInfoProps {
   onVariantChange: (_variant: ProductVariant) => void;
   onAddToCart: (_quantity: number) => void;
   onBuyNow: (_quantity: number) => void;
+  packingStandard?: string;
 }
 
 const ProductInfo = ({
@@ -44,13 +45,24 @@ const ProductInfo = ({
   onVariantChange,
   onAddToCart,
   onBuyNow,
+  packingStandard = '',
 }: ProductInfoProps) => {
   const dispatch = useDispatch();
   const wishlistItems = useSelector((state: RootState) => state.wishlist.items);
   const [addToWishlistApi] = useAddToWishlistMutation();
   const [removeFromWishlistApi] = useRemoveFromWishlistMutation();
+
+  // Helper to extract numeric quantity from packing standard (e.g., "100 Pcs/Box" -> 100)
+  const getPackingQty = (standard: string | null | undefined): number => {
+    if (!standard) return 1;
+    const match = standard.match(/\d+/);
+    return match ? parseInt(match[0], 10) : 1;
+  };
+
+  const packingQty = getPackingQty(packingStandard);
+
   const [selectedVariant, setSelectedVariant] = useState<ProductVariant | undefined>(initialSelectedVariant || variants[0]);
-  const [quantity, setQuantity] = useState(variants[0]?.minOrderQty || 1);
+  const [quantity, setQuantity] = useState(packingQty);
   const [isWishlisted, setIsWishlisted] = useState(false);
 
   const uniqueSizes = Array.from(new Set(variants.map((v) => v.size)));
@@ -97,8 +109,19 @@ const ProductInfo = ({
   };
 
   const handleQuantityChange = (newQuantity: number) => {
-    if (selectedVariant && newQuantity >= selectedVariant.minOrderQty && newQuantity <= selectedVariant.stock) {
-      setQuantity(newQuantity);
+    // Ensure quantity is a multiple of packing standard quantity
+    const remainder = newQuantity % packingQty;
+    let adjustedQuantity = newQuantity;
+
+    if (remainder !== 0) {
+      // Round to the nearest multiple if user enters value manually
+      adjustedQuantity = Math.round(newQuantity / packingQty) * packingQty;
+    }
+
+    if (selectedVariant && adjustedQuantity >= packingQty && adjustedQuantity <= selectedVariant.stock) {
+      setQuantity(adjustedQuantity);
+    } else if (selectedVariant && adjustedQuantity < packingQty) {
+      setQuantity(packingQty);
     }
   };
 
@@ -115,7 +138,7 @@ const ProductInfo = ({
       toast.error('Please select a variant');
       return;
     }
-    
+
     const wishlistItem = {
       id: selectedVariant.id,
       productId: selectedVariant.id,
@@ -124,9 +147,9 @@ const ProductInfo = ({
       image: currentImage,
       variant: `${selectedVariant.color} - ${selectedVariant.size}`,
     };
-    
+
     const newWishlistState = !isWishlisted;
-    
+
     try {
       if (newWishlistState) {
         await addToWishlistApi({
@@ -142,7 +165,7 @@ const ProductInfo = ({
     } catch (error) {
       // Continue with local state even if API fails
     }
-    
+
     dispatch(toggleWishlistItem(wishlistItem));
     setIsWishlisted(newWishlistState);
     toast.success(newWishlistState ? 'Added to wishlist!' : 'Removed from wishlist!');
@@ -237,8 +260,8 @@ const ProductInfo = ({
                 key={size}
                 onClick={() => handleSizeChange(size)}
                 className={`min-w-[60px] rounded-lg border-2 px-4 py-2 text-sm font-medium transition-all ${selectedSize === size
-                    ? 'border-primary bg-primary text-white shadow-md'
-                    : 'border-gray-200 bg-white text-gray-700 hover:border-primary hover:shadow-sm'
+                  ? 'border-primary bg-primary text-white shadow-md'
+                  : 'border-gray-200 bg-white text-gray-700 hover:border-primary hover:shadow-sm'
                   }`}
               >
                 {size}
@@ -258,8 +281,8 @@ const ProductInfo = ({
                 key={colorObj.color}
                 onClick={() => handleColorChange(colorObj.color)}
                 className={`rounded-full border-2 p-1 transition-all ${selectedColor === colorObj.color
-                    ? 'border-primary shadow-lg ring-2 ring-primary/20'
-                    : 'border-gray-200 hover:border-gray-400 hover:shadow-md'
+                  ? 'border-primary shadow-lg ring-2 ring-primary/20'
+                  : 'border-gray-200 hover:border-gray-400 hover:shadow-md'
                   }`}
               >
                 <div
@@ -273,19 +296,18 @@ const ProductInfo = ({
         </div>
       </div>
 
-      {/* Product Details */}
-      <div className="grid grid-cols-2 gap-4 rounded-lg bg-gray-50 p-4">
-        <div className="text-center">
-          <p className="text-xs text-muted-foreground uppercase tracking-wide">Capacity</p>
-          <p className="font-semibold text-foreground">{selectedVariant?.capacity || 'N/A'}</p>
+      {/* Product Details - Packing Standard */}
+      {packingStandard && (
+        <div className="rounded-lg bg-gray-50 p-4 border border-dashed border-gray-200">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Icon name="BoxIcon" size={18} className="text-primary/70" />
+              <span className="text-sm font-semibold text-foreground uppercase tracking-wider">Packing Standard</span>
+            </div>
+            <span className="text-sm font-bold text-primary">{packingStandard}</span>
+          </div>
         </div>
-        <div className="text-center">
-          <p className="text-xs text-muted-foreground uppercase tracking-wide">Min Order</p>
-          <p className="font-semibold text-foreground">
-            {selectedVariant?.minOrderQty || 1} units
-          </p>
-        </div>
-      </div>
+      )}
 
       {/* Quantity Selector */}
       <div>
@@ -293,8 +315,8 @@ const ProductInfo = ({
         <div className="flex items-center space-x-4">
           <div className="flex items-center rounded-lg border border-gray-200 bg-white shadow-sm">
             <button
-              onClick={() => handleQuantityChange(quantity - 1)}
-              disabled={quantity <= (selectedVariant?.minOrderQty || 1)}
+              onClick={() => handleQuantityChange(quantity - packingQty)}
+              disabled={quantity <= packingQty}
               className="flex h-12 w-12 items-center justify-center text-gray-600 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
             >
               <Icon name="MinusIcon" size={20} />
@@ -302,21 +324,22 @@ const ProductInfo = ({
             <input
               type="number"
               value={quantity}
-              onChange={(e) => handleQuantityChange(parseInt(e.target.value) || (selectedVariant?.minOrderQty || 1))}
+              step={packingQty}
+              onChange={(e) => handleQuantityChange(parseInt(e.target.value) || packingQty)}
               className="h-12 w-20 border-x border-gray-200 bg-transparent text-center font-medium text-foreground focus:outline-none"
-              min={selectedVariant?.minOrderQty || 1}
+              min={packingQty}
               max={selectedVariant?.stock || 999}
             />
             <button
-              onClick={() => handleQuantityChange(quantity + 1)}
-              disabled={quantity >= (selectedVariant?.stock || 999)}
+              onClick={() => handleQuantityChange(quantity + packingQty)}
+              disabled={quantity + packingQty > (selectedVariant?.stock || 999)}
               className="flex h-12 w-12 items-center justify-center text-gray-600 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
             >
               <Icon name="PlusIcon" size={20} />
             </button>
           </div>
           <span className="text-xs text-muted-foreground">
-            Min: {selectedVariant?.minOrderQty || 1} | Max: {selectedVariant?.stock || 999}
+            {packingQty > 1 ? `Packed in ${packingQty}s` : `Min: 1`} | Max: {selectedVariant?.stock || 999}
           </span>
         </div>
       </div>
