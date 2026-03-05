@@ -10,6 +10,8 @@ interface NewProduct {
   name: string;
   category: string;
   price: number;
+  originalPrice?: number;
+  discount?: number;
   image: string;
   alt: string;
   launchDate: string;
@@ -21,28 +23,44 @@ const NewArrivals = () => {
   const newProducts: NewProduct[] = productsData?.data
     ?.filter((p: any) => p.is_new_arrival === 1 || p.is_new_arrival === true)
     .slice(0, 6)
-    .map((product: any) => ({
-      id: product.id.toString(),
-      slug: product.slug || product.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''),
-      name: product.name,
-      category: product.category,
-      price: Number(product.discount_price) || Number(product.price),
-      image: (() => {
-        let productImages = [];
-        if (Array.isArray(product.product_images)) {
-          productImages = product.product_images;
-        } else if (typeof product.product_images === 'string') {
-          try {
-            productImages = JSON.parse(product.product_images || '[]');
-          } catch {
-            productImages = [];
+    .map((product: any) => {
+      const price = Number(product.discount_price) && Number(product.discount_price) < Number(product.price)
+        ? Number(product.discount_price)
+        : Number(product.price);
+
+      const originalPrice = Number(product.discount_price) && Number(product.discount_price) < Number(product.price)
+        ? Number(product.price)
+        : undefined;
+
+      const discount = originalPrice
+        ? Math.round(((originalPrice - price) / originalPrice) * 100)
+        : 0;
+
+      return {
+        id: product.id.toString(),
+        slug: product.slug || product.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''),
+        name: product.name,
+        category: product.category,
+        price,
+        originalPrice,
+        discount,
+        image: (() => {
+          let productImages = [];
+          if (Array.isArray(product.product_images)) {
+            productImages = product.product_images;
+          } else if (typeof product.product_images === 'string') {
+            try {
+              productImages = JSON.parse(product.product_images || '[]');
+            } catch {
+              productImages = [];
+            }
           }
-        }
-        return productImages?.[0] || '/placeholder.jpg';
-      })(),
-      alt: product.description,
-      launchDate: 'Jan 2025',
-    })) || [];
+          return productImages?.[0] || '/placeholder.jpg';
+        })(),
+        alt: product.description,
+        launchDate: 'Jan 2025',
+      };
+    }) || [];
 
   if (isLoading) {
     return (
@@ -82,6 +100,8 @@ const NewArrivals = () => {
               name={product.name}
               category={product.category}
               price={product.price}
+              originalPrice={product.originalPrice}
+              discount={product.discount}
               image={product.image}
               alt={product.alt}
               rating={4.5}
@@ -96,6 +116,3 @@ const NewArrivals = () => {
 };
 
 export default NewArrivals;
-
-
-

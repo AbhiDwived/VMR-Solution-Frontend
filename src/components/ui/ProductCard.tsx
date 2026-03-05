@@ -143,7 +143,7 @@ const ProductCard = ({
           <span className="text-base font-semibold text-primary">
             ₹{price.toLocaleString('en-IN')}
           </span>
-          {originalPrice && (
+          {originalPrice && originalPrice > price && (
             <span className="text-xs text-muted-foreground line-through">
               ₹{originalPrice.toLocaleString('en-IN')}
             </span>

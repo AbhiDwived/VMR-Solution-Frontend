@@ -13,7 +13,7 @@ export default {
         lg: '2rem',
       },
       screens: {
-        '2xl': '1200px',
+        '2xl': '1536px',
       },
     },
     extend: {
@@ -27,7 +27,7 @@ export default {
         'espresso': '#2A1E1A',
         'mocha-grey': '#6B5B54',
         'soft-stone': '#DED6CC',
-        
+
         border: 'var(--color-border)',
         input: 'var(--color-input)',
         ring: 'var(--color-ring)',

@@ -18,7 +18,7 @@ const BlogSection = () => {
   if (!publishedPosts.length) return null;
 
   return (
-    <section className="mx-auto max-w-[1400px] px-4 py-4 sm:px-6 sm:py-6">
+    <section className="w-full px-4 py-4 sm:px-6 sm:py-6">
       <div className="mb-4 flex items-center justify-between" data-aos="fade-up">
         <div>
           <div className="mb-2 flex items-center space-x-2">

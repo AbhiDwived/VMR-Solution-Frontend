@@ -30,7 +30,7 @@ const RelatedProducts = ({ slug }: RelatedProductsProps) => {
         </Link>
       </div>
 
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
         {data.data.map((product: any) => {
           const discountPercentage = product.price && product.discount_price
             ? Math.round(((product.price - product.discount_price) / product.price) * 100)

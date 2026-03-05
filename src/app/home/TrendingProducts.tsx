@@ -43,8 +43,12 @@ const TrendingProducts = () => {
         slug: product.slug || product.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''),
         name: product.name,
         category: product.category,
-        price: Number(product.discount_price) || Number(product.price),
-        originalPrice: Number(product.price) > 50 ? Math.floor(Number(product.price) * 1.4) : 0,
+        price: Number(product.discount_price) && Number(product.discount_price) < Number(product.price)
+          ? Number(product.discount_price)
+          : Number(product.price),
+        originalPrice: Number(product.discount_price) && Number(product.discount_price) < Number(product.price)
+          ? Number(product.price)
+          : undefined,
         image: (() => {
           const images = productImages;
           if (images.length > 0) {
@@ -115,7 +119,7 @@ const TrendingProducts = () => {
               name={product.name}
               category={product.category}
               price={product.price}
-              originalPrice={product.originalPrice || 0}
+              originalPrice={product.originalPrice}
               image={product.image}
               alt={product.alt}
               rating={product.rating}
@@ -130,6 +134,3 @@ const TrendingProducts = () => {
 };
 
 export default TrendingProducts;
-
-
-
