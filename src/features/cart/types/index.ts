@@ -1,11 +1,6 @@
-export interface CartItem {
-  id: string
-  name: string
-  price: number
-  image: string
-  quantity: number
-  description?: string
-}
+import { CartItem as StoreCartItem } from '@/store/slices/cart'
+
+export type CartItem = StoreCartItem
 
 export interface CartState {
   items: CartItem[]

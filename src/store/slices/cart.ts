@@ -4,13 +4,14 @@ import { cartApi } from '../api/cartApi'
 export interface CartItem {
   id: string // Logical ID: variant_id || product_id
   recordId?: number // Database ID from cart table
-  productId: string
+  productId?: string // Optional for backward compatibility with components that don't have it
   variantId?: string | undefined
   name: string
   price: number
   image: string
   quantity: number
   variant?: string | undefined // e.g., "Red - L"
+  description?: string
 }
 
 interface CartState {
