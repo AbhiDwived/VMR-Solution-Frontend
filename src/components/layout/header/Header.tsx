@@ -105,22 +105,34 @@ const Header = memo(() => {
                   <div className="rounded-md bg-popover shadow-lg border border-border p-4 min-w-[600px]">
                     <h3 className="text-sm font-semibold mb-3 text-center">{category.name} Products</h3>
                     <div className="grid grid-cols-2 gap-2">
-                      {categoryProducts[category.slug].map((product: any) => (
-                        <Link
-                          key={product.id}
-                          href={`/product/${product.slug}`}
-                          className="flex items-center gap-3 p-2 text-sm text-foreground hover:bg-muted rounded transition-colors"
-                        >
-                          <Image
-                            src={product.images?.[0] || '/placeholder.png'}
-                            alt={product.name}
-                            width={32}
-                            height={32}
-                            className="object-cover rounded flex-shrink-0"
-                          />
-                          <span className="text-xs flex-1">{product.name}</span>
-                        </Link>
-                      ))}
+                      {categoryProducts[category.slug].map((product: any) => {
+                        let productImages: string[] = [];
+                        if (Array.isArray(product.product_images)) {
+                          productImages = product.product_images;
+                        } else if (typeof product.product_images === 'string') {
+                          try {
+                            productImages = JSON.parse(product.product_images);
+                          } catch (e) {
+                            productImages = [];
+                          }
+                        }
+                        return (
+                          <Link
+                            key={product.id}
+                            href={`/product/${product.slug}`}
+                            className="flex items-center gap-3 p-2 text-sm text-foreground hover:bg-muted rounded transition-colors"
+                          >
+                            <Image
+                              src={productImages[0] || '/placeholder.png'}
+                              alt={product.name}
+                              width={32}
+                              height={32}
+                              className="object-cover rounded flex-shrink-0"
+                            />
+                            <span className="text-xs flex-1">{product.name}</span>
+                          </Link>
+                        );
+                      })}
                       {categoryProducts[category.slug].length === 0 && (
                         <p className="text-sm text-muted-foreground px-2 py-1 col-span-2 text-center">No products available</p>
                       )}
