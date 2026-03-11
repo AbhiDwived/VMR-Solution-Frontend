@@ -1,8 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import AppImage from '@/components/ui/AppImage';
 import Icon from '@/components/ui/AppIcon';
+import ProductCard from '@/components/ui/ProductCard';
 import { useGetRelatedProductsQuery } from '@/store/api/productsApi';
 
 interface RelatedProductsProps {
@@ -32,47 +32,37 @@ const RelatedProducts = ({ slug }: RelatedProductsProps) => {
 
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
         {data.data.map((product: any) => {
-          const discountPercentage = product.price && product.discount_price
+          const discount = product.price && product.discount_price
             ? Math.round(((product.price - product.discount_price) / product.price) * 100)
             : 0;
 
+          let productImages: string[] = [];
+          if (Array.isArray(product.product_images)) {
+            productImages = product.product_images;
+          } else if (typeof product.product_images === 'string') {
+            try {
+              productImages = JSON.parse(product.product_images);
+            } catch (e) {
+              productImages = [];
+            }
+          }
+
           return (
-            <Link
+            <ProductCard
               key={product.id}
-              href={`/product/${product.slug}`}
-              className="group rounded-lg border border-border bg-card transition-smooth hover:shadow-elevation-2"
-            >
-              <div className="relative aspect-square overflow-hidden rounded-t-lg bg-muted">
-                <AppImage
-                  src={product.product_images?.[0] || ''}
-                  alt={product.name}
-                  className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                />
-                {discountPercentage > 0 && (
-                  <div className="absolute right-2 top-2 rounded-md bg-error px-2 py-1 text-xs font-medium text-error-foreground">
-                    {discountPercentage}% OFF
-                  </div>
-                )}
-              </div>
-
-              <div className="p-4">
-                <p className="caption mb-1 text-muted-foreground">{product.category}</p>
-                <h3 className="mb-2 line-clamp-2 text-sm font-medium text-card-foreground">
-                  {product.name}
-                </h3>
-
-                <div className="flex items-baseline space-x-2">
-                  <span className="data-text font-bold text-primary">
-                    ₹{Number(product.discount_price || product.price).toLocaleString('en-IN')}
-                  </span>
-                  {product.price && product.discount_price && product.price !== product.discount_price && (
-                    <span className="caption text-muted-foreground line-through">
-                      ₹{Number(product.price).toLocaleString('en-IN')}
-                    </span>
-                  )}
-                </div>
-              </div>
-            </Link>
+              id={product.id.toString()}
+              slug={product.slug}
+              name={product.name}
+              category={product.category}
+              price={Number(product.discount_price || product.price)}
+              originalPrice={Number(product.price)}
+              image={productImages[0] || ''}
+              alt={product.description || product.name}
+              rating={4.5}
+              discount={discount}
+              showThumbnails={false}
+              animationDelay={0}
+            />
           );
         })}
       </div>
@@ -81,6 +71,3 @@ const RelatedProducts = ({ slug }: RelatedProductsProps) => {
 };
 
 export default RelatedProducts;
-
-
-

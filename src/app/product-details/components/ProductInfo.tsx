@@ -247,21 +247,21 @@ const ProductInfo = ({
         </div>
       </div>
 
-      {/* Variant Selection */}
-      <div className="space-y-6">
+      {/* Variant Selection - Size and Color Only */}
+      <div className="flex flex-wrap items-center gap-6">
         {/* Size Selection */}
-        <div>
-          <label className="mb-3 block text-sm font-semibold text-foreground">
-            Size: <span className="font-normal text-primary">{selectedSize}</span>
+        <div className="flex items-center gap-3">
+          <label className="text-base font-semibold text-foreground whitespace-nowrap">
+            Size:
           </label>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex items-center gap-2">
             {uniqueSizes.map((size) => (
               <button
                 key={size}
                 onClick={() => handleSizeChange(size)}
-                className={`min-w-[60px] rounded-lg border-2 px-4 py-2 text-sm font-medium transition-all ${selectedSize === size
-                  ? 'border-primary bg-primary text-white shadow-md'
-                  : 'border-gray-200 bg-white text-gray-700 hover:border-primary hover:shadow-sm'
+                className={`min-w-[70px] rounded-lg border-2 px-5 py-2.5 text-sm font-semibold transition-all hover:scale-105 ${selectedSize === size
+                  ? 'border-primary bg-primary text-white shadow-lg'
+                  : 'border-gray-300 bg-white text-gray-700 hover:border-primary hover:shadow-md'
                   }`}
               >
                 {size}
@@ -271,22 +271,22 @@ const ProductInfo = ({
         </div>
 
         {/* Color Selection */}
-        <div>
-          <label className="mb-3 block text-sm font-semibold text-foreground">
-            Color: <span className="font-normal text-primary">{selectedColor}</span>
+        <div className="flex items-center gap-3">
+          <label className="text-base font-semibold text-foreground whitespace-nowrap">
+            Color:
           </label>
-          <div className="flex flex-wrap gap-3">
+          <div className="flex items-center gap-2">
             {uniqueColors.map((colorObj) => (
               <button
                 key={colorObj.color}
                 onClick={() => handleColorChange(colorObj.color)}
-                className={`rounded-full border-2 p-1 transition-all ${selectedColor === colorObj.color
-                  ? 'border-primary shadow-lg ring-2 ring-primary/20'
-                  : 'border-gray-200 hover:border-gray-400 hover:shadow-md'
+                className={`rounded-full border-2 p-1 transition-all hover:scale-110 ${selectedColor === colorObj.color
+                  ? 'border-primary shadow-lg ring-4 ring-primary/20'
+                  : 'border-gray-300 hover:border-gray-400 hover:shadow-md'
                   }`}
               >
                 <div
-                  className="h-10 w-10 rounded-full border border-white shadow-sm"
+                  className="h-8 w-8 rounded-full border-2 border-white shadow-sm"
                   style={{ backgroundColor: colorObj.hex }}
                   title={colorObj.color}
                 />
@@ -296,24 +296,12 @@ const ProductInfo = ({
         </div>
       </div>
 
-      {/* Product Details - Packing Standard */}
-      {packingStandard && (
-        <div className="rounded-lg bg-gray-50 p-4 border border-dashed border-gray-200">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Icon name="BoxIcon" size={18} className="text-primary/70" />
-              <span className="text-sm font-semibold text-foreground uppercase tracking-wider">Packing Standard</span>
-            </div>
-            <span className="text-sm font-bold text-primary">{packingStandard}</span>
-          </div>
-        </div>
-      )}
-
-      {/* Quantity Selector */}
-      <div>
-        <label className="mb-3 block text-sm font-semibold text-foreground">Quantity</label>
-        <div className="flex items-center space-x-4">
-          <div className="flex items-center rounded-lg border border-gray-200 bg-white shadow-sm">
+      {/* Quantity and Packing Standard in One Row */}
+      <div className="flex flex-wrap items-center gap-6">
+        {/* Quantity Selector */}
+        <div className="flex items-center gap-3">
+          <label className="text-base font-semibold text-foreground whitespace-nowrap">Quantity</label>
+          <div className="flex items-center rounded-lg border-2 border-gray-300 bg-white shadow-sm">
             <button
               onClick={() => handleQuantityChange(quantity - packingQty)}
               disabled={quantity <= packingQty}
@@ -326,7 +314,7 @@ const ProductInfo = ({
               value={quantity}
               step={packingQty}
               onChange={(e) => handleQuantityChange(parseInt(e.target.value) || packingQty)}
-              className="h-12 w-20 border-x border-gray-200 bg-transparent text-center font-medium text-foreground focus:outline-none"
+              className="h-12 w-20 border-x-2 border-gray-300 bg-transparent text-center font-medium text-foreground focus:outline-none"
               min={packingQty}
               max={selectedVariant?.stock || 999}
             />
@@ -338,38 +326,51 @@ const ProductInfo = ({
               <Icon name="PlusIcon" size={20} />
             </button>
           </div>
-          <span className="text-xs text-muted-foreground">
-            {packingQty > 1 ? `Packed in ${packingQty}s` : `Min: 1`} | Max: {selectedVariant?.stock || 999}
-          </span>
         </div>
+
+        {/* Packing Standard */}
+        {packingStandard && (
+          <div className="flex items-center gap-3 rounded-xl bg-blue-50 px-4 py-2.5 border-2 border-dashed border-blue-200">
+            <div className="flex items-center gap-2">
+              <Icon name="BoxIcon" size={20} className="text-primary" />
+              <span className="text-sm font-bold text-foreground uppercase tracking-wide whitespace-nowrap">Packing Standard</span>
+            </div>
+            <span className="text-base font-bold text-primary">{packingStandard}</span>
+          </div>
+        )}
+
+        
+
+        {/* Wishlist Button */}
+        <button
+          onClick={toggleWishlist}
+          className="flex items-center justify-center space-x-2 rounded-lg border-2 border-gray-300 bg-white px-4 h-12 font-semibold text-gray-700 transition-all hover:border-red-400 hover:bg-red-50 hover:text-red-600"
+        >
+          <Icon
+            name="HeartIcon"
+            size={20}
+            variant={isWishlisted ? 'solid' : 'outline'}
+            className={isWishlisted ? 'text-red-500' : 'text-gray-400'}
+          />
+          <span>Wishlist</span>
+        </button>
       </div>
 
-      {/* Action Buttons */}
-      <div className="space-y-3">
-        <div className="flex space-x-3">
-          <button
-            onClick={handleAddToCart}
-            className="flex flex-1 items-center justify-center space-x-2 rounded-lg border-2 border-primary bg-white px-6 py-4 font-semibold text-primary transition-all hover:bg-primary hover:text-white"
-          >
-            <Icon name="ShoppingCartIcon" size={20} />
-            <span>Add to Cart</span>
-          </button>
-          <button
-            onClick={toggleWishlist}
-            className="flex items-center justify-center rounded-lg border-2 border-gray-200 bg-white px-4 py-4 transition-all hover:border-red-300 hover:bg-red-50"
-          >
-            <Icon
-              name="HeartIcon"
-              size={20}
-              variant={isWishlisted ? 'solid' : 'outline'}
-              className={isWishlisted ? 'text-red-500' : 'text-gray-400'}
-            />
-          </button>
-        </div>
+      <span className="text-xs text-muted-foreground block">
+        {packingQty > 1 ? `Packed in ${packingQty}s` : `Min: 1`} | Max: {selectedVariant?.stock || 999}
+      </span>
 
+      {/* Buy Now and Add to Cart in Row */}
+      <div className="flex gap-3">
+        <button
+          onClick={handleAddToCart}
+          className="flex-1 rounded-lg border-2 border-primary bg-white px-6 py-4 font-semibold text-primary transition-all hover:bg-primary hover:text-white hover:shadow-lg"
+        >
+          Add to Cart
+        </button>
         <button
           onClick={handleBuyNow}
-          className="w-full rounded-lg bg-primary px-6 py-4 font-semibold text-white transition-all hover:bg-primary/90 hover:shadow-lg"
+          className="flex-1 rounded-lg bg-primary px-6 py-4 font-semibold text-white transition-all hover:bg-primary/90 hover:shadow-lg"
         >
           Buy Now
         </button>
