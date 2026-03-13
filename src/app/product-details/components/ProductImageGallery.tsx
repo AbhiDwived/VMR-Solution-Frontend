@@ -31,23 +31,16 @@ const ProductImageGallery = ({ images, allVariantImages, productName }: ProductI
 
   const handlePrevious = () => {
     const imagesToUse = allVariantImages || images;
-    const newIndex = selectedImageIndex === 0 ? imagesToUse.length - 1 : selectedImageIndex - 1;
-    setSelectedImageIndex(newIndex);
-    setCurrentImages([imagesToUse[newIndex]]);
+    setSelectedImageIndex(selectedImageIndex === 0 ? imagesToUse.length - 1 : selectedImageIndex - 1);
   };
 
   const handleNext = () => {
     const imagesToUse = allVariantImages || images;
-    const newIndex = selectedImageIndex === imagesToUse.length - 1 ? 0 : selectedImageIndex + 1;
-    setSelectedImageIndex(newIndex);
-    setCurrentImages([imagesToUse[newIndex]]);
+    setSelectedImageIndex(selectedImageIndex === imagesToUse.length - 1 ? 0 : selectedImageIndex + 1);
   };
 
   const handleThumbnailClick = (index: number) => {
-    const imagesToUse = allVariantImages || images;
     setSelectedImageIndex(index);
-    // Update current images to show the clicked image
-    setCurrentImages([imagesToUse[index]]);
   };
 
   const toggleZoom = () => {
@@ -60,9 +53,9 @@ const ProductImageGallery = ({ images, allVariantImages, productName }: ProductI
       <div className="flex-1">
         <div className="relative aspect-square overflow-hidden rounded-xl bg-gray-50 shadow-lg">
           <AppImage
-            key={`${currentImages[0]?.id}-${selectedImageIndex}`}
-            src={currentImages[0]?.url || ''}
-            alt={currentImages[0]?.alt || ''}
+            key={`${(allVariantImages || images)[selectedImageIndex]?.id}-${selectedImageIndex}`}
+            src={(allVariantImages || images)[selectedImageIndex]?.url || ''}
+            alt={(allVariantImages || images)[selectedImageIndex]?.alt || ''}
             className={`h-full w-full object-cover transition-transform duration-300 ${isZoomed ? 'scale-150 cursor-zoom-out' : 'cursor-zoom-in'
               }`}
             onClick={toggleZoom}

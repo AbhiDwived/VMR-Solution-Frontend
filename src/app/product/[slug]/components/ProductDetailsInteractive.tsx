@@ -275,12 +275,13 @@ const ProductDetailsInteractive = () => {
           dbVariants = [];
         }
       }
-      const allImages: ProductImage[] = [];
+      
+      const variantImages: ProductImage[] = [];
 
       dbVariants.forEach((v: any, variantIndex: number) => {
         if (v.images && v.images.length > 0) {
           v.images.forEach((url: string, imageIndex: number) => {
-            allImages.push({
+            variantImages.push({
               id: `variant-${variantIndex}-${imageIndex}`,
               url,
               alt: `${product?.name} - ${v.color?.name || 'Color'} ${v.size}`,
@@ -290,30 +291,34 @@ const ProductDetailsInteractive = () => {
         }
       });
 
-      if (allImages.length === 0) {
-        let images: any[] = [];
-        if (Array.isArray(product?.product_images)) {
-          images = product.product_images;
-        } else if (typeof product?.product_images === 'string') {
-          try {
-            images = JSON.parse(product.product_images);
-          } catch (e) {
-            console.warn('Failed to parse product images for fallback:', e);
-            images = [];
-          }
+      // Get product images
+      let productImages: any[] = [];
+      if (Array.isArray(product?.product_images)) {
+        productImages = product.product_images;
+      } else if (typeof product?.product_images === 'string') {
+        try {
+          productImages = JSON.parse(product.product_images);
+        } catch (e) {
+          console.warn('Failed to parse product images:', e);
+          productImages = [];
         }
-        const defaultImages = images.map((url: string, index: number) => ({
-          id: (index + 1).toString(),
-          url,
-          alt: product?.description || product?.name,
-        }));
-        setCurrentImages(defaultImages);
-        setAllVariantImages(defaultImages);
+      }
+      
+      const defaultImages = productImages.map((url: string, index: number) => ({
+        id: `product-${index + 1}`,
+        url,
+        alt: product?.description || product?.name,
+      }));
+
+      // Combine product images and variant images
+      const combinedImages = [...defaultImages, ...variantImages];
+
+      if (combinedImages.length === 0) {
+        setCurrentImages([]);
+        setAllVariantImages([]);
       } else {
-        if (allImages.length > 0) {
-          setCurrentImages([allImages[0]!]);
-        }
-        setAllVariantImages(allImages);
+        setCurrentImages(combinedImages);
+        setAllVariantImages(combinedImages);
       }
     }
   }, [isHydrated, productVariants, product]);
@@ -333,37 +338,41 @@ const ProductDetailsInteractive = () => {
         variantData = [];
       }
     }
+    
     const matchingVariant = variantData.find((v: any) =>
       v.color?.code === variant.colorHex && v.size === variant.size
     );
 
+    // Get product images
+    let productImages: any[] = [];
+    if (Array.isArray(product.product_images)) {
+      productImages = product.product_images;
+    } else if (typeof product.product_images === 'string') {
+      try {
+        productImages = JSON.parse(product.product_images);
+      } catch (e) {
+        console.warn('Failed to parse product images:', e);
+        productImages = [];
+      }
+    }
+    const defaultImages = productImages.map((url: string, index: number) => ({
+      id: `product-${index + 1}`,
+      url,
+      alt: product.description || product.name,
+    }));
+
     if (matchingVariant && matchingVariant.images && matchingVariant.images.length > 0) {
-      // Use variant-specific images
+      // Use variant-specific images + product images
       const variantImages = matchingVariant.images.map((url: string, index: number) => ({
         id: `variant-${index + 1}`,
         url,
         alt: `${product.name} - ${variant.color} ${variant.size}`,
         colorVariant: variant.color,
       }));
-      setCurrentImages(variantImages);
+      const combinedImages = [...defaultImages, ...variantImages];
+      setCurrentImages(combinedImages);
     } else {
-      // Fallback to default product images
-      let images: any[] = [];
-      if (Array.isArray(product.product_images)) {
-        images = product.product_images;
-      } else if (typeof product.product_images === 'string') {
-        try {
-          images = JSON.parse(product.product_images);
-        } catch (e) {
-          console.warn('Failed to parse product images for fallback:', e);
-          images = [];
-        }
-      }
-      const defaultImages = images.map((url: string, index: number) => ({
-        id: (index + 1).toString(),
-        url,
-        alt: product.description || product.name,
-      }));
+      // Use only product images
       setCurrentImages(defaultImages);
     }
   };
