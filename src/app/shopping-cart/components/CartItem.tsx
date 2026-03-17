@@ -11,6 +11,7 @@ interface CartItemData {
   price: number;
   quantity: number;
   variant?: string;
+  packingStandard?: string;
 }
 
 interface CartItemProps {
@@ -23,7 +24,10 @@ interface CartItemProps {
 export default function CartItem({ item, onQuantityChange, onRemove, onSaveForLater }: CartItemProps) {
   const [isRemoving, setIsRemoving] = useState(false);
 
-  const handleQuantityChange = (newQty: number) => {
+  const step = item.packingStandard ? parseInt(item.packingStandard) || 1 : 1;
+
+  const handleDecrease = () => {
+    const newQty = item.quantity - step;
     if (newQty <= 0) {
       handleRemove();
     } else {
@@ -31,11 +35,13 @@ export default function CartItem({ item, onQuantityChange, onRemove, onSaveForLa
     }
   };
 
+  const handleIncrease = () => {
+    onQuantityChange(item.id, item.quantity + step);
+  };
+
   const handleRemove = () => {
     setIsRemoving(true);
-    setTimeout(() => {
-      onRemove(item.id);
-    }, 300);
+    setTimeout(() => onRemove(item.id), 300);
   };
 
   const itemTotal = item.price * item.quantity;
@@ -66,6 +72,11 @@ export default function CartItem({ item, onQuantityChange, onRemove, onSaveForLa
               {item.variant && (
                 <p className="mt-1 text-sm text-muted-foreground">{item.variant}</p>
               )}
+              {item.packingStandard && (
+                <p className="mt-1 text-xs font-medium text-orange-500">
+                  Pack of {item.packingStandard}
+                </p>
+              )}
             </div>
             <button
               onClick={handleRemove}
@@ -80,31 +91,22 @@ export default function CartItem({ item, onQuantityChange, onRemove, onSaveForLa
         {/* Price and Quantity Controls */}
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-4">
-            {/* Quantity Controls */}
             <div className="flex items-center gap-2">
               <span className="text-sm text-muted-foreground">Qty:</span>
               <div className="flex items-center rounded-md border border-border">
                 <button
-                  onClick={() => handleQuantityChange(item.quantity - 1)}
-                  disabled={item.quantity <= 1}
-                  className="flex h-8 w-8 items-center justify-center text-foreground transition-smooth hover:bg-muted disabled:cursor-not-allowed disabled:opacity-40"
+                  onClick={handleDecrease}
+                  className="flex h-8 w-8 items-center justify-center text-foreground transition-smooth hover:bg-muted"
                   aria-label="Decrease quantity"
                 >
                   <Icon name="MinusIcon" size={16} />
                 </button>
-                <input
-                  type="number"
-                  value={item.quantity}
-                  onChange={(e) => {
-                    const val = parseInt(e.target.value) || 1;
-                    handleQuantityChange(val);
-                  }}
-                  min={1}
-                  className="data-text h-8 w-16 border-x border-border bg-transparent text-center text-sm focus:outline-none"
-                />
+                <span className="data-text h-8 w-16 border-x border-border bg-transparent text-center text-sm leading-8">
+                  {item.quantity}
+                </span>
                 <button
-                  onClick={() => handleQuantityChange(item.quantity + 1)}
-                  className="flex h-8 w-8 items-center justify-center text-foreground transition-smooth hover:bg-muted disabled:cursor-not-allowed disabled:opacity-40"
+                  onClick={handleIncrease}
+                  className="flex h-8 w-8 items-center justify-center text-foreground transition-smooth hover:bg-muted"
                   aria-label="Increase quantity"
                 >
                   <Icon name="PlusIcon" size={16} />
@@ -114,12 +116,10 @@ export default function CartItem({ item, onQuantityChange, onRemove, onSaveForLa
           </div>
 
           {/* Price */}
-          <div className="flex items-center gap-3">
-            <div className="text-right">
-              <p className="data-text text-xl font-semibold text-primary">
-                ₹{itemTotal.toLocaleString('en-IN')}
-              </p>
-            </div>
+          <div className="text-right">
+            <p className="data-text text-xl font-semibold text-primary">
+              ₹{itemTotal.toLocaleString('en-IN')}
+            </p>
           </div>
         </div>
 
@@ -135,6 +135,3 @@ export default function CartItem({ item, onQuantityChange, onRemove, onSaveForLa
     </div>
   );
 }
-
-
-

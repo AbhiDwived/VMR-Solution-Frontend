@@ -1,20 +1,37 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import Icon from '@/components/ui/AppIcon';
 import { useAuth } from '@/features/auth/hooks/useAuth';
+import { useGetProductsQuery } from '@/store/api/productsApi';
 import type { RootState } from '@/store/store';
 
 const Navbar = () => {
+  const router = useRouter();
+  const [searchQuery, setSearchQuery] = useState('');
+  const [showDropdown, setShowDropdown] = useState(false);
   const { user, logout } = useAuth();
   const cartItemCount = useSelector((state: RootState) => state.cart.itemCount);
   const wishlistItemCount = useSelector((state: RootState) => state.wishlist.items.length);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isHydrated, setIsHydrated] = useState(false);
+
+  const { data: productsData } = useGetProductsQuery({ limit: 1000 });
+
+  const searchResults = useMemo(() => {
+    if (!searchQuery.trim() || !productsData?.data) return [];
+    const q = searchQuery.toLowerCase();
+    return productsData.data
+      .filter((p: any) =>
+        p.name?.toLowerCase().includes(q) || p.category?.toLowerCase().includes(q)
+      )
+      .slice(0, 8);
+  }, [searchQuery, productsData]);
 
   useEffect(() => {
     // Set hydration state after component mounts
@@ -58,9 +75,25 @@ const Navbar = () => {
 
           {/* Center Search Bar */}
           <div className="hidden md:flex flex-1 justify-center px-8">
-            <div className="relative w-full max-w-md">
+            <form
+              className="relative w-full max-w-md"
+              onSubmit={(e) => {
+                e.preventDefault();
+                if (searchQuery.trim()) {
+                  setShowDropdown(false);
+                  router.push(`/products?search=${encodeURIComponent(searchQuery.trim())}`);
+                }
+              }}
+            >
               <input
                 type="text"
+                value={searchQuery}
+                onChange={(e) => {
+                  setSearchQuery(e.target.value);
+                  setShowDropdown(e.target.value.trim().length > 0);
+                }}
+                onBlur={() => setTimeout(() => setShowDropdown(false), 150)}
+                onFocus={() => searchQuery.trim() && setShowDropdown(true)}
                 placeholder="Search products..."
                 className="w-full rounded-md border border-border bg-background px-4 py-2 pl-10 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
               />
@@ -69,7 +102,52 @@ const Navbar = () => {
                 size={20}
                 className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
               />
-            </div>
+              {showDropdown && searchResults.length > 0 && (
+                <div className="absolute left-0 right-0 top-full z-[200] mt-1 max-h-80 overflow-y-auto rounded-md border border-border bg-popover shadow-lg">
+                  {searchResults.map((product: any) => {
+                    let img = '';
+                    try {
+                      const imgs = typeof product.product_images === 'string' ? JSON.parse(product.product_images) : product.product_images;
+                      img = Array.isArray(imgs) ? imgs[0] : '';
+                    } catch { img = ''; }
+                    return (
+                      <button
+                        key={product.id}
+                        type="button"
+                        onMouseDown={() => {
+                          setSearchQuery(product.name);
+                          setShowDropdown(false);
+                          router.push(`/product/${product.slug}`);
+                        }}
+                        className="flex w-full items-center gap-3 px-4 py-2 text-left text-sm hover:bg-muted"
+                      >
+                        {img && (
+                          <Image src={img} alt={product.name} width={32} height={32} className="rounded object-cover flex-shrink-0" />
+                        )}
+                        <div className="min-w-0">
+                          <p className="truncate font-medium text-foreground">{product.name}</p>
+                          <p className="text-xs text-muted-foreground">{product.category}</p>
+                        </div>
+                        <span className="ml-auto text-xs font-semibold text-primary">
+                          ₹{product.discount_price || product.price}
+                        </span>
+                      </button>
+                    );
+                  })}
+                  <button
+                    type="submit"
+                    className="w-full border-t border-border px-4 py-2 text-center text-xs text-primary hover:bg-muted"
+                  >
+                    See all results for "{searchQuery}"
+                  </button>
+                </div>
+              )}
+              {showDropdown && searchQuery.trim().length > 0 && searchResults.length === 0 && (
+                <div className="absolute left-0 right-0 top-full z-[200] mt-1 rounded-md border border-border bg-popover px-4 py-3 text-sm text-muted-foreground shadow-lg">
+                  No products found
+                </div>
+              )}
+            </form>
           </div>
 
           {/* Right Section - User Actions */}

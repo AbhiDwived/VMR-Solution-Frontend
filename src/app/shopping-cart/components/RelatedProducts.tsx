@@ -1,18 +1,21 @@
 'use client';
 
 import Link from 'next/link';
-import AppImage from '@/components/ui/AppImage';
 import Icon from '@/components/ui/AppIcon';
+import ProductCard from '@/components/ui/ProductCard';
 
 interface RelatedProduct {
   id: string;
+  slug: string;
   name: string;
+  category: string;
   image: string;
   alt: string;
   price: number;
   originalPrice: number;
+  discount: number;
   rating: number;
-  reviews: number;
+  packingStandard?: string;
 }
 
 interface RelatedProductsProps {
@@ -35,55 +38,26 @@ export default function RelatedProducts({ products }: RelatedProductsProps) {
         </Link>
       </div>
 
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-        {products.map((product) => (
-          <Link
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-4 lg:grid-cols-6">
+        {products.map((product, index) => (
+          <ProductCard
             key={product.id}
-            href={`/product-details?id=${product.id}`}
-            className="group rounded-lg border border-border bg-card transition-smooth hover:shadow-elevation-2"
-          >
-            <div className="aspect-square overflow-hidden rounded-t-lg bg-muted">
-              <AppImage
-                src={product.image}
-                alt={product.alt}
-                className="h-full w-full object-cover transition-smooth group-hover:scale-105"
-              />
-            </div>
-            <div className="p-4">
-              <h3 className="mb-2 line-clamp-2 text-sm font-medium text-card-foreground">
-                {product.name}
-              </h3>
-              <div className="mb-2 flex items-center gap-1">
-                <div className="flex items-center">
-                  {[...Array(5)].map((_, i) => (
-                    <Icon
-                      key={i}
-                      name="StarIcon"
-                      size={14}
-                      variant={i < Math.floor(product.rating) ? 'solid' : 'outline'}
-                      className={
-                        i < Math.floor(product.rating) ? 'text-accent' : 'text-muted-foreground'
-                      }
-                    />
-                  ))}
-                </div>
-                <span className="caption text-muted-foreground">({product.reviews})</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="data-text font-semibold text-primary">
-                  ₹{product.price.toLocaleString('en-IN')}
-                </span>
-                <span className="data-text text-sm text-muted-foreground line-through">
-                  ₹{product.originalPrice.toLocaleString('en-IN')}
-                </span>
-              </div>
-            </div>
-          </Link>
+            id={product.id}
+            slug={product.slug}
+            name={product.name}
+            category={product.category}
+            price={product.price}
+            originalPrice={product.originalPrice}
+            discount={product.discount}
+            image={product.image}
+            alt={product.alt}
+            rating={product.rating}
+            showThumbnails={false}
+            animationDelay={index * 100}
+            packingStandard={product.packingStandard}
+          />
         ))}
       </div>
     </div>
   );
 }
-
-
-

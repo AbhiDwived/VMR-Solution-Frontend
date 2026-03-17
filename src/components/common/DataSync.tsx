@@ -47,7 +47,8 @@ export default function DataSync() {
           images = []
         }
         return {
-          id: item.product_id.toString(),
+          id: item.id.toString(),
+          productId: item.product_id.toString(),
           name: item.name,
           price: item.discount_price || item.price,
           image: Array.isArray(images) ? images[0] || '' : '',

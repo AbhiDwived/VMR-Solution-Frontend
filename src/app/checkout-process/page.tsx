@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 export default function CheckoutProcessPage() {
   return (
     <main className="min-h-screen bg-background">
-      <div className="mx-auto max-w-[1200px] px-4 py-6 sm:px-6">
+      <div className="w-full px-2 py-6 sm:px-4">
         <Breadcrumb />
         <div className="mb-6">
           <h1 className="font-heading text-3xl font-bold text-foreground">

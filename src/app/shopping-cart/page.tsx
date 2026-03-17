@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 export default function ShoppingCartPage() {
   return (
     <main className="min-h-screen bg-background">
-      <div className="mx-auto max-w-[1200px] px-4 py-6 sm:px-6">
+      <div className="w-full px-2 py-6 sm:px-4">
         <div data-aos="fade-down">
           <Breadcrumb />
         </div>

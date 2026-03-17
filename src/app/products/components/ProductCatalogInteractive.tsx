@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useSearchParams } from 'next/navigation';
 import FilterPanel, { FilterState } from './FilterPanel';
 import SortControls, { SortOption } from './SortControls';
 import ProductGrid from './ProductGrid';
@@ -11,7 +11,9 @@ import { useGetProductsQuery } from '@/store/api/productsApi';
 
 const ProductCatalogInteractive = () => {
   const params = useParams();
+  const searchParams = useSearchParams();
   const categoryFromUrl = params?.category as string | undefined;
+  const searchQuery = searchParams?.get('search') || '';
   const [isHydrated, setIsHydrated] = useState(false);
   const [filters, setFilters] = useState<FilterState>({
     categories: [],
@@ -65,6 +67,13 @@ const ProductCatalogInteractive = () => {
 
     let result = [...apiProducts];
 
+    if (searchQuery) {
+      const q = searchQuery.toLowerCase();
+      result = result.filter((p) =>
+        p.name.toLowerCase().includes(q) || p.category.toLowerCase().includes(q)
+      );
+    }
+
     if (filters.categories.length > 0) {
       result = result.filter((p) =>
         filters.categories.some((cat) =>
@@ -112,7 +121,7 @@ const ProductCatalogInteractive = () => {
     }
 
     setFilteredProducts(result);
-  }, [filters, sortBy, isHydrated, apiProducts]);
+  }, [filters, sortBy, isHydrated, apiProducts, searchQuery]);
 
   const handleAddToCart = (_productId: string, _size: string, _color: string) => {
     if (!isHydrated) return;

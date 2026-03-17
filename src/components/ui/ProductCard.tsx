@@ -2,12 +2,15 @@
 
 import { useDispatch, useSelector } from 'react-redux';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
 import AppImage from '@/components/ui/AppImage';
 import Icon from '@/components/ui/AppIcon';
 import { useBulkOrder } from '@/components/ui/modal/BulkOrderContext';
 import { useAddToWishlistMutation, useRemoveFromWishlistMutation } from '@/store/api/wishlistApi';
+import { useAddToCartMutation } from '@/store/api/cartApi';
 import { toggleWishlistItem } from '@/store/slices/wishlist';
+import { addItem } from '@/store/slices/cart';
 import type { RootState } from '@/store/store';
 
 interface ProductCardProps {
@@ -23,6 +26,7 @@ interface ProductCardProps {
   discount?: number | undefined;
   showThumbnails?: boolean | undefined;
   animationDelay?: number | undefined;
+  packingStandard?: string | undefined;
 }
 
 const ProductCard = ({
@@ -37,17 +41,25 @@ const ProductCard = ({
   rating,
   discount = 0,
   showThumbnails = true,
-  animationDelay: _animationDelay = 0
+  animationDelay: _animationDelay = 0,
+  packingStandard
 }: ProductCardProps) => {
   const { openModal } = useBulkOrder();
   const dispatch = useDispatch();
+  const router = useRouter();
   const [addToWishlist] = useAddToWishlistMutation();
   const [removeFromWishlist] = useRemoveFromWishlistMutation();
+  const [addToCartApi] = useAddToCartMutation();
   const wishlistItems = useSelector((state: RootState) => state.wishlist.items);
+  const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
   const wishlistItem = wishlistItems.find(item => item.productId === id);
   const isInWishlist = !!wishlistItem;
 
   const handleWishlistToggle = async () => {
+    if (!isAuthenticated) {
+      router.push('/login');
+      return;
+    }
     try {
       if (isInWishlist && wishlistItem) {
         await removeFromWishlist(wishlistItem.id).unwrap();
@@ -60,6 +72,22 @@ const ProductCard = ({
       }
     } catch {
       toast.error('Failed to update wishlist');
+    }
+  };
+
+  const packQty = packingStandard ? parseInt(packingStandard) || 1 : 1;
+
+  const handleAddToCart = async () => {
+    if (!isAuthenticated) {
+      router.push('/login');
+      return;
+    }
+    try {
+      await addToCartApi({ product_id: id, quantity: packQty }).unwrap();
+      dispatch(addItem({ id, productId: id, name, price, image, quantity: packQty }));
+      toast.success(`Added ${packQty} ${packQty > 1 ? 'pcs' : 'pc'} to cart`);
+    } catch {
+      toast.error('Failed to add to cart');
     }
   };
   return (
@@ -85,6 +113,7 @@ const ProductCard = ({
 
         <button
           type="button"
+          onClick={handleAddToCart}
           className="flex h-7 w-7 items-center justify-center rounded-lg bg-white shadow transition hover:bg-gray-100"
         >
           <Icon name="ShoppingCartIcon" size={14} className="text-slate-700" />
@@ -137,6 +166,13 @@ const ProductCard = ({
             ({rating.toFixed(1)})
           </span>
         </div>
+
+        {/* Packing Standard */}
+        {packingStandard && (
+          <p className="mb-1 text-[10px] font-medium text-orange-500">
+            Pack of {packingStandard}
+          </p>
+        )}
 
         {/* Price */}
         <div className="mb-3 flex items-baseline space-x-2">

@@ -15,6 +15,7 @@ interface NewProduct {
   image: string;
   alt: string;
   launchDate: string;
+  packingStandard?: string | undefined;
 }
 
 const NewArrivals = () => {
@@ -60,6 +61,7 @@ const NewArrivals = () => {
         })(),
         alt: product.description,
         launchDate: 'Jan 2025',
+        packingStandard: product.packing_standard || undefined,
       };
     }) || [];
 
@@ -108,6 +110,7 @@ const NewArrivals = () => {
               rating={4.5}
               showThumbnails={false}
               animationDelay={index * 100}
+              packingStandard={product.packingStandard}
             />
           ))}
         </div>

@@ -12,13 +12,16 @@ import { useGetProductsQuery } from '@/store/api/productsApi';
 
 interface RelatedProduct {
   id: string;
+  slug: string;
   name: string;
+  category: string;
   image: string;
   alt: string;
   price: number;
   originalPrice: number;
+  discount: number;
   rating: number;
-  reviews: number;
+  packingStandard?: string;
 }
 
 interface RecentProduct {
@@ -36,6 +39,7 @@ interface ShoppingCartItem {
   image: string;
   quantity: number;
   variant: string;
+  packingStandard?: string;
 }
 
 export default function ShoppingCartInteractive() {
@@ -52,8 +56,7 @@ export default function ShoppingCartInteractive() {
   }, []);
 
   const apiProducts = productsData?.data || [];
-  
-  // Get cart items from API response
+
   const rawCartItems = cartData?.data || [];
   const cartItems: ShoppingCartItem[] = rawCartItems.map((item: any): ShoppingCartItem => {
     let images = [];
@@ -69,21 +72,35 @@ export default function ShoppingCartInteractive() {
       image: Array.isArray(images) ? images[0] || '' : '',
       quantity: item.quantity,
       variant: item.variant_id,
+      packingStandard: item.packing_standard || undefined,
     };
   });
 
   const relatedProducts: RelatedProduct[] = apiProducts
     .slice(0, 8)
-    .map((product: any) => ({
-      id: product.id.toString(),
-      name: product.name,
-      image: '/placeholder.jpg',
-      alt: product.description,
-      price: Number(product.price),
-      originalPrice: Math.floor(Number(product.price) * 1.3),
-      rating: 4.5,
-      reviews: 50,
-    }));
+    .map((product: any) => {
+      let images: string[] = [];
+      try {
+        images = typeof product.product_images === 'string' ? JSON.parse(product.product_images) : (product.product_images || []);
+      } catch { images = []; }
+      const discountPrice = Number(product.discount_price);
+      const originalPrice = Number(product.price);
+      const price = discountPrice && discountPrice < originalPrice ? discountPrice : originalPrice;
+      const discount = discountPrice && discountPrice < originalPrice ? Math.round(((originalPrice - discountPrice) / originalPrice) * 100) : 0;
+      return {
+        id: product.id.toString(),
+        slug: product.slug || product.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''),
+        name: product.name,
+        category: product.category || '',
+        image: Array.isArray(images) ? images[0] || '' : '',
+        alt: product.description || product.name,
+        price,
+        originalPrice,
+        discount,
+        rating: 4.5,
+        packingStandard: product.packing_standard || undefined,
+      };
+    });
 
   const recentProducts: RecentProduct[] = apiProducts
     .slice(0, 2)
@@ -96,29 +113,21 @@ export default function ShoppingCartInteractive() {
     }));
 
   const handleQuantityChange = (id: string, newQuantity: number) => {
-    console.log('🔄 Quantity change:', { id, newQuantity });
-    
     if (newQuantity <= 0) {
       handleRemoveItem(id);
       return;
     }
-    
     if (updateTimeoutRef.current) clearTimeout(updateTimeoutRef.current);
     updateTimeoutRef.current = setTimeout(() => {
-      console.log('📡 API call - Update cart:', { id, quantity: newQuantity });
       updateCartApi({ id, quantity: newQuantity })
         .unwrap()
-        .then((result) => console.log('✅ DB updated successfully:', result))
         .catch((err) => console.error('❌ DB update failed:', err));
     }, 500);
   };
 
   const handleRemoveItem = (id: string) => {
-    console.log('🗑️ Remove item:', id);
-    console.log('📡 API call - Remove from cart:', id);
     removeFromCartApi(id)
       .unwrap()
-      .then((result) => console.log('✅ Item removed from DB:', result))
       .catch((err) => console.error('❌ Remove failed:', err));
   };
 
@@ -131,14 +140,12 @@ export default function ShoppingCartInteractive() {
     setIsClearModalOpen(false);
   };
 
-  const handleApplyPromo = (_code: string) => {
-    // Promo logic here
-  };
+  const handleApplyPromo = (_code: string) => {};
 
   if (!isHydrated || isLoading) {
     return (
       <div className="min-h-screen bg-background">
-        <div className="mx-auto max-w-[1200px] px-4 py-8 sm:px-6">
+        <div className="w-full px-2 py-8 sm:px-4">
           <div className="h-8 w-48 animate-pulse rounded bg-muted"></div>
           <div className="mt-8 grid gap-8 lg:grid-cols-3">
             <div className="space-y-4 lg:col-span-2">
@@ -160,20 +167,12 @@ export default function ShoppingCartInteractive() {
   const gstAmount = Math.floor(((subtotal - discount + deliveryCharges) * gstRate) / 100);
   const total = subtotal - discount + deliveryCharges + gstAmount;
 
-  const orderSummary = {
-    subtotal,
-    discount,
-    deliveryCharges,
-    gstRate,
-    gstAmount,
-    total,
-  };
-
+  const orderSummary = { subtotal, discount, deliveryCharges, gstRate, gstAmount, total };
   const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="mx-auto max-w-[1200px] px-4 py-8 sm:px-6">
+      <div className="w-full px-2 py-8 sm:px-4">
         {cartItems.length > 0 ? (
           <>
             <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
@@ -204,7 +203,6 @@ export default function ShoppingCartInteractive() {
                   />
                 ))}
               </div>
-
               <div>
                 <OrderSummary
                   summary={orderSummary}

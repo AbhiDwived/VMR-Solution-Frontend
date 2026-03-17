@@ -123,7 +123,7 @@ const CheckoutInteractive = () => {
   if (!isHydrated || !isAuthenticated) {
     return (
       <div className="min-h-screen bg-background">
-        <div className="mx-auto max-w-[1200px] px-4 py-8 sm:px-6">
+        <div className="w-full px-2 py-8 sm:px-4">
           <div className="h-8 w-48 animate-pulse rounded-md bg-muted" />
           <div className="mt-6 h-64 animate-pulse rounded-md bg-muted" />
         </div>
@@ -134,7 +134,7 @@ const CheckoutInteractive = () => {
   if (cartItems.length === 0) {
     return (
       <div className="min-h-screen bg-background">
-        <div className="mx-auto max-w-[1200px] px-4 py-8 sm:px-6 text-center">
+        <div className="w-full px-2 py-8 sm:px-4 text-center">
           <Icon name="ShoppingCartIcon" size={64} className="mx-auto text-muted-foreground" />
           <h2 className="mt-4 text-xl font-semibold text-foreground">Your cart is empty</h2>
           <p className="mt-2 text-muted-foreground">Add items to your cart to proceed with checkout</p>
@@ -151,7 +151,7 @@ const CheckoutInteractive = () => {
 
   return (
     <div className="min-h-screen bg-background pb-20 lg:pb-8">
-      <div className="mx-auto max-w-[1200px] px-4 py-8 sm:px-6">
+      <div className="w-full px-2 py-8 sm:px-4">
         <CheckoutProgress currentStep={currentStep} />
 
         <div className="grid gap-6 lg:grid-cols-3">
