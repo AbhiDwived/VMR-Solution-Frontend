@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { Suspense } from 'react';
 import Breadcrumb from '@/components/common/Breadcrumb';
 import ProductCatalogInteractive from '../components/ProductCatalogInteractive';
 
@@ -31,7 +32,15 @@ export default async function CategoryPage({ params }: { params: Promise<{ categ
         </div>
 
         <div data-aos="fade-up">
-          <ProductCatalogInteractive />
+          <Suspense fallback={
+            <div className="grid grid-cols-2 gap-1 sm:gap-2 lg:grid-cols-5">
+              {[...Array(8)].map((_, i) => (
+                <div key={i} className="h-96 animate-pulse rounded-lg bg-muted" />
+              ))}
+            </div>
+          }>
+            <ProductCatalogInteractive />
+          </Suspense>
         </div>
       </main>
     </div>
