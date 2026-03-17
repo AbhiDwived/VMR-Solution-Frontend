@@ -20,13 +20,10 @@ interface ProductImageGalleryProps {
 const ProductImageGallery = ({ images, allVariantImages, productName }: ProductImageGalleryProps) => {
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [isZoomed, setIsZoomed] = useState(false);
-  const [currentImages, setCurrentImages] = useState<ProductImage[]>(images);
-
   // Reset selected image index when images change
   useEffect(() => {
     setSelectedImageIndex(0);
     setIsZoomed(false);
-    setCurrentImages(images);
   }, [images]);
 
   const handlePrevious = () => {
