@@ -26,6 +26,10 @@ export const blogApi = createApi({
       query: (id) => `/blogs/${id}`,
       providesTags: ['Blog'],
     }),
+    getBlogBySlug: builder.query({
+      query: (slug) => `/blogs/slug/${slug}`,
+      providesTags: ['Blog'],
+    }),
     createBlog: builder.mutation({
       query: (formData) => ({
         url: '/blogs',
@@ -52,4 +56,4 @@ export const blogApi = createApi({
   }),
 });
 
-export const { useGetBlogsQuery, useGetBlogQuery, useCreateBlogMutation, useUpdateBlogMutation, useDeleteBlogMutation } = blogApi;
+export const { useGetBlogsQuery, useGetBlogQuery, useGetBlogBySlugQuery, useCreateBlogMutation, useUpdateBlogMutation, useDeleteBlogMutation } = blogApi;

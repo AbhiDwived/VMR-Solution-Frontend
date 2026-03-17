@@ -4,21 +4,21 @@ import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import AppImage from '@/components/ui/AppImage';
 import Icon from '@/components/ui/AppIcon';
-import { useGetBlogsQuery } from '@/store/api/blogApi';
+import { useGetBlogBySlugQuery } from '@/store/api/blogApi';
 
 export default function BlogDetailPage() {
   const params = useParams();
   const slug = params.slug as string;
-  const { data, isLoading } = useGetBlogsQuery(undefined);
+  const { data, isLoading } = useGetBlogBySlugQuery(slug);
   
-  const blog = data?.blogs?.find((b: any) => b.slug === slug);
+  const blog = data?.blog;
 
   if (isLoading) return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
   if (!blog) return <div className="min-h-screen flex items-center justify-center">Blog not found</div>;
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="mx-auto max-w-4xl px-4 py-12">
+      <div className="w-full px-4 py-12">
         <Link href="/blog" className="inline-flex items-center gap-2 text-primary hover:underline mb-6">
           <Icon name="ArrowLeftIcon" size={16} />
           Back to Blog

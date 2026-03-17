@@ -326,7 +326,6 @@ const ProductDetailsInteractive = () => {
   const handleVariantChange = (variant: ProductVariant) => {
     setSelectedVariant(variant);
 
-    // Find variant-specific images from the product's variants data
     let variantData: any[] = [];
     if (Array.isArray(product.variants)) {
       variantData = product.variants;
@@ -334,7 +333,6 @@ const ProductDetailsInteractive = () => {
       try {
         variantData = JSON.parse(product.variants);
       } catch (e) {
-        console.warn('Failed to parse variants for variant change:', e);
         variantData = [];
       }
     }
@@ -343,37 +341,14 @@ const ProductDetailsInteractive = () => {
       v.color?.code === variant.colorHex && v.size === variant.size
     );
 
-    // Get product images
-    let productImages: any[] = [];
-    if (Array.isArray(product.product_images)) {
-      productImages = product.product_images;
-    } else if (typeof product.product_images === 'string') {
-      try {
-        productImages = JSON.parse(product.product_images);
-      } catch (e) {
-        console.warn('Failed to parse product images:', e);
-        productImages = [];
-      }
-    }
-    const defaultImages = productImages.map((url: string, index: number) => ({
-      id: `product-${index + 1}`,
-      url,
-      alt: product.description || product.name,
-    }));
-
-    if (matchingVariant && matchingVariant.images && matchingVariant.images.length > 0) {
-      // Use variant-specific images + product images
+    if (matchingVariant?.images?.length > 0) {
       const variantImages = matchingVariant.images.map((url: string, index: number) => ({
         id: `variant-${index + 1}`,
         url,
         alt: `${product.name} - ${variant.color} ${variant.size}`,
         colorVariant: variant.color,
       }));
-      const combinedImages = [...defaultImages, ...variantImages];
-      setCurrentImages(combinedImages);
-    } else {
-      // Use only product images
-      setCurrentImages(defaultImages);
+      setCurrentImages(variantImages);
     }
   };
 
